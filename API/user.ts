@@ -20,6 +20,16 @@ export const createUser = async (userData: UserData): Promise<any> => {
     }
 };
 
+export const loginUser = async (email: string): Promise<any> => {
+    try {
+        const response = await axiosInstance.post("/user/login", { email });
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data?.message || "Login failed";
+    }
+};
+
+
 export const getAllUsers = async () => {
     try {
         const response = await axiosInstance.get("/user");

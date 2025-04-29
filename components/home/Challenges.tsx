@@ -12,13 +12,13 @@ import Sidebar from "./Sidebar";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
-import { createUser } from "@/API/user";
+import { createUser, loginUser } from "@/API/user";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { RootState } from "@/redux/store";
 import { fetchUsers } from "@/redux/features/userSlice";
-import { setToken } from "@/config/token";
+import {  getToken, setToken } from "@/config/token";
 
 const initialTopics = [
   {
@@ -93,6 +93,10 @@ const Challenges = () => {
   const { user, isSignedIn } = useUser();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const token = getToken()
+
+  // console.log("user", user)
+  // console.log("isSignedIn", user)
 
   // useEffect(() => {
   //   const getJWTToken = async () => {
@@ -155,11 +159,23 @@ const Challenges = () => {
             console.error('Error creating user:', error);
             // toast.error('Failed to create user');
           });
-      } else {
+      } else if(userExists && !token){
+
+        loginUser(userEmail || '')
+        .then((response) => {
+          console.log("Response:", response);
+          if (response?.token) {
+            setToken(response?.token);
+          }
+        })
+        .catch((error) => {
+          console.error('Error creating user:', error);
+          toast.error('Failed to create user');  
+        });
         console.log("User already exists");
       }
     }
-  }, [isSignedIn, user, allUsers, dispatch, router]);
+  }, [isSignedIn, user, allUsers, dispatch, router,token]);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 pb-4 sm:pb-8 mt-16 sm:mt-20 pt-4 bg-white rounded-xl">

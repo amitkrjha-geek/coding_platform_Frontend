@@ -24,7 +24,7 @@ export default function Navbar() {
   
 
     const { userId } = useAuth();
-        console.log("userId",userId);
+        // console.log("userId",userId);
 
     React.useEffect(() => {
         setMounted(true);

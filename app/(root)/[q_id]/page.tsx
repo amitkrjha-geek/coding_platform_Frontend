@@ -15,6 +15,8 @@ import SubmissionsTab from '@/components/home/code/SubmissionsTab'
 import AcceptedTab from '@/components/home/code/AcceptedTab'
 import { generateCodeTemplate } from '@/lib/utils'
 import { questionsData } from '@/constants'
+import { storeCode, triggerSubmission } from '@/API/codeRunner'
+import toast from 'react-hot-toast'
 
 
 type ProgrammingLanguage = {
@@ -76,7 +78,7 @@ const QuestionPage = () => {
         return templates[selectedLanguage];
     });
 
-    console.log("code", code)
+    // console.log("code", code)
 
     const [activeTab, setActiveTab] = useState<TabValue>("description")
     const [isFullscreen, setIsFullscreen] = useState(false)
@@ -109,10 +111,48 @@ const QuestionPage = () => {
         }
     };
 
-    const handleSubmit = () => {
-        console.log("Submitted code:", { code, q_id })
-        // Add your submission logic here
+    const handleSubmitCompile = async() => {
+        console.log("Submitted code:", { code, q_id ,selectedLanguage})
+        const codeData = {
+            // challengeId: q_id,
+            challengeId: "68050aa58da36fb6b89c37cb",
+            code: code,
+            language: selectedLanguage
+        }
+        try {
+          const submissionId = await storeCode(codeData)
+          console.log("submissionId", submissionId)
+          
+          // Store the submissionId in localStorage
+          if (submissionId) {
+            localStorage.setItem('submissionId', submissionId)
+          }
+
+        } catch (error:any) {
+          toast.error(error || "Error submitting code")
+          console.log("error", error)
+        }
     }
+
+    const handleSubmitCode = async() => {
+      const submissionId = localStorage.getItem('submissionId')
+      if (!submissionId) {
+        toast.error("No submission found")
+        console.log("No submissionId found")
+        return
+      }
+      try {
+        const submissionResult = await triggerSubmission(submissionId)
+        console.log("submissionResult", submissionResult)
+        if (submissionId) {
+          localStorage.removeItem('submissionId')
+        }
+
+      } catch (error:any) {
+        toast.error(error?.error || "Error submitting code")
+        console.log("error", error)
+      }
+  }
 
     const handleLanguageChange = (newLanguage: string) => {
         setSelectedLanguage(newLanguage as ProgrammingLanguage['id']);
@@ -367,26 +407,27 @@ const QuestionPage = () => {
             {/* Bottom toolbar: submission buttons */}
             <div className="flex justify-between !p-2 border-t">
               <div className="flex gap-x-3">
-                <Button
+                {/* <Button
                   onClick={handleSubmit}
                   size="sm"
                   variant={"outline"}
                   className='h-8'
                 >
                   Start Agent
-                </Button>
+                </Button> */}
                 <Button
                   className="bg-purple h-8 text-white rounded-lg hover:bg-purple/90 transition-colors"
-                  onClick={handleSubmit}
+                  onClick={handleSubmitCompile}
                   size="sm"
                 >
-                  Run Malware
+                  {/* Run Malware */}
+                  Compile
                 </Button>
               </div>
               <div className="flex justify-end">
                 <Button
                   className="bg-purple h-8 text-white rounded-lg hover:bg-purple/90 transition-colors"
-                  onClick={handleSubmit}
+                  onClick={handleSubmitCode}
                   size="sm"
                 >
                   Submit

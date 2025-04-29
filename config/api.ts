@@ -1,8 +1,8 @@
 import axios from "axios";
 import { getToken } from "./token";
 export const axiosInstance = axios.create({
-  baseURL:
-    `${process.env.NEXT_PUBLIC_API_END_POINTS}/api`,
+  baseURL:`${process.env.NEXT_PUBLIC_API_END_POINTS}/api`,
+  // baseURL:`http://localhost:8080/api`,
   headers: {
     "Content-Type": "application/json",
   },
