@@ -17,6 +17,7 @@ import { generateCodeTemplate } from '@/lib/utils'
 import { questionsData } from '@/constants'
 import { storeCode, triggerSubmission } from '@/API/codeRunner'
 import toast from 'react-hot-toast'
+import { getToken } from '@/config/token'
 
 
 type ProgrammingLanguage = {
@@ -45,32 +46,35 @@ type TabValue = "description" | "submissions" | "logs" | "accepted";
 const QuestionPage = () => {
     const { q_id } = useParams()
     const [selectedLanguage, setSelectedLanguage] = useState<ProgrammingLanguage['id']>('c')
+    const token = getToken()
     
     // Static question data
     const questionData = {
-        "id": "1",
-        "title": "Making A Large Island",
-        "difficulty": "Hard",
-        "description": "You are given an n x n binary matrix grid. You are allowed to change at most one 0 to be 1. Return the size of the largest island in grid after applying this operation.",
-        "examples": [
-            {
-                "input": "grid = [[1,0],[0,1]]",
-                "output": "3",
-                "explanation": "Change one 0 to 1 and connect two 1s, then we get an island with area = 3."
-            },
-            {
-                "input": "grid = [[1,1],[1,0]]",
-                "output": "4",
-                "explanation": "Change the 0 to 1 and make the island bigger, only one island with area = 4."
-            }
-        ],
-        "constraints": [
-            "n == grid.length",
-            "n == grid[i].length",
-            "1 <= n <= 500",
-            "grid[i][j] is either 0 or 1"
-        ]
-    };
+      "id": "68245a7b97b94fa3e979c834",
+      "title": "Making A Large Island",
+      "difficulty": "hard",
+      "topic": "Arrays",
+      "problemStatement": "You are given an n x n binary matrix grid. You are allowed to change at most one 0 to be 1. Return the size of the largest island in grid after applying this operation.",
+      "examples": [
+          {
+              "input": "grid = [[1,0],[0,1]]",
+              "output": "3",
+              "explanation": "Change one 0 to 1 and connect two 1s, then we get an island with area = 3."
+          },
+          {
+              "input": "grid = [[1,1],[1,0]]",
+              "output": "4",
+              "explanation": "Change the 0 to 1 and make the island bigger, only one island with area = 4."
+          }
+      ],
+      "constraints": [
+          "n == grid.length",
+          "n == grid[i].length",
+          "1 <= n <= 500",
+          "grid[i][j] is either 0 or 1"
+      ]
+  }
+    
 
     // Generate initial code template
     const [code, setCode] = useState(() => {
@@ -113,19 +117,24 @@ const QuestionPage = () => {
 
     const handleSubmitCompile = async() => {
         console.log("Submitted code:", { code, q_id ,selectedLanguage})
+        if (!token) {
+            toast.error("Please login to submit code")
+            return
+        }
         const codeData = {
             // challengeId: q_id,
-            challengeId: "68050aa58da36fb6b89c37cb",
+            challengeId: "68245a7b97b94fa3e979c834",
             code: code,
             language: selectedLanguage
         }
         try {
-          const submissionId = await storeCode(codeData)
-          console.log("submissionId", submissionId)
+          const res = await storeCode(codeData)
+          console.log("res", res)
           
           // Store the submissionId in localStorage
-          if (submissionId) {
-            localStorage.setItem('submissionId', submissionId)
+          if (res) {
+            localStorage.setItem('submissionId', res?.submissionId)
+            toast.success("Code submitted successfully")
           }
 
         } catch (error:any) {
@@ -135,9 +144,13 @@ const QuestionPage = () => {
     }
 
     const handleSubmitCode = async() => {
+      if (!token) {
+        toast.error("Please login to submit code")
+        return
+      }
       const submissionId = localStorage.getItem('submissionId')
       if (!submissionId) {
-        toast.error("No submission found")
+        toast.error("No submission found! Please compile the code first")
         console.log("No submissionId found")
         return
       }
@@ -147,9 +160,9 @@ const QuestionPage = () => {
         if (submissionId) {
           localStorage.removeItem('submissionId')
         }
-
+        toast.success("Code submitted successfully")
       } catch (error:any) {
-        toast.error(error?.error || "Error submitting code")
+        toast.error(error || "Error submitting code")
         console.log("error", error)
       }
   }

@@ -34,7 +34,8 @@ interface QuestionData {
   id: string;
   title: string;
   difficulty: string;
-  description: string;
+  problemStatement?: string;
+  description?: string;
   examples: {
       input: string;
       output: string;
