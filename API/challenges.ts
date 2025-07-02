@@ -6,7 +6,7 @@ export const createChallenge = async (data: any) => {
         const response = await axiosInstance.post("/challenges", data);
         return response.data;
     } catch (error: any) {
-        throw error.response?.data?.message || "Challenge creation failed";
+        throw error.response?.data?.error || "Challenge creation failed";
     }
 };
 
@@ -16,7 +16,7 @@ export const getAllChallenges = async () => {
         const response = await axiosInstance.get("/challenges");
         return response.data;
     } catch (error: any) {
-        throw error.response?.data?.message || "Fetching challenges failed";
+        throw error.response?.data?.error || "Fetching challenges failed";
     }
 };
 
@@ -26,7 +26,7 @@ export const getChallengeById = async (id: string) => {
         const response = await axiosInstance.get(`/challenges/${id}`);
         return response.data;
     } catch (error: any) {
-        throw error.response?.data?.message || "Fetching challenge failed";
+        throw error.response?.data?.error || "Fetching challenge failed";
     }
 };
 
@@ -46,6 +46,6 @@ export const deleteChallenge = async (id: string) => {
         const response = await axiosInstance.delete(`/challenges/${id}`);
         return response.data;
     } catch (error: any) {
-        throw error.response?.data?.message || "Deleting challenge failed";
+        throw error.response?.data?.error || "Deleting challenge failed";
     }
 };

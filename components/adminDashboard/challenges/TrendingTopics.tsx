@@ -1,4 +1,3 @@
-
 import { Input } from "@/components/ui/input";
 import { TrendingCompany } from "@/types";
 import { Search } from "lucide-react";
@@ -6,9 +5,11 @@ import { useState } from "react";
 
 interface TrendingTopicsProps {
   companies: TrendingCompany[];
+  selectedCompany: string;
+  setSelectedCompany: (company: string) => void;
 }
 
-export const TrendingTopics = ({ companies }: TrendingTopicsProps) => {
+export const TrendingTopics = ({ companies, selectedCompany, setSelectedCompany }: TrendingTopicsProps) => {
   const [search, setSearch] = useState("");
   
   const filteredCompanies = companies.filter(company => 
@@ -29,15 +30,24 @@ export const TrendingTopics = ({ companies }: TrendingTopicsProps) => {
       </div>
       <div className="flex flex-wrap gap-2">
         {filteredCompanies.map((company) => (
-          <div
+          <button
             key={company.name}
-            className="flex items-center gap-1 bg-gray-100 rounded-full px-3 py-1"
+            className={`flex items-center gap-1 rounded-full px-3 py-1 border transition ${
+              selectedCompany === company.name.toLowerCase()
+                ? "bg-purple-600 text-white"
+                : "bg-gray-100 text-gray-800 hover:bg-purple-100"
+            }`}
+            onClick={() => setSelectedCompany(company.name.toLowerCase())}
           >
             <span className="text-xs 2xl:text-sm font-medium">{company.name}</span>
-            <span className="text-xs bg-purple-600 text-white rounded-full px-2 py-0.5">
+            <span className={`text-xs rounded-full px-2 py-0.5 ${
+              selectedCompany === company.name.toLowerCase()
+                ? "bg-white text-purple-700"
+                : "bg-purple-600 text-white"
+            }`}>
               {company.count}
             </span>
-          </div>
+          </button>
         ))}
       </div>
     </div>

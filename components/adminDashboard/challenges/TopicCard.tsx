@@ -20,7 +20,7 @@ interface TopicCardProps {
 
 export const TopicCard = ({ challenge, onView, onEdit, onDelete, index }: TopicCardProps) => {  
   return (
-    <Card className="p-4 space-y-2 bg-white shadow-sm">
+    <Card className="p-4 space-y-2 bg-white shadow-sm flex flex-col justify-between">
       <div className="flex justify-between items-start">
         <div>
           <h3 className="text-lg font-medium">{index + 1}. {challenge?.title}</h3>
@@ -30,9 +30,11 @@ export const TopicCard = ({ challenge, onView, onEdit, onDelete, index }: TopicC
           </div>
         </div>
         <span className={`text-sm ${
-          challenge.difficulty === 'Easy' ? 'text-green-500' :
-          challenge.difficulty === 'Medium' ? 'text-yellow-500' :
-          'text-red-500'
+          challenge.difficulty === "easy"
+            ? "text-green-500"
+            : challenge.difficulty === "medium"
+            ? "text-yellow-500"
+            : "text-red-500"
         }`}>
           {challenge?.difficulty}
         </span>
@@ -58,6 +60,15 @@ export const TopicCard = ({ challenge, onView, onEdit, onDelete, index }: TopicC
           onClick={() => onDelete(challenge?.id || '')} 
         >
           Delete
+        </Button>
+        <Button
+          variant="secondary"
+          className={`text-sm ${
+            challenge.status === "active"
+              ? "text-green-500"
+              : "text-red-500"
+          } capitalize`}>
+          {challenge?.status}
         </Button>
       </div>
     </Card>
