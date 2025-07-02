@@ -3,6 +3,7 @@ import userReducer from "./features/userSlice";
 import planReducer from "./features/planSlice";
 import { configureStore } from "@reduxjs/toolkit";
 import couponReducer from "./features/couponSlice";
+import challengeReducer from "./features/challengeSlice";
 
 export const store = () => {
   return configureStore({
@@ -11,6 +12,7 @@ export const store = () => {
       user: userReducer,
       plan: planReducer,
       coupon: couponReducer,
+      challenge: challengeReducer,
     },
   })
 }

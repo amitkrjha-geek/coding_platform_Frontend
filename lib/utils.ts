@@ -30,104 +30,47 @@ export const formatUserData = (data: User[]): {
 };
 
 
-interface QuestionData {
-  id: string;
-  title: string;
-  difficulty: string;
-  problemStatement?: string;
-  description?: string;
-  examples: {
-      input: string;
-      output: string;
-      explanation?: string;
-  }[];
-  constraints: string[];
-}
-
 interface CodeTemplates {
   c: string;
   cpp: string;
   csharp: string;
 }
 
-// Helper functions to generate function signatures based on input/output types
-const getFunctionSignatureC = (questionData: QuestionData): string => {
-  const example = questionData.examples[0];
-  if (example.input.includes('grid')) {
-      return 'int largestIsland(int** grid, int gridSize, int* gridColSize) {';
-  }
-  // Add more conditions for different input types
-  return 'int solve() {';
-};
 
-const getFunctionSignatureCpp = (questionData: QuestionData): string => {
-  const example = questionData.examples[0];
-  if (example.input.includes('grid')) {
-      return 'int largestIsland(vector<vector<int>>& grid) {';
-  }
-  return 'int solve() {';
-};
-
-const getFunctionSignatureCSharp = (questionData: QuestionData): string => {
-  const example = questionData.examples[0];
-  if (example.input.includes('grid')) {
-      return 'public int LargestIsland(int[][] grid) {';
-  }
-  return 'public int Solve() {';
-};
-
-export const generateCodeTemplate = (questionData: QuestionData): CodeTemplates => {
-  const functionName = questionData.title
-      .toLowerCase()
-      .replace(/\s+/g, '_')
-      .replace(/[^a-z0-9_]/g, '');
-
+export const generateCodeTemplate = (): CodeTemplates => {
   const templates: CodeTemplates = {
-      c: `#include <stdio.h>
+    c: `#include <stdio.h>
 #include <stdlib.h>
 
-// ${questionData.description}
-
-// Constraints:
-${questionData.constraints.map(c => `// ${c}`).join('\n')}
-
-${getFunctionSignatureC(questionData)}
-    // Write your solution here
+int main() {
+    // Write your C code here
+    // Read input from stdin (scanf, gets)
+    // Print output to stdout (printf)
     
     return 0;
 }`,
 
-      cpp: `#include <iostream>
+    cpp: `#include <iostream>
 #include <vector>
 using namespace std;
 
-// ${questionData.description}
+int main() {
+    // Write your C++ code here
+    // cin for input, cout for output
+    // Use STL containers like vector, set, map
+    
+    return 0;
+}`,
 
-// Constraints:
-${questionData.constraints.map(c => `// ${c}`).join('\n')}
-
-class Solution {
-public:
-    ${getFunctionSignatureCpp(questionData)}
-        // Write your solution here
-        
-        return 0;
-    }
-};`,
-
-      csharp: `using System;
+    csharp: `using System;
 using System.Collections.Generic;
 
-// ${questionData.description}
-
-// Constraints:
-${questionData.constraints.map(c => `// ${c}`).join('\n')}
-
 public class Solution {
-    ${getFunctionSignatureCSharp(questionData)}
-        // Write your solution here
+    public static void Main(string[] args) {
+        // Write your C# code here
+        // Console.ReadLine() for input
+        // Console.WriteLine() for output
         
-        return 0;
     }
 }`
   };
