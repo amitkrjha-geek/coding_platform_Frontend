@@ -65,7 +65,7 @@ const Challenges = () => {
     (state: RootState) => state.user
   );
 
-  const { status: challengesStatus, challenges, companyStats, topicStats, loading, error } = useAppSelector((state) => state.challenge);
+  const { status: challengesStatus, challenges, topicStats, loading, error } = useAppSelector((state) => state.challenge);
 
   const topics = useDynamicTopics(topicStats || {}, showMore);
 

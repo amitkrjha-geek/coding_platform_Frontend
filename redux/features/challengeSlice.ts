@@ -179,4 +179,9 @@ const challengeSlice = createSlice({
     },
 });
 
+// Selector to get challenge by ID
+export const selectChallengeById = (state: { challenge: ChallengeState }, id: string) => {
+    return state.challenge.challenges.find(challenge => challenge._id === id);
+};
+
 export default challengeSlice.reducer;

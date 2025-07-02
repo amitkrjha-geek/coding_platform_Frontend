@@ -1,0 +1,38 @@
+.problem-statement {
+    @apply text-gray-700;
+}
+
+.problem-statement h2 {
+    @apply text-xl font-semibold text-gray-800 mt-6 mb-3;
+}
+
+.problem-statement pre {
+    @apply bg-gray-50 p-4 rounded-lg my-4 text-sm font-mono;
+    white-space: pre-wrap;
+}
+
+.problem-statement code {
+    @apply font-mono text-sm;
+}
+
+.problem-statement ul {
+    @apply space-y-2 my-4;
+}
+
+.problem-statement li {
+    @apply ml-4;
+}
+
+.problem-statement p {
+    @apply my-3;
+}
+
+/* Add more spacing between examples */
+.problem-statement h2+p+pre {
+    @apply mt-2;
+}
+
+/* Better formatting for constraints */
+.problem-statement ul li p {
+    @apply my-0;
+}
