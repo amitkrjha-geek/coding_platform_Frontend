@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,20 +14,61 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Pencil } from "lucide-react";
 import ChallengeDetails from "@/components/adminDashboard/challenges/ChallengeDetails";
 import SubmissionsTable from "@/components/adminDashboard/challenges/SubmissionsTable";
+import { getChallengeById } from "@/API/challenges";
 
-
+interface Challenge {
+  _id: string;
+  title: string;
+  difficulty: string;
+  topic: string[];
+  keywords: string[];
+  problemStatement: string;
+  constraints: string[];
+  files: string[];
+  status: string;
+  acceptanceRate: number;
+  submissions: number;
+  isFeatured: boolean;
+  companies: string[];
+  createdAt: string;
+  __v: number;
+}
 
 const ViewChallenges = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'description' | 'submissions'>('description');
+  const [challenge, setChallenge] = useState<Challenge | null>(null);
+  const [loading, setLoading] = useState(true);
 
   console.log("id", id);
 
   const handleEditChallenge = () => {
     router.push(`/admin/challenges/edit?id=${id}`);
   };
+
+  useEffect(() => {
+    const getSingleChallenge = async () => {
+      try {
+        setLoading(true);
+        const res = await getChallengeById(String(id));
+        console.log({res});
+        
+        if (res) {
+          setChallenge(res?.data);
+        }
+      } catch (error) {
+        console.error('Error fetching challenges:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    if (id) {
+      getSingleChallenge();
+    }
+  }, [id]);
 
   return (
     <section className="bg-[#f9f9f9] h-50 p-7">
@@ -82,18 +123,29 @@ const ViewChallenges = () => {
           </div>
 
           {/* Content based on active tab */}
-          {activeTab === 'description' ? (
-            <ChallengeDetails
-              title="Making A Large Island"
-              difficulty="Hard"
-              stats={{
-                Accepted: "500.7k",
-                Submissions: "558.5k",
-                acceptanceRate: "33.8%"
-              }}
-            />
+          {loading ? (
+            <div className="flex justify-center items-center py-8">
+              <div className="text-gray-500">Loading challenge details...</div>
+            </div>
+          ) : challenge ? (
+            activeTab === 'description' ? (
+              <ChallengeDetails
+                title={challenge?.title}
+                difficulty={challenge?.difficulty}
+                stats={{
+                  Accepted: `${(challenge?.submissions * challenge?.acceptanceRate / 100).toFixed(1)}k`,
+                  Submissions: `${(challenge?.submissions / 1000).toFixed(1)}k`,
+                  acceptanceRate: `${challenge?.acceptanceRate.toFixed(1)}%`
+                }}
+                challenge={challenge}
+              />
+            ) : (
+              <SubmissionsTable />
+            )
           ) : (
-            <SubmissionsTable />
+            <div className="flex justify-center items-center py-8">
+              <div className="text-gray-500">Challenge not found</div>
+            </div>
           )}
         </div>
       </div>

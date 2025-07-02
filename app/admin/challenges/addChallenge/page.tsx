@@ -36,20 +36,30 @@ import * as z from "zod"
 import { Badge } from '@/components/ui/badge'
 import { FileText, X } from 'lucide-react'
 import Tiptap from '@/components/Tiptap'
+import { createChallenge } from '@/API/challenges'
+import toast from 'react-hot-toast'
+import { useRouter } from 'next/navigation'
 
 const formSchema = z.object({
   title: z.string().min(1, "Challenge name is required"),
   difficulty: z.string().min(1, "Difficulty is required"),
-  topic: z.string().min(1, "Topic is required"),
+  topic: z.array(z.string()).min(1, "At least one topic is required"),
   keywords: z.array(z.string()),
   problemStatement: z.string().min(1, "Problem statement is required"),
+  status: z.string().min(1, "Status is required"),
+  companies: z.array(z.string()),
   files: z.array(z.any()).optional(),
 })
 
 const AddChallenge = () => {
+  const router = useRouter()
   const [newTag, setNewTag] = React.useState("")
+  const [newCompany, setNewCompany] = React.useState("")
+  const [newTopic, setNewTopic] = React.useState("")
   const [formData, setFormData] = React.useState({
-    tags: [] as string[]
+    tags: [] as string[],
+    companies: [] as string[],
+    topics: [] as string[]
   })
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -57,9 +67,11 @@ const AddChallenge = () => {
     defaultValues: {
       title: "",
       difficulty: "",
-      topic: "",
+      topic: [],
       keywords: [],
       problemStatement: "",
+      status: "active",
+      companies: [],
       files: [],
     },
   })
@@ -83,11 +95,60 @@ const AddChallenge = () => {
     }));
     form.setValue('keywords', newTags);
   };
+
+  const addCompany = (company: string) => {
+    if (company && !formData.companies.includes(company)) {
+      setFormData(prev => ({
+        ...prev,
+        companies: [...prev.companies, company]
+      }));
+      form.setValue('companies', [...formData.companies, company]);
+      setNewCompany("");
+    }
+  };
   
+  const removeCompany = (companyToRemove: string) => {
+    const newCompanies = formData.companies.filter(company => company !== companyToRemove);
+    setFormData(prev => ({
+      ...prev,
+      companies: newCompanies
+    }));
+    form.setValue('companies', newCompanies);
+  };
+
+  const addTopic = (topic: string) => {
+    if (topic && !formData.topics.includes(topic)) {
+      setFormData(prev => ({
+        ...prev,
+        topics: [...prev.topics, topic]
+      }));
+      form.setValue('topic', [...formData.topics, topic]);
+      setNewTopic("");
+    }
+  };
+  
+  const removeTopic = (topicToRemove: string) => {
+    const newTopics = formData.topics.filter(topic => topic !== topicToRemove);
+    setFormData(prev => ({
+      ...prev,
+      topics: newTopics
+    }));
+    form.setValue('topic', newTopics);
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log(values)
-      // Add your API call here to save the challenge
+      console.log('Form values:', JSON.stringify(values, null, 2));
+      const res = await createChallenge(values)
+      console.log({res})
+      if (res){
+        toast.success("Challenge created successfully")
+        router.push("/admin/challenges")
+      }
+      // console.log({res})
+      form.reset()
+      setFormData({ tags: [], companies: [], topics: [] })
+      
     } catch (error) {
       console.error("Error creating challenge:", error)
     }
@@ -159,30 +220,68 @@ const AddChallenge = () => {
                   )}
                 />
 
-                {/* Topic */}
+                {/* Status */}
                 <FormField
                   control={form.control}
-                  name="topic"
+                  name="status"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Topic</FormLabel>
+                      <FormLabel>Status</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select Category" />
+                            <SelectValue placeholder="Select Status" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="arrays">Arrays</SelectItem>
-                          <SelectItem value="strings">Strings</SelectItem>
-                          <SelectItem value="dp">Dynamic Programming</SelectItem>
-                          {/* Add more categories as needed */}
+                          <SelectItem value="active">Active</SelectItem>
+                          <SelectItem value="inactive">Inactive</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+              </div>
+
+              {/* Topics */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Topics</label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {formData.topics.map((topic) => (
+                    <Badge key={topic} variant="secondary" className="px-3 py-1">
+                      {topic}
+                      <button
+                        type="button"
+                        onClick={() => removeTopic(topic)}
+                        className="ml-2 hover:text-red-500 transition-colors"
+                      >
+                        <X size={14} />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    value={newTopic}
+                    onChange={(e) => setNewTopic(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addTopic(newTopic);
+                      }
+                    }}
+                    placeholder="Add Topics (e.g., Arrays, Strings, Dynamic Programming)"
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => addTopic(newTopic)}
+                  >
+                    Add
+                  </Button>
+                </div>
               </div>
 
               {/* Keywords and Tags */}
@@ -225,7 +324,46 @@ const AddChallenge = () => {
                 </div>
               </div>
 
-              
+              {/* Companies */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Companies</label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {formData.companies.map((company) => (
+                    <Badge key={company} variant="secondary" className="px-3 py-1">
+                      {company}
+                      <button
+                        type="button"
+                        onClick={() => removeCompany(company)}
+                        className="ml-2 hover:text-red-500 transition-colors"
+                      >
+                        <X size={14} />
+                      </button>
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    value={newCompany}
+                    onChange={(e) => setNewCompany(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        addCompany(newCompany);
+                      }
+                    }}
+                    placeholder="Add Companies"
+                    className="flex-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => addCompany(newCompany)}
+                  >
+                    Add
+                  </Button>
+                </div>
+              </div>
+
               {/* Problem Statement */}
               <FormField
                 control={form.control}

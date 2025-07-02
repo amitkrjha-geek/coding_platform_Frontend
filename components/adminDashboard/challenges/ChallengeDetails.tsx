@@ -1,5 +1,23 @@
 import { FileText } from "lucide-react";
 
+interface Challenge {
+  _id: string;
+  title: string;
+  difficulty: string;
+  topic: string[];
+  keywords: string[];
+  problemStatement: string;
+  constraints: string[];
+  files: string[];
+  status: string;
+  acceptanceRate: number;
+  submissions: number;
+  isFeatured: boolean;
+  companies: string[];
+  createdAt: string;
+  __v: number;
+}
+
 interface ChallengeDetailsProps {
   title: string;
   difficulty: string;
@@ -8,15 +26,22 @@ interface ChallengeDetailsProps {
     Submissions: string;
     acceptanceRate: string;
   };
+  challenge: Challenge;
 }
 
-const ChallengeDetails = ({ title, difficulty, stats }: ChallengeDetailsProps) => {
+const ChallengeDetails = ({ title, difficulty, stats, challenge }: ChallengeDetailsProps) => {
   return (
     <div className="prose max-w-none">
       {/* Challenge Title and Difficulty */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold">{title}</h2>
-        <span className="bg-red-100 text-red-600 px-3 py-1 rounded-full text-sm">{difficulty}</span>
+        <span className={`px-3 py-1 rounded-full text-sm ${
+          difficulty === 'easy' ? 'bg-green-100 text-green-600' :
+          difficulty === 'medium' ? 'bg-yellow-100 text-yellow-600' :
+          'bg-red-100 text-red-600'
+        }`}>
+          {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
+        </span>
       </div>
 
       {/* Statistics */}
@@ -35,54 +60,72 @@ const ChallengeDetails = ({ title, difficulty, stats }: ChallengeDetailsProps) =
         </div>
       </div>
 
-      <p className="mb-4">
-        You are given an n x n binary matrix grid. You are allowed to change at most one 0 to be 1. Return size of the largest island in grid after applying this operation.
-      </p>
-
-      {/* Examples */}
-      <div className="space-y-4">
-        <div>
-          <h3 className="font-medium mb-2">Example 1:</h3>
-          <div className="bg-gray-50 p-3 rounded">
-            <p>Input: grid = [[1,0],[0,1]]</p>
-            <p>Output: 3</p>
-            <p className="text-gray-600">Explanation: Change one 0 to 1 and connect two 1s, then we get an island with area = 3</p>
+      {/* Topics */}
+      {challenge.topic && challenge.topic.length > 0 && (
+        <div className="mb-4">
+          <h3 className="font-medium mb-2">Topics:</h3>
+          <div className="flex flex-wrap gap-2">
+            {challenge.topic.map((topic, index) => (
+              <span key={index} className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-sm">
+                {topic}
+              </span>
+            ))}
           </div>
         </div>
+      )}
 
-        <div>
-          <h3 className="font-medium mb-2">Example 2:</h3>
-          <div className="bg-gray-50 p-3 rounded">
-            <p>Input: grid = [[1,1],[1,0]]</p>
-            <p>Output: 4</p>
-            <p className="text-gray-600">Explanation: Change the 0 to 1 and make the island bigger, only one island with area = 4</p>
+      {/* Keywords */}
+      {challenge.keywords && challenge.keywords.length > 0 && (
+        <div className="mb-4">
+          <h3 className="font-medium mb-2">Keywords:</h3>
+          <div className="flex flex-wrap gap-2">
+            {challenge.keywords.map((keyword, index) => (
+              <span key={index} className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-sm">
+                {keyword}
+              </span>
+            ))}
           </div>
         </div>
+      )}
+
+      {/* Companies */}
+      {challenge.companies && challenge.companies.length > 0 && (
+        <div className="mb-4">
+          <h3 className="font-medium mb-2">Companies:</h3>
+          <div className="flex flex-wrap gap-2">
+            {challenge.companies.map((company, index) => (
+              <span key={index} className="bg-purple-100 text-purple-600 px-2 py-1 rounded text-sm">
+                {company}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Problem Statement */}
+      <div className="mb-4 mt-4">
+        <h3 className="font-medium mb-2">Problem Statement:</h3>
+        <div 
+          className="text-gray-700 prose max-w-none [&>h2]:text-xl [&>h2]:font-semibold [&>h2]:mt-4 [&>h2]:mb-2 [&>p]:mb-2 [&>pre]:bg-gray-100 [&>pre]:p-3 [&>pre]:rounded [&>pre]:overflow-x-auto [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-1 [&>code]:bg-gray-100 [&>code]:px-1 [&>code]:py-0.5 [&>code]:rounded [&>code]:text-sm"
+          dangerouslySetInnerHTML={{ __html: challenge.problemStatement }}
+        />
       </div>
 
-      {/* Constraints */}
-      <div className="mt-6">
-        <h3 className="font-medium mb-2">Constraints:</h3>
-        <ul className="list-disc pl-6 space-y-1">
-          <li>n == grid.length</li>
-          <li>n == grid[i].length</li>
-          <li>1 ≤ n ≤ 500</li>
-          <li>grid[i][j] is either 0 or 1</li>
-        </ul>
-      </div>
 
       {/* Files Section */}
-      <div className="mt-6">
-        <h3 className="font-medium mb-3">Uploaded Artifacts or Required Files</h3>
-        <div className="flex gap-3">
-          {Array(4).fill(0).map((_, i) => (
-            <div key={i} className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded">
-              <FileText className="w-4 h-4 text-red-500" />
-              <span>ModifyKey.sln</span>
-            </div>
-          ))}
+      {challenge.files && challenge.files.length > 0 && (
+        <div className="mt-6">
+          <h3 className="font-medium mb-3">Uploaded Artifacts or Required Files</h3>
+          <div className="flex gap-3">
+            {challenge.files.map((file, index) => (
+              <div key={index} className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded">
+                <FileText className="w-4 h-4 text-red-500" />
+                <span>{file}</span>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

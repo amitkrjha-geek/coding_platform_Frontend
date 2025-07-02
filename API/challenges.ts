@@ -36,7 +36,7 @@ export const updateChallenge = async (id: string, data: any) => {
         const response = await axiosInstance.put(`/challenges/${id}`, data);
         return response.data;
     } catch (error: any) {
-        throw error.response?.data?.message || "Updating challenge failed";
+        throw error.response?.data?.error || "Updating challenge failed";
     }
 };
 

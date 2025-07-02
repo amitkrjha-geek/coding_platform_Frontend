@@ -6,9 +6,11 @@ import Heading from '@tiptap/extension-heading'
 import ListItem from '@tiptap/extension-list-item'
 import OrderedList from '@tiptap/extension-ordered-list'
 import { Toolbar } from './Toolbar';
+import { useEffect } from 'react';
 // import { headers } from 'next/headers';
 
 const Tiptap = ({problemStatement, onChange}: {problemStatement: string, onChange: (richText: string) => void}) => {
+ 
   const editor = useEditor({
     extensions: [StarterKit.configure({}),
       Heading.configure({
@@ -39,6 +41,13 @@ const Tiptap = ({problemStatement, onChange}: {problemStatement: string, onChang
       console.log(editor.getHTML());
     },
   });
+
+  // Update content when problemStatement prop changes (external updates)
+  useEffect(() => {
+    if (editor && problemStatement !== editor.getHTML()) {
+      editor.commands.setContent(problemStatement);
+    }
+  }, [problemStatement, editor]);
 
   return (
     <div className='flex flex-col gap-2 '>

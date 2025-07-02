@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 // import {
 //   Card,
 //   CardContent,
@@ -32,97 +32,219 @@ import { z } from "zod";
 import Tiptap from "@/components/Tiptap";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, X } from "lucide-react";
+import { getChallengeById, updateChallenge } from "@/API/challenges";
+import toast from "react-hot-toast";
+import { Badge } from "@/components/ui/badge";
 
 interface EditChallengeFormProps {
   challengeId: string;
 }
 
-const challengeSchema = z.object({
-  title: z.string().min(1),
-  difficulty: z.enum(["easy", "medium", "hard"]),
-  topic: z.string().min(1),
+const formSchema = z.object({
+  title: z.string().min(1, "Challenge name is required"),
+  difficulty: z.string().min(1, "Difficulty is required"),
+  topic: z.array(z.string()).min(1, "At least one topic is required"),
   keywords: z.array(z.string()),
-  problemStatement: z.string().min(1),
-  files: z.array(z.any()),
-});
+  problemStatement: z.string().min(1, "Problem statement is required"),
+  status: z.string().min(1, "Status is required"),
+  companies: z.array(z.string()),
+  files: z.array(z.any()).optional(),
+})
 
-type FormData = z.infer<typeof challengeSchema>;
 
-const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
+type FormData = z.infer<typeof formSchema>;
+
+const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => { 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [newTag, setNewTag] = React.useState("")
+  const [newCompany, setNewCompany] = React.useState("")
+  const [newTopic, setNewTopic] = React.useState("")
+  const [formData, setFormData] = React.useState({
+    tags: [] as string[],
+    companies: [] as string[],
+    topics: [] as string[]
+  })
 
-  const form = useForm<FormData>({
-    resolver: zodResolver(challengeSchema),
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "Making A Large Island",
-      difficulty: "medium",
-      topic: "strings",
-      keywords: ["Making A Large Island", "array"],
-      problemStatement:
-        '<p>You are given an n x n binary matrix grid. You are allowed to change at most one 0 to be 1. Return size of the largest island in grid after applying this operation.</p><p></p><p>Example 1:</p><p></p><pre><code>Input: grid = [[1,0],[0,1]]\n\nOutput: 3\n\nExplanation: Change one 0 to 1 and connect two 1s, then we get an island with area = 3</code></pre><p></p><h3 class="text-2xl font-bold" level="2"><strong>Example 2:</strong></h3><p></p><pre><code>Input: grid = [[1,1],[1,0]]\n\nOutput: 4\n\nExplanation: Change the 0 to 1 and make the island bigger, only one island with area = 4</code></pre><p></p><h3 class="text-2xl font-bold" level="2"><strong>Constraints:</strong></h3><p></p><ul><li class="list-disc"><p>n == grid.length</p></li><li class="list-disc"><p>n == grid[i].length</p></li><li class="list-disc"><p>1 ≤ n ≤ 500</p></li><li class="list-disc"><p>grid[i][j] is either 0 or 1</p></li></ul>',
-      files: [{ name: "banner-image.jpg" }],
+      title: "",
+      difficulty: "",
+      topic: [],
+      keywords: [],
+      problemStatement: "",
+      status: "active",
+      companies: [],
+      files: [],
     },
-  });
+  })
 
-  const onSubmit = async (data: FormData) => {
+  const addTag = (tag: string) => {
+    if (tag && !formData.tags.includes(tag)) {
+      setFormData(prev => ({
+        ...prev,
+        tags: [...prev.tags, tag]
+      }));
+      form.setValue('keywords', [...formData.tags, tag]);
+      setNewTag("");
+    }
+  };
+  
+  const removeTag = (tagToRemove: string) => {
+    const newTags = formData.tags.filter(tag => tag !== tagToRemove);
+    setFormData(prev => ({
+      ...prev,
+      tags: newTags
+    }));
+    form.setValue('keywords', newTags);
+  };
+
+  const addCompany = (company: string) => {
+    if (company && !formData.companies.includes(company)) {
+      setFormData(prev => ({
+        ...prev,
+        companies: [...prev.companies, company]
+      }));
+      form.setValue('companies', [...formData.companies, company]);
+      setNewCompany("");
+    }
+  };
+  
+  const removeCompany = (companyToRemove: string) => {
+    const newCompanies = formData.companies.filter(company => company !== companyToRemove);
+    setFormData(prev => ({
+      ...prev,
+      companies: newCompanies
+    }));
+    form.setValue('companies', newCompanies);
+  };
+
+  const addTopic = (topic: string) => {
+    if (topic && !formData.topics.includes(topic)) {
+      setFormData(prev => ({
+        ...prev,
+        topics: [...prev.topics, topic]
+      }));
+      form.setValue('topic', [...formData.topics, topic]);
+      setNewTopic("");
+    }
+  };
+  
+  const removeTopic = (topicToRemove: string) => {
+    const newTopics = formData.topics.filter(topic => topic !== topicToRemove);
+    setFormData(prev => ({
+      ...prev,
+      topics: newTopics
+    }));
+    form.setValue('topic', newTopics);
+  };
+
+  useEffect(() => {
+    const getChallenge = async () => {
+      try {
+        setLoading(true);
+        const res = await getChallengeById(challengeId);
+        console.log({res});
+        
+        if (res?.data) {
+          const challenge = res?.data;
+          
+          // Set form values
+          form.reset({
+            title: challenge?.title,
+            difficulty: challenge?.difficulty,
+            topic: challenge?.topic || [],
+            keywords: challenge?.keywords || [],
+            problemStatement: challenge?.problemStatement || '',
+            status: challenge?.status || 'active',
+            companies: challenge?.companies || [],
+            files: challenge?.files || [],
+          });
+          
+          // Set local state for tags, companies, and topics
+          setFormData({
+            tags: challenge.keywords || [],
+            companies: challenge.companies || [],
+            topics: challenge.topic || []
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching challenge:', error);
+        toast.error('Failed to load challenge data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    if (challengeId) {
+      getChallenge();
+    }
+  }, [challengeId, form]);
+
+  const handleCancel = () => {
+    router.push("/admin/challenges");
+  };
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/challenges/${challengeId}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to update challenge");
+      console.log('Form values:', JSON.stringify(values, null, 2));
+      const res = await updateChallenge(challengeId, values)
+      console.log({res})
+      if (res){
+        toast.success("Challenge updated successfully")
+        router.push("/admin/challenges")
       }
-
-      // toast.success("Challenge updated successfully")
-      router.push("/admin/challenges");
-      router.refresh();
+      // console.log({res})
+      
     } catch (error) {
-      console.log(error);
-      // toast.error("Something went wrong")
+      console.error("Error creating challenge:", error)
+      toast.error(error as string)
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <Card>
-      <CardContent className="pt-6">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+    <CardContent className="pt-6">
+      {loading && (
+        <div className="flex justify-center items-center py-8 mb-4">
+          <div className="text-gray-500">Loading challenge data...</div>
+        </div>
+      )}
+      
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/* Challenge Name */}
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Challenge Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Challenge Name" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
+          <div className="grid grid-cols-2 gap-6">
+            {/* Difficulty */}
             <FormField
               control={form.control}
               name="difficulty"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Difficulty</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select difficulty" />
+                        <SelectValue placeholder="Select Difficulty Level" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -136,139 +258,249 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
               )}
             />
 
+            {/* Status */}
             <FormField
               control={form.control}
-              name="topic"
+              name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Topic</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
+                  <FormLabel>Status</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Status" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
+          </div>
 
-            <FormField
-              control={form.control}
-              name="keywords"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Keywords (comma-separated)</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      value={field.value?.join(", ")}
-                      onChange={(e) => {
-                        const keywords = e.target.value
-                          .split(",")
-                          .map((keyword) => keyword.trim())
-                          .filter(Boolean);
-                        field.onChange(keywords);
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          {/* Topics */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Topics</label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {formData.topics.map((topic) => (
+                <Badge key={topic} variant="secondary" className="px-3 py-1">
+                  {topic}
+                  <button
+                    type="button"
+                    onClick={() => removeTopic(topic)}
+                    className="ml-2 hover:text-red-500 transition-colors"
+                  >
+                    <X size={14} />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={newTopic}
+                onChange={(e) => setNewTopic(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addTopic(newTopic);
+                  }
+                }}
+                placeholder="Add Topics (e.g., Arrays, Strings, Dynamic Programming)"
+                className="flex-1"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => addTopic(newTopic)}
+              >
+                Add
+              </Button>
+            </div>
+          </div>
 
-            <FormField
-              control={form.control}
-              name="problemStatement"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Problem Statement</FormLabel>
-                  <FormControl>
-                    <Tiptap
+          {/* Keywords and Tags */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Keywords and Tags</label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {formData.tags.map((tag) => (
+                <Badge key={tag} variant="secondary" className="px-3 py-1">
+                  {tag}
+                  <button
+                    type="button"
+                    onClick={() => removeTag(tag)}
+                    className="ml-2 hover:text-red-500 transition-colors"
+                  >
+                    <X size={14} />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={newTag}
+                onChange={(e) => setNewTag(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addTag(newTag);
+                  }
+                }}
+                placeholder="Add Tags"
+                className="flex-1"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => addTag(newTag)}
+              >
+                Add
+              </Button>
+            </div>
+          </div>
+
+          {/* Companies */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Companies</label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {formData.companies.map((company) => (
+                <Badge key={company} variant="secondary" className="px-3 py-1">
+                  {company}
+                  <button
+                    type="button"
+                    onClick={() => removeCompany(company)}
+                    className="ml-2 hover:text-red-500 transition-colors"
+                  >
+                    <X size={14} />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={newCompany}
+                onChange={(e) => setNewCompany(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    addCompany(newCompany);
+                  }
+                }}
+                placeholder="Add Companies"
+                className="flex-1"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => addCompany(newCompany)}
+              >
+                Add
+              </Button>
+            </div>
+          </div>
+
+          {/* Problem Statement */}
+          <FormField
+            control={form.control}
+            name="problemStatement"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Problem Statement</FormLabel>
+                <FormControl>
+                
+                <Tiptap
                       problemStatement={field.value}
                       onChange={field.onChange}
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            {/* File Upload */}
-            <FormField
-              control={form.control}
-              name="files"
-              render={({ field: { onChange, value } }) => (
-                <FormItem>
-                  <FormLabel>Upload Artifacts or Required Files</FormLabel>
-                  <FormControl>
-                    <div className="border-2 border-dashed rounded-md p-4 text-center">
-                      <p className="text-gray-500">
-                        Artifacts or Required Files
-                      </p>
-
-                      {/* Display uploaded files */}
-                      <div className="mt-2 space-y-2">
-                        {value?.map((file: File, index: number) => (
-                          <div
-                            key={index}
-                            className="flex items-center justify-between bg-gray-50 p-1 rounded"
-                          >
-                            <div className="flex items-center gap-2">
-                              <FileText className="w-4 h-4 text-red-500" />
-                              <span className="text-sm">{file.name}</span>
-                            </div>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => {
-                                const newFiles = value.filter(
-                                  (_: File, i: number) => i !== index
-                                );
-                                onChange(newFiles);
-                              }}
-                            >
-                              <X size={16} className="w-4 h-4 text-red-500" />
-                            </Button>
+          {/* File Upload */}
+          <FormField
+            control={form.control}
+            name="files"
+            render={({ field: { onChange, value } }) => (
+              <FormItem>
+                <FormLabel>Upload Artifacts or Required Files</FormLabel>
+                <FormControl>
+                  <div className="border-2 border-dashed rounded-md p-4 text-center">
+                    <p className="text-gray-500">Artifacts or Required Files</p>
+                    
+                    {/* Display uploaded files */}
+                    <div className="mt-2 space-y-2">
+                      {value?.map((file: File, index: number) => (
+                        <div key={index} className="flex items-center justify-between bg-gray-50 p-1 rounded">
+                          <div className="flex items-center gap-2">
+                          <FileText className="w-4 h-4 text-red-500" />
+                            <span className="text-sm">{file.name}</span>
                           </div>
-                        ))}
-                      </div>
-
-                      <input
-                        type="file"
-                        onChange={(e) => {
-                          const newFiles = Array.from(e.target.files || []);
-                          onChange([...(value || []), ...newFiles]);
-                        }}
-                        className="hidden"
-                        id="file-upload"
-                        multiple
-                      />
-                      <Button
-                        variant="secondary"
-                        className="mt-4"
-                        onClick={() =>
-                          document.getElementById("file-upload")?.click()
-                        }
-                      >
-                        Choose Files
-                      </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              const newFiles = value.filter((_: File, i: number) => i !== index);
+                              onChange(newFiles);
+                            }}
+                          >
+                            <X size={16} className="w-4 h-4 text-red-500" />
+                          </Button>
+                        </div>
+                      ))}
                     </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
-            <Button
-              type="submit"
+                    <input
+                      type="file"
+                      onChange={(e) => {
+                        const newFiles = Array.from(e.target.files || []);
+                        onChange([...(value || []), ...newFiles]);
+                      }}
+                      className="hidden"
+                      id="file-upload"
+                      multiple
+                    />
+                    <Button 
+                      variant="secondary" 
+                      className="mt-4" 
+                      onClick={() => document.getElementById('file-upload')?.click()}
+                    >
+                      Choose Files
+                    </Button>
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="flex gap-4">
+            <Button 
+              type="submit" 
+              className="bg-purple-600 text-white"
               disabled={loading}
-              className="bg-purple text-white"
             >
-              {loading ? "Updating..." : "Update Challenge"}
+              {loading ? "Updating..." : "Save Changes"}
             </Button>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+            <Button 
+              variant="outline" 
+              type="button" 
+              className="bg-orange-100 border-orange-200" 
+              onClick={handleCancel}
+              disabled={loading}
+            >
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </CardContent>
+  </Card>
   );
 };
 

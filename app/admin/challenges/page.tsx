@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,13 +18,34 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Activity, Code, Database, Layers, Plus, Search, Terminal, ChevronsRight, ChevronLeft, ChevronRight } from "lucide-react";
-import { topics, trendingCompanies } from "@/constants";
+import {  trendingCompanies } from "@/constants";
 import { TopicCard } from "@/components/adminDashboard/challenges/TopicCard";
 import { TrendingTopics } from "@/components/adminDashboard/challenges/TrendingTopics";
 import SectionHeader from "@/components/adminDashboard/SectionHeader";
 import { useRouter } from "next/navigation";
+import { deleteChallenge, getAllChallenges } from "@/API/challenges";
+import toast from "react-hot-toast";
+import { error } from "console";
+
+
+interface Challenge {
+  id?: string;
+  _id?: string;
+  title: string;
+  difficulty: string;
+  topic: string[];
+  keywords: string[];
+  problemStatement: string;
+  files: any[];
+  submissions: number;
+  acceptanceRate: number;
+  status: string;
+  companies?: string[];
+}
+
 
 const Page = () => {
+  const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
@@ -47,35 +68,73 @@ const Page = () => {
     router.push("/admin/challenges/addChallenge");
   };
 
-  const handleView = (id: number) => {
+  const handleView = (id: string) => {
     router.push(`/admin/challenges/view?id=${id}`);
   };
   
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: string) => {
     router.push(`/admin/challenges/edit?id=${id}`);
   };
   
-  const handleDelete = (id: number) => {
-    console.log("Delete topic:", id);
+  const handleDelete = async (id: string) => {
+    try {
+      const res = await deleteChallenge(id);
+      if(res){
+        toast.success("Challenge deleted successfully");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to delete challenge");
+    }
   };
 
-  const filteredTopics = topics.filter((topic) => {
-    const matchesSearch = topic.title
+  useEffect(() => {
+    const getAllChallengesData = async () => {
+      
+      try {
+        const res = await getAllChallenges();
+     
+        console.log(res?.data);
+        const formattedData = res?.data?.map((item: Challenge) => ({ 
+          id: item?._id,
+          title: item?.title,
+          difficulty: item?.difficulty,
+          submissions: item?.submissions || 0,
+          acceptanceRate: item?.acceptanceRate || 0,
+          topic: item?.topic,
+          status: item?.status || 'active',
+          keywords: item?.keywords,
+          problemStatement: item?.problemStatement,
+          companies: item?.companies,
+       
+        }));
+        setChallenges(formattedData);
+      } catch (error) {
+        console.error('Error fetching challenges:', error);
+      }
+    };
+    getAllChallengesData();
+  }, []);
+
+
+
+  const filteredChallenges = challenges.filter((challenge) => { 
+    const matchesSearch = challenge.title
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     const matchesDifficulty =
-      selectedDifficulty === "all" || topic.difficulty === selectedDifficulty;
+      selectedDifficulty === "all" || challenge.difficulty === selectedDifficulty;
     return matchesSearch && matchesDifficulty;
   });
 
   // Calculate total pages
-  const totalPages = Math.ceil(filteredTopics.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredChallenges.length / itemsPerPage);
 
   // Get current page items
   const getCurrentPageItems = () => {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    return filteredTopics.slice(startIndex, endIndex);
+    return filteredChallenges.slice(startIndex, endIndex);
   };
 
   // Generate page numbers array with ellipsis
@@ -230,13 +289,14 @@ const Page = () => {
 
               <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2  gap-2 2xl:gap-4">
-                  {getCurrentPageItems().map((topic) => (
+                  {challenges?.map((challenge: Challenge ,index: number) => (
                     <TopicCard
-                      key={topic.id}
-                      topic={topic}
+                      key={challenge?.id}
+                      challenge={challenge} 
                       onView={handleView}
                       onEdit={handleEdit}
                       onDelete={handleDelete}
+                      index={index}
                     />
                   ))}
                 </div>
