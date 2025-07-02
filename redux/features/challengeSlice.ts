@@ -184,4 +184,12 @@ export const selectChallengeById = (state: { challenge: ChallengeState }, id: st
     return state.challenge.challenges.find(challenge => challenge._id === id);
 };
 
+// Selector to get challenges by company name (case-insensitive)
+export const selectChallengesByCompany = (state: { challenge: ChallengeState }, companyName: string) => {
+    const normalizedCompanyName = companyName.trim().toLowerCase();
+    return state.challenge.challenges.filter(challenge =>
+        challenge.companies.some(company => company.toLowerCase() === normalizedCompanyName)
+    );
+};
+
 export default challengeSlice.reducer;

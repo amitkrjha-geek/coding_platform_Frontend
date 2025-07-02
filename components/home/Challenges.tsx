@@ -43,12 +43,13 @@ const useDynamicTopics = (topicStats: { [key: string]: number }, showMore: boole
   }, ...sortedTopics];
 
   // Show first 6 topics or all topics based on showMore
-  return showMore ? allTopics : allTopics.slice(0, 6);
+  return showMore ? allTopics : allTopics.slice(0, 8);
 };
 
 const Challenges = () => {
 
   const [showMore, setShowMore] = useState(false);
+  const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
   const [selectedFilters, setSelectedFilters] = useState({
     difficulty: "",
     status: "",
@@ -92,9 +93,13 @@ const Challenges = () => {
       const topicMatch = !selectedFilters.topics ||
         challenge.topic.some(t => t.trim().toLowerCase() === selectedFilters.topics);
 
-      return searchMatch && difficultyMatch && statusMatch && topicMatch;
+      // Company filter
+      const companyMatch = !selectedCompany ||
+        challenge.companies.some(c => c.toLowerCase() === selectedCompany);
+
+      return searchMatch && difficultyMatch && statusMatch && topicMatch && companyMatch;
     });
-  }, [challenges, searchQuery, selectedFilters]);
+  }, [challenges, searchQuery, selectedFilters, selectedCompany]);
 
   const filterOptions = useMemo(() => ({
     difficulty: [
@@ -271,7 +276,7 @@ const Challenges = () => {
                 </TabsList>
               </Tabs>
             </div>
-            {!loading && topics.length > 6 && (
+            {!loading && Object.keys(topicStats || {}).length > 7 && (
               <motion.button
                 onClick={() => setShowMore(!showMore)}
                 className="flex items-center gap-1 px-2 sm:px-3 py-2 text-sm text-gray-600 hover:text-purple whitespace-nowrap shrink-0 font-medium"
@@ -302,7 +307,7 @@ const Challenges = () => {
                 </div>
               )}
             </div>
-            <div className="flex flex-wrap sm:flex-nowrap gap-2 w-full sm:w-auto">
+            <div className="grid grid-cols-3 sm:flex flex-wrap sm:flex-nowrap gap-2 w-full sm:w-auto">
               {Object.entries(filterOptions).map(([key, options]) => (
                 <Select
                   key={key}
@@ -343,7 +348,10 @@ const Challenges = () => {
 
         {/* Sidebar - Hidden on mobile */}
         <div className="hidden xl:block w-full xl:w-auto">
-          <Sidebar />
+          <Sidebar
+            selectedCompany={selectedCompany}
+            onCompanySelect={setSelectedCompany}
+          />
         </div>
       </div>
     </div>
