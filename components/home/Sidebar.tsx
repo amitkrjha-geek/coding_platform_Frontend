@@ -2,29 +2,10 @@
 
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { useAppSelector } from "@/redux/hooks";
+import { useState, useMemo } from "react";
 
-const trendingCompanies = [
-  { name: "Amazon", count: "1771" },
-  { name: "Meta", count: "1018" },
-  { name: "Uber", count: "617" },
-  { name: "Google", count: "1786" },
-  { name: "Bloomberg", count: "928" },
-  { name: "Apple", count: "710" },
-  { name: "Oracle", count: "289" },
-  { name: "Microsoft", count: "1059" },
-  { name: "LinkedIn", count: "149" },
-  { name: "TikTok", count: "424" },
-  { name: "Adobe", count: "892" },
-  { name: "Salesforce", count: "188" },
-  { name: "Goldman Sachs", count: "222" },
-  { name: "Walmart Labs", count: "155" },
-  { name: "PayPal", count: "106" },
-  { name: "Snap", count: "112" },
-  { name: "Nvidia", count: "129" },
-  { name: "IBM", count: "129" },
-  { name: "Airbnb", count: "55" },
-  { name: "DoorDash", count: "78" }
-];
+
 
 const difficultyStats = [
   { level: "Easy", count: 8, total: 834, color: "text-green-500" },
@@ -33,6 +14,18 @@ const difficultyStats = [
 ];
 
 const Sidebar = () => {
+  const { companyStats, loading } = useAppSelector((state) => state.challenge);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Filter and sort companies based on search query
+  const filteredCompanies = useMemo(() => {
+    return Object.entries(companyStats)
+      .filter(([name]) =>
+        name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .sort((a, b) => b[1] - a[1]); // Sort by count in descending order
+  }, [companyStats, searchQuery]);
+
   return (
     <div className="w-[280px] space-y-8 py-8 pr-8">
       {/* Submissions Stats */}
@@ -54,7 +47,7 @@ const Sidebar = () => {
               fill="none"
               stroke="#4CAF50"
               strokeWidth="10"
-              strokeDasharray={`${(34/100) * 283} 283`}
+              strokeDasharray={`${(34 / 100) * 283} 283`}
               transform="rotate(-90 50 50)"
             />
           </svg>
@@ -63,7 +56,7 @@ const Sidebar = () => {
             <span className="text-xs text-gray-500">3437</span>
           </div>
         </div>
-        
+
         {/* Difficulty Stats */}
         <div className="space-y-2 mt-6">
           {difficultyStats.map((stat) => (
@@ -77,30 +70,54 @@ const Sidebar = () => {
         </div>
       </div>
 
-      {/* Trending Topics */}
+      {/* Trending Companies */}
       <div>
-        <h3 className="text-lg font-medium mb-4">Trending Topics</h3>
+        <h3 className="text-lg font-medium mb-4">Trending Companies</h3>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <Input
             placeholder="Search for a company..."
             className="pl-9 bg-[#F8F9FA] border-0 mb-4"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <div className="flex flex-wrap gap-y-4 gap-x-2">
-          {trendingCompanies.map((company) => (
-            <div
-              key={company.name}
-              className="flex items-center gap-x-2 bg-[#262626BF]/10 p-0.5 px-1.5 rounded-full group cursor-pointer"
-            >
-              <span className="text-sm font-medium group-hover:text-purple">
-                {company.name}
-              </span>
-              <span className="text-xs px-2 py-1 rounded-full bg-purple text-white">
-                {company.count}
-              </span>
+        <div className="flex flex-wrap gap-2">
+          {loading ? (
+            // Loading skeleton
+            <>
+              {[...Array(6)].map((_, i) => (
+                <div
+                  key={i}
+                  className="h-6 w-24 bg-gray-200 animate-pulse rounded-full"
+                />
+              ))}
+            </>
+          ) : filteredCompanies.length === 0 ? (
+            // No results message
+            <div className="w-full text-center py-4">
+              <p className="text-gray-500 text-sm">
+                {searchQuery
+                  ? `No companies found matching "${searchQuery}"`
+                  : "No companies available"}
+              </p>
             </div>
-          ))}
+          ) : (
+            // Actual company data
+            filteredCompanies.map(([name, count]) => (
+              <div
+                key={name}
+                className="flex items-center gap-x-2 bg-[#262626BF]/10 p-0.5 px-1.5 rounded-full group cursor-pointer"
+              >
+                <span className="text-sm font-medium group-hover:text-purple capitalize">
+                  {name}
+                </span>
+                <span className="text-xs px-2 py-1 rounded-full bg-purple text-white">
+                  {count}
+                </span>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

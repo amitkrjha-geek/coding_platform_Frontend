@@ -10,11 +10,38 @@ interface ChallengeCardProps {
     id: string;
 }
 
+const difficultyConfig = {
+    easy: {
+        text: 'text-green-700',
+        bg: 'bg-green-50',
+        border: 'border-green-100'
+    },
+    medium: {
+        text: 'text-yellow-700',
+        bg: 'bg-yellow-50',
+        border: 'border-yellow-100'
+    },
+    hard: {
+        text: 'text-red-700',
+        bg: 'bg-red-50',
+        border: 'border-red-100'
+    }
+} as const;
+
 const ChallengeCard = memo(({ title, difficulty, submissions, acceptanceRate, id }: ChallengeCardProps) => {
     const router = useRouter();
 
     const handleStartChallenge = () => {
         router.push(`/${id}`);
+    };
+
+    const getDifficultyStyles = (level: string) => {
+        const config = difficultyConfig[level.toLowerCase() as keyof typeof difficultyConfig];
+        return config || {
+            text: 'text-gray-700',
+            bg: 'bg-gray-50',
+            border: 'border-gray-100'
+        };
     };
 
     return (
@@ -23,9 +50,16 @@ const ChallengeCard = memo(({ title, difficulty, submissions, acceptanceRate, id
                 <div>
                     <h3 className="text-lg font-medium text-gray-900">{title}</h3>
                     <div className="flex items-center space-x-4 mt-2">
-                        <span className={`text-sm ${difficulty === 'Easy' ? 'text-green-500' : 'text-yellow-500'}`}>
-                            {difficulty}
-                        </span>
+                        {difficulty && (
+                            <span
+                                className={`px-2.5 py-0.5 rounded-full text-xs font-medium border capitalize
+                                ${getDifficultyStyles(difficulty).text}
+                                ${getDifficultyStyles(difficulty).bg}
+                                ${getDifficultyStyles(difficulty).border}`}
+                            >
+                                {difficulty}
+                            </span>
+                        )}
                     </div>
                 </div>
                 <button className="text-gray-400 hover:text-yellow-400 transition-colors">
