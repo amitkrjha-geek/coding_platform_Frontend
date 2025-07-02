@@ -128,7 +128,8 @@ const challengeSlice = createSlice({
             .addCase(fetchChallenges.fulfilled, (state, action) => {
                 state.loading = false;
                 state.status = "succeeded";
-                state.challenges = action.payload.data;
+                // Filter out challenges with "inactive" status
+                state.challenges = action.payload.data.filter((challenge: ChallengeData) => challenge.status !== "inactive");
 
                 const companyMap = new Map<string, { count: number; displayName: string }>();
                 const topicMap = new Map<string, { count: number; displayName: string }>();
@@ -182,6 +183,14 @@ const challengeSlice = createSlice({
 // Selector to get challenge by ID
 export const selectChallengeById = (state: { challenge: ChallengeState }, id: string) => {
     return state.challenge.challenges.find(challenge => challenge._id === id);
+};
+
+// Selector to get challenges by company name (case-insensitive)
+export const selectChallengesByCompany = (state: { challenge: ChallengeState }, companyName: string) => {
+    const normalizedCompanyName = companyName.trim().toLowerCase();
+    return state.challenge.challenges.filter(challenge =>
+        challenge.companies.some(company => company.toLowerCase() === normalizedCompanyName)
+    );
 };
 
 export default challengeSlice.reducer;

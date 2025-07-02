@@ -13,7 +13,10 @@ const difficultyStats = [
   { level: "Hard", count: 4, total: 793, color: "text-red-500" }
 ];
 
-const Sidebar = () => {
+const Sidebar = ({ selectedCompany, onCompanySelect }: {
+  selectedCompany?: string | null,
+  onCompanySelect?: (company: string | null) => void
+}) => {
   const { companyStats, loading } = useAppSelector((state) => state.challenge);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -107,12 +110,25 @@ const Sidebar = () => {
             filteredCompanies.map(([name, count]) => (
               <div
                 key={name}
-                className="flex items-center gap-x-2 bg-[#262626BF]/10 p-0.5 px-1.5 rounded-full group cursor-pointer"
+                className={`flex items-center gap-x-2 p-0.5 px-1.5 rounded-full group cursor-pointer transition-colors ${selectedCompany === name.toLowerCase()
+                    ? 'bg-purple/20 ring-2 ring-purple'
+                    : 'bg-[#262626BF]/10 hover:bg-[#262626BF]/20'
+                  }`}
+                onClick={() => {
+                  const isCurrentlySelected = selectedCompany === name.toLowerCase();
+                  onCompanySelect?.(isCurrentlySelected ? null : name.toLowerCase());
+                }}
               >
-                <span className="text-sm font-medium group-hover:text-purple capitalize">
+                <span className={`text-sm font-medium capitalize ${selectedCompany === name.toLowerCase()
+                    ? 'text-purple'
+                    : 'group-hover:text-purple'
+                  }`}>
                   {name}
                 </span>
-                <span className="text-xs px-2 py-1 rounded-full bg-purple text-white">
+                <span className={`text-xs px-2 py-1 rounded-full text-white ${selectedCompany === name.toLowerCase()
+                    ? 'bg-purple'
+                    : 'bg-purple'
+                  }`}>
                   {count}
                 </span>
               </div>
