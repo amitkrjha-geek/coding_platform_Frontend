@@ -52,7 +52,8 @@ const formSchema = z.object({
   files: z.array(z.object({
     name: z.string(),
     content: z.string(),
-    type: z.string()
+    type: z.string(),
+    size: z.number() // Added to track file size
   })).optional()
 })
 
@@ -141,41 +142,45 @@ const AddChallenge = () => {
     form.setValue('topic', newTopics);
   };
 
-  const fileToBase64 = (file: File): Promise<string> => {
+  const fileToBase64 = (file: File): Promise<{ name: string, content: string, type: string, size: number }> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.readAsArrayBuffer(file); // Change to ArrayBuffer instead of DataURL
+      reader.readAsDataURL(file);
       reader.onload = () => {
-        const arrayBuffer = reader.result as ArrayBuffer;
-        const bytes = new Uint8Array(arrayBuffer);
-        let binary = '';
-        for (let i = 0; i < bytes.byteLength; i++) {
-          binary += String.fromCharCode(bytes[i]);
-        }
-        const base64 = btoa(binary);
-        resolve(base64);
+        const base64String = reader.result as string;
+        resolve({
+          name: file.name,
+          content: base64String.split(',')[1], // Remove data URL prefix
+          type: file.type || 'application/octet-stream',
+          size: file.size
+        });
       };
       reader.onerror = (error) => reject(error);
     });
   };
 
+
   // Update the onSubmit function
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log('Submitting form with files:', values.files?.map(f => ({
-        name: f.name,
-        contentLength: f.content.length
-      })));
+      console.log('Submitting form with values:', {
+        ...values,
+        files: values.files?.map(f => ({
+          name: f.name,
+          contentLength: f.content.length,
+          size: f.size
+        }))
+      });
 
       const res = await createChallenge(values); // values already contains processed files
       console.log('API Response:', res);
       
-      if (res) {
-        toast.success("Challenge created successfully");
-        router.push("/admin/challenges");
-        form.reset();
-        setFormData({ tags: [], companies: [], topics: [] });
-      }
+      // if (res) {
+      //   toast.success("Challenge created successfully");
+      //   router.push("/admin/challenges");
+      //   form.reset();
+      //   setFormData({ tags: [], companies: [], topics: [] });
+      // }
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Failed to create challenge");
@@ -445,58 +450,43 @@ const AddChallenge = () => {
                         </div>
 
                         <input
-                          type="file"
-                          onChange={async (e) => {
-                            const files = Array.from(e.target.files || []);
-                            
-                            // Handle DLL files
-                            const dllFiles = files.filter(file => {
-                              if (!file.name.toLowerCase().endsWith('.dll')) {
-                                toast.error(`${file.name} is not a DLL file`);
-                                return false;
-                              }
-                              return true;
-                            });
+  type="file"
+  onChange={async (e) => {
+    const files = Array.from(e.target.files || []);
 
-                            try {
-                              // Convert files to base64 and create file objects
-                              const processedFiles = await Promise.all(
-                                dllFiles.map(async (file) => {
-                                  const base64 = await new Promise<string>((resolve) => {
-                                    const reader = new FileReader();
-                                    reader.onloadend = () => {
-                                      const base64String = reader.result as string;
-                                      resolve(base64String.split(',')[1]); // Remove data URL prefix
-                                    };
-                                    reader.readAsDataURL(file);
-                                  });
+    // only .dll files
+    const dllFiles = files.filter(file => {
+      if (!file.name.toLowerCase().endsWith('.dll')) {
+        toast.error(`${file.name} is not a DLL file`);
+        return false;
+      }
+      return true;
+    });
 
-                                  return {
-                                    name: file.name,
-                                    content: base64,
-                                    type: file.type
-                                  };
-                                })
-                              );
+    try {
+      // ✅ Use your helper – it includes size and a safe default for type
+      const processedFiles = await Promise.all(
+        dllFiles.map(fileToBase64) // returns { name, content, type, size }
+      );
 
-                              // Update form field with processed files
-                              const currentFiles = field.value || [];
-                              field.onChange([...currentFiles, ...processedFiles]);
-                              
-                              console.log('Processed files:', processedFiles.map(f => ({
-                                name: f.name,
-                                contentLength: f.content.length
-                              })));
-                            } catch (error) {
-                              console.error('Error processing files:', error);
-                              toast.error('Error processing files');
-                            }
-                          }}
-                          className="hidden"
-                          id="file-upload"
-                          accept=".dll"
-                          multiple
-                        />
+      const currentFiles = field.value || [];
+      field.onChange([...currentFiles, ...processedFiles]);
+
+      console.log(
+        'Processed files:',
+        processedFiles.map(f => ({ name: f.name, size: f.size, contentLength: f.content.length }))
+      );
+    } catch (error) {
+      console.error('Error processing files:', error);
+      toast.error('Error processing files');
+    }
+  }}
+  className="hidden"
+  id="file-upload"
+  accept=".dll"
+  multiple
+/>
+
                         <Button 
                           type="button"
                           variant="secondary" 
