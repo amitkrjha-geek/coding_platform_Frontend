@@ -91,7 +91,7 @@ const AddChallenge = () => {
       setNewTag("");
     }
   };
-  
+
   const removeTag = (tagToRemove: string) => {
     const newTags = formData.tags.filter(tag => tag !== tagToRemove);
     setFormData(prev => ({
@@ -111,7 +111,7 @@ const AddChallenge = () => {
       setNewCompany("");
     }
   };
-  
+
   const removeCompany = (companyToRemove: string) => {
     const newCompanies = formData.companies.filter(company => company !== companyToRemove);
     setFormData(prev => ({
@@ -131,7 +131,7 @@ const AddChallenge = () => {
       setNewTopic("");
     }
   };
-  
+
   const removeTopic = (topicToRemove: string) => {
     const newTopics = formData.topics.filter(topic => topic !== topicToRemove);
     setFormData(prev => ({
@@ -162,14 +162,14 @@ const AddChallenge = () => {
   // Update the onSubmit function
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log('Submitting form with files:', values.files?.map(f => ({
+      console.log('Submitting form with files:', values, values.files?.map(f => ({
         name: f.name,
         contentLength: f.content.length
       })));
 
-      const res = await createChallenge(values); // values already contains processed files
+      const res = await createChallenge(values); 
       console.log('API Response:', res);
-      
+
       if (res) {
         toast.success("Challenge created successfully");
         router.push("/admin/challenges");
@@ -400,7 +400,7 @@ const AddChallenge = () => {
                   <FormItem>
                     <FormLabel>Problem Statement</FormLabel>
                     <FormControl>
-                    
+
                       <Tiptap problemStatement={field.value} onChange={field.onChange} />
                     </FormControl>
                     <FormMessage />
@@ -409,117 +409,94 @@ const AddChallenge = () => {
               />
 
               {/* File Upload */}
-              <FormField
-                control={form.control}
-                name="files"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Upload DLL Files</FormLabel>
-                    <FormControl>
-                      <div className="border-2 border-dashed rounded-md p-4 text-center">
-                        <p className="text-gray-500">Upload DLL files only</p>
-                        
-                        {/* Display uploaded files */}
-                        <div className="mt-2 space-y-2">
-                          {(field.value || []).map((file, index) => (
-                            <div key={index} className="flex items-center justify-between bg-gray-50 p-1 rounded">
-                              <div className="flex items-center gap-2">
-                                <FileText className="w-4 h-4 text-red-500" />
-                                <span className="text-sm">{file.name}</span>
-                              </div>
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                  const currentFiles = field.value || [];
-                                  const newFiles = [...currentFiles];
-                                  newFiles.splice(index, 1);
-                                  field.onChange(newFiles);
-                                }}
-                              >
-                                <X size={16} className="w-4 h-4 text-red-500" />
-                              </Button>
-                            </div>
-                          ))}
+              {/* DLL File Upload - New Implementation */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Upload DLL Files</label>
+                <div className="border-2 border-dashed rounded-md p-4 text-center">
+                  <p className="text-gray-500">Upload DLL files only</p>
+                  <div className="mt-2 space-y-2">
+                    {form.watch('files')?.map((file, idx) => (
+                      <div key={idx} className="flex items-center justify-between bg-gray-50 p-1 rounded">
+                        <div className="flex items-center gap-2">
+                          <FileText className="w-4 h-4 text-red-500" />
+                          <span className="text-sm">{file.name}</span>
                         </div>
-
-                        <input
-                          type="file"
-                          onChange={async (e) => {
-                            const files = Array.from(e.target.files || []);
-                            
-                            // Handle DLL files
-                            const dllFiles = files.filter(file => {
-                              if (!file.name.toLowerCase().endsWith('.dll')) {
-                                toast.error(`${file.name} is not a DLL file`);
-                                return false;
-                              }
-                              return true;
-                            });
-
-                            try {
-                              // Convert files to base64 and create file objects
-                              const processedFiles = await Promise.all(
-                                dllFiles.map(async (file) => {
-                                  const base64 = await new Promise<string>((resolve) => {
-                                    const reader = new FileReader();
-                                    reader.onloadend = () => {
-                                      const base64String = reader.result as string;
-                                      resolve(base64String.split(',')[1]); // Remove data URL prefix
-                                    };
-                                    reader.readAsDataURL(file);
-                                  });
-
-                                  return {
-                                    name: file.name,
-                                    content: base64,
-                                    type: file.type
-                                  };
-                                })
-                              );
-
-                              // Update form field with processed files
-                              const currentFiles = field.value || [];
-                              field.onChange([...currentFiles, ...processedFiles]);
-                              
-                              console.log('Processed files:', processedFiles.map(f => ({
-                                name: f.name,
-                                contentLength: f.content.length
-                              })));
-                            } catch (error) {
-                              console.error('Error processing files:', error);
-                              toast.error('Error processing files');
-                            }
-                          }}
-                          className="hidden"
-                          id="file-upload"
-                          accept=".dll"
-                          multiple
-                        />
-                        <Button 
+                        <Button
                           type="button"
-                          variant="secondary" 
-                          className="mt-4" 
-                          onClick={() => document.getElementById('file-upload')?.click()}
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            const currentFiles = form.getValues('files') || [];
+                            const newFiles = [...currentFiles];
+                            newFiles.splice(idx, 1);
+                            form.setValue('files', newFiles);
+                          }}
                         >
-                          Choose DLL Files
+                          <X size={16} className="w-4 h-4 text-red-500" />
                         </Button>
                       </div>
-                    </FormControl>
-                    <FormMessage />
-                    <p className="text-sm text-gray-500 mt-2">Only .dll files are allowed</p>
-                  </FormItem>
-                )}
-              />
+                    ))}
+                  </div>
+                  <input
+                    type="file"
+                    id="dll-upload"
+                    accept=".dll"
+                    multiple
+                    className="hidden"
+                    onChange={async (e) => {
+                      const files = Array.from(e.target.files || []);
+                      const dllFiles = files.filter(file => {
+                        if (!file.name.toLowerCase().endsWith('.dll')) {
+                          toast.error(`${file.name} is not a DLL file`);
+                          return false;
+                        }
+                        return true;
+                      });
+                      try {
+                        const processedFiles = await Promise.all(
+                          dllFiles.map(async (file) => {
+                            const base64 = await new Promise<string>((resolve, reject) => {
+                              const reader = new FileReader();
+                              reader.onload = () => {
+                                const base64String = reader.result as string;
+                                resolve(base64String.split(',')[1]);
+                              };
+                              reader.onerror = reject;
+                              reader.readAsDataURL(file);
+                            });
+                            return {
+                              name: file.name,
+                              content: base64,
+                              type: file.type
+                            };
+                          })
+                        );
+                        const currentFiles = form.getValues('files') || [];
+                        form.setValue('files', [...currentFiles, ...processedFiles]);
+                      } catch (error) {
+                        toast.error('Error processing files');
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="mt-4"
+                    onClick={() => document.getElementById('dll-upload')?.click()}
+                  >
+                    Choose DLL Files
+                  </Button>
+                </div>
+                <p className="text-sm text-gray-500 mt-2">Only .dll files are allowed</p>
+              </div>
 
               <div className="flex gap-4">
-                <Button type="submit" className="bg-purple-600 text-white">
+                <button type="submit" className="bg-purple-600 text-white px-4 py-2 rounded-md">
                   Save Change
-                </Button>
-                <Button variant="outline" type="button" className="bg-orange-100 border-orange-200">
+                </button>
+                <button type="button" className="bg-orange-100 border-orange-200 px-4 py-2 rounded-md">
                   Cancel
-                </Button>
+                </button>
               </div>
             </form>
           </Form>
