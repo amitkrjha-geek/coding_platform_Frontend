@@ -14,7 +14,7 @@ import LogsTab from '@/components/home/code/LogsTab'
 import SubmissionsTab from '@/components/home/code/SubmissionsTab'
 import AcceptedTab from '@/components/home/code/AcceptedTab'
 import { generateCodeTemplate } from '@/lib/utils'
-import { questionsData } from '@/constants'
+// import { questionsData } from '@/constants'
 import { storeCode, triggerSubmission } from '@/API/codeRunner'
 import toast from 'react-hot-toast'
 import { getToken } from '@/config/token'
@@ -122,9 +122,11 @@ const QuestionPage = () => {
       console.log("res", res)
 
       // Store the submissionId in localStorage
-      if (res) {
+      if (res?.success) {
         localStorage.setItem('submissionId', res?.submissionId)
         toast.success("Code submitted successfully")
+      }else {
+        toast.error(res?.error || "Error submitting code")
       }
 
     } catch (error: any) {

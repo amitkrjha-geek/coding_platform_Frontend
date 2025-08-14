@@ -48,11 +48,33 @@ const formSchema = z.object({
   problemStatement: z.string().min(1, "Problem statement is required"),
   status: z.string().min(1, "Status is required"),
   companies: z.array(z.string()),
-  files: z.array(z.any()).optional(),
+  files: z.array(z.object({
+    name: z.string(),
+    content: z.string(),
+    type: z.string(),
+    size: z.number()
+  })).optional(),
 })
 
 
 type FormData = z.infer<typeof formSchema>;
+
+const fileToBase64 = (file: File): Promise<{ name: string, content: string, type: string, size: number }> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      const base64String = reader.result as string;
+      resolve({
+        name: file.name,
+        content: base64String.split(',')[1],
+        type: file.type || 'application/octet-stream',
+        size: file.size
+      });
+    };
+    reader.onerror = (error) => reject(error);
+  });
+};
 
 const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => { 
   const router = useRouter();
@@ -190,17 +212,27 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
-      console.log('Form values:', JSON.stringify(values, null, 2));
+      
+      // Log form values for debugging
+      console.log('Form values:', {
+        ...values,
+        files: values.files?.map(f => ({
+          name: f.name,
+          contentLength: f.content.length,
+          size: f.size
+        }))
+      });
+
       const res = await updateChallenge(challengeId, values)
       console.log({res})
-      if (res){
+      
+      if (res) {
         toast.success("Challenge updated successfully")
         router.push("/admin/challenges")
       }
-      // console.log({res})
       
     } catch (error) {
-      console.error("Error creating challenge:", error)
+      console.error("Error updating challenge:", error)
       toast.error(error as string)
     } finally {
       setLoading(false);
@@ -425,19 +457,19 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
           <FormField
             control={form.control}
             name="files"
-            render={({ field: { onChange, value } }) => (
+            render={({ field }) => (
               <FormItem>
-                <FormLabel>Upload Artifacts or Required Files</FormLabel>
+                <FormLabel>Upload DLL Files</FormLabel>
                 <FormControl>
                   <div className="border-2 border-dashed rounded-md p-4 text-center">
-                    <p className="text-gray-500">Artifacts or Required Files</p>
+                    <p className="text-gray-500">Upload DLL files only</p>
                     
                     {/* Display uploaded files */}
                     <div className="mt-2 space-y-2">
-                      {value?.map((file: File, index: number) => (
+                      {(field.value || []).map((file: any, index: number) => (
                         <div key={index} className="flex items-center justify-between bg-gray-50 p-1 rounded">
                           <div className="flex items-center gap-2">
-                          <FileText className="w-4 h-4 text-red-500" />
+                            <FileText className="w-4 h-4 text-red-500" />
                             <span className="text-sm">{file.name}</span>
                           </div>
                           <Button
@@ -445,8 +477,10 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
                             variant="ghost"
                             size="sm"
                             onClick={() => {
-                              const newFiles = value.filter((_: File, i: number) => i !== index);
-                              onChange(newFiles);
+                              const currentFiles = field.value || [];
+                              const newFiles = [...currentFiles];
+                              newFiles.splice(index, 1);
+                              field.onChange(newFiles);
                             }}
                           >
                             <X size={16} className="w-4 h-4 text-red-500" />
@@ -457,21 +491,51 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
 
                     <input
                       type="file"
-                      onChange={(e) => {
-                        const newFiles = Array.from(e.target.files || []);
-                        onChange([...(value || []), ...newFiles]);
+                      onChange={async (e) => {
+                        const files = Array.from(e.target.files || []);
+
+                        // only .dll files
+                        const dllFiles = files.filter(file => {
+                          if (!file.name.toLowerCase().endsWith('.dll')) {
+                            toast.error(`${file.name} is not a DLL file`);
+                            return false;
+                          }
+                          return true;
+                        });
+
+                        try {
+                          // Process files
+                          const processedFiles = await Promise.all(
+                            dllFiles.map(fileToBase64)
+                          );
+
+                          const currentFiles = field.value || [];
+                          field.onChange([...currentFiles, ...processedFiles]);
+
+                          console.log(
+                            'Processed files:',
+                            processedFiles.map(f => ({ name: f.name, size: f.size, contentLength: f.content.length }))
+                          );
+                        } catch (error) {
+                          console.error('Error processing files:', error);
+                          toast.error('Error processing files');
+                        }
                       }}
                       className="hidden"
                       id="file-upload"
+                      accept=".dll"
                       multiple
                     />
                     <Button 
+                      type="button"
                       variant="secondary" 
                       className="mt-4" 
                       onClick={() => document.getElementById('file-upload')?.click()}
                     >
-                      Choose Files
+                      Choose DLL Files
                     </Button>
+
+                    <p className="text-sm text-gray-500 mt-2">Only .dll files are allowed</p>
                   </div>
                 </FormControl>
                 <FormMessage />
