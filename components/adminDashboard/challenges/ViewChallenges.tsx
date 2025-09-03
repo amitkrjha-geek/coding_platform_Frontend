@@ -16,6 +16,14 @@ import ChallengeDetails from "@/components/adminDashboard/challenges/ChallengeDe
 import SubmissionsTable from "@/components/adminDashboard/challenges/SubmissionsTable";
 import { getChallengeById } from "@/API/challenges";
 
+interface FileObject {
+  name: string;
+  content: string;
+  type: string;
+  size: number;
+  _id: string;
+}
+
 interface Challenge {
   _id: string;
   title: string;
@@ -24,7 +32,7 @@ interface Challenge {
   keywords: string[];
   problemStatement: string;
   constraints: string[];
-  files: string[];
+  files: FileObject[];
   status: string;
   acceptanceRate: number;
   submissions: number;

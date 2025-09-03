@@ -40,6 +40,7 @@ import { createChallenge } from '@/API/challenges'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/navigation'
 
+// First, update the formSchema to properly handle file validation
 const formSchema = z.object({
   title: z.string().min(1, "Challenge name is required"),
   difficulty: z.string().min(1, "Difficulty is required"),
@@ -48,7 +49,12 @@ const formSchema = z.object({
   problemStatement: z.string().min(1, "Problem statement is required"),
   status: z.string().min(1, "Status is required"),
   companies: z.array(z.string()),
-  files: z.array(z.any()).optional(),
+  files: z.array(z.object({
+    name: z.string(),
+    content: z.string(),
+    type: z.string(),
+    size: z.number() // Added to track file size
+  })).optional()
 })
 
 const AddChallenge = () => {
@@ -72,7 +78,7 @@ const AddChallenge = () => {
       problemStatement: "",
       status: "active",
       companies: [],
-      files: [],
+      files: [], // Initialize as empty array, not undefined
     },
   })
 
@@ -136,21 +142,48 @@ const AddChallenge = () => {
     form.setValue('topic', newTopics);
   };
 
+  const fileToBase64 = (file: File): Promise<{ name: string, content: string, type: string, size: number }> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const base64String = reader.result as string;
+        resolve({
+          name: file.name,
+          content: base64String.split(',')[1], // Remove data URL prefix
+          type: file.type || 'application/octet-stream',
+          size: file.size
+        });
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+
+  // Update the onSubmit function
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      console.log('Form values:', JSON.stringify(values, null, 2));
-      const res = await createChallenge(values)
-      console.log({res})
-      if (res){
-        toast.success("Challenge created successfully")
-        router.push("/admin/challenges")
-      }
-      // console.log({res})
-      form.reset()
-      setFormData({ tags: [], companies: [], topics: [] })
+      console.log('Submitting form with values:', {
+        ...values,
+        files: values.files?.map(f => ({
+          name: f.name,
+          contentLength: f.content.length,
+          size: f.size
+        }))
+      });
+
+      const res = await createChallenge(values); // values already contains processed files
+      console.log('API Response:', res);
       
+      // if (res) {
+      //   toast.success("Challenge created successfully");
+      //   router.push("/admin/challenges");
+      //   form.reset();
+      //   setFormData({ tags: [], companies: [], topics: [] });
+      // }
     } catch (error) {
-      console.error("Error creating challenge:", error)
+      console.error("Error submitting form:", error);
+      toast.error("Failed to create challenge");
     }
   }
 
@@ -384,19 +417,19 @@ const AddChallenge = () => {
               <FormField
                 control={form.control}
                 name="files"
-                render={({ field: { onChange, value } }) => (
+                render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Upload Artifacts or Required Files</FormLabel>
+                    <FormLabel>Upload Files</FormLabel>
                     <FormControl>
                       <div className="border-2 border-dashed rounded-md p-4 text-center">
-                        <p className="text-gray-500">Artifacts or Required Files</p>
+                        <p className="text-gray-500">Upload any type of file</p>
                         
                         {/* Display uploaded files */}
                         <div className="mt-2 space-y-2">
-                          {value?.map((file: File, index: number) => (
+                          {(field.value || []).map((file, index) => (
                             <div key={index} className="flex items-center justify-between bg-gray-50 p-1 rounded">
                               <div className="flex items-center gap-2">
-                              <FileText className="w-4 h-4 text-red-500" />
+                                <FileText className="w-4 h-4 text-blue-500" />
                                 <span className="text-sm">{file.name}</span>
                               </div>
                               <Button
@@ -404,8 +437,10 @@ const AddChallenge = () => {
                                 variant="ghost"
                                 size="sm"
                                 onClick={() => {
-                                  const newFiles = value.filter((_: File, i: number) => i !== index);
-                                  onChange(newFiles);
+                                  const currentFiles = field.value || [];
+                                  const newFiles = [...currentFiles];
+                                  newFiles.splice(index, 1);
+                                  field.onChange(newFiles);
                                 }}
                               >
                                 <X size={16} className="w-4 h-4 text-red-500" />
@@ -415,16 +450,35 @@ const AddChallenge = () => {
                         </div>
 
                         <input
-                          type="file"
-                          onChange={(e) => {
-                            const newFiles = Array.from(e.target.files || []);
-                            onChange([...(value || []), ...newFiles]);
-                          }}
-                          className="hidden"
-                          id="file-upload"
-                          multiple
-                        />
+  type="file"
+  onChange={async (e) => {
+    const files = Array.from(e.target.files || []);
+
+    try {
+      // Process all files without filtering by type
+      const processedFiles = await Promise.all(
+        files.map(fileToBase64) // returns { name, content, type, size }
+      );
+
+      const currentFiles = field.value || [];
+      field.onChange([...currentFiles, ...processedFiles]);
+
+      console.log(
+        'Processed files:',
+        processedFiles.map(f => ({ name: f.name, size: f.size, contentLength: f.content.length }))
+      );
+    } catch (error) {
+      console.error('Error processing files:', error);
+      toast.error('Error processing files');
+    }
+  }}
+  className="hidden"
+  id="file-upload"
+  multiple
+/>
+
                         <Button 
+                          type="button"
                           variant="secondary" 
                           className="mt-4" 
                           onClick={() => document.getElementById('file-upload')?.click()}
@@ -434,6 +488,7 @@ const AddChallenge = () => {
                       </div>
                     </FormControl>
                     <FormMessage />
+                    <p className="text-sm text-gray-500 mt-2">Any file type is allowed</p>
                   </FormItem>
                 )}
               />

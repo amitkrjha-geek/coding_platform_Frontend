@@ -38,7 +38,7 @@ const Tiptap = ({problemStatement, onChange}: {problemStatement: string, onChang
     },
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
-      console.log(editor.getHTML());
+      // console.log(editor.getHTML());
     },
   });
 

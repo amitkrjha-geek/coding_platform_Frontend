@@ -20,3 +20,11 @@ export const storeCode = async (codeData: any) => {
     }
   };
   
+  export const triggerRunAgent = async (submissionId: string) => {
+    try {
+      const response = await axiosInstance.post("/code-runner/run-agent", { submissionId });
+      return response.data;
+    } catch (error: any) {
+      throw error.response?.data?.error || "Run agent failed";
+    }
+  };
