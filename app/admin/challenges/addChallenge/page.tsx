@@ -419,17 +419,17 @@ const AddChallenge = () => {
                 name="files"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Upload DLL Files</FormLabel>
+                    <FormLabel>Upload Files</FormLabel>
                     <FormControl>
                       <div className="border-2 border-dashed rounded-md p-4 text-center">
-                        <p className="text-gray-500">Upload DLL files only</p>
+                        <p className="text-gray-500">Upload any type of file</p>
                         
                         {/* Display uploaded files */}
                         <div className="mt-2 space-y-2">
                           {(field.value || []).map((file, index) => (
                             <div key={index} className="flex items-center justify-between bg-gray-50 p-1 rounded">
                               <div className="flex items-center gap-2">
-                                <FileText className="w-4 h-4 text-red-500" />
+                                <FileText className="w-4 h-4 text-blue-500" />
                                 <span className="text-sm">{file.name}</span>
                               </div>
                               <Button
@@ -454,19 +454,10 @@ const AddChallenge = () => {
   onChange={async (e) => {
     const files = Array.from(e.target.files || []);
 
-    // only .dll files
-    const dllFiles = files.filter(file => {
-      if (!file.name.toLowerCase().endsWith('.dll')) {
-        toast.error(`${file.name} is not a DLL file`);
-        return false;
-      }
-      return true;
-    });
-
     try {
-      // ✅ Use your helper – it includes size and a safe default for type
+      // Process all files without filtering by type
       const processedFiles = await Promise.all(
-        dllFiles.map(fileToBase64) // returns { name, content, type, size }
+        files.map(fileToBase64) // returns { name, content, type, size }
       );
 
       const currentFiles = field.value || [];
@@ -483,7 +474,6 @@ const AddChallenge = () => {
   }}
   className="hidden"
   id="file-upload"
-  accept=".dll"
   multiple
 />
 
@@ -493,12 +483,12 @@ const AddChallenge = () => {
                           className="mt-4" 
                           onClick={() => document.getElementById('file-upload')?.click()}
                         >
-                          Choose DLL Files
+                          Choose Files
                         </Button>
                       </div>
                     </FormControl>
                     <FormMessage />
-                    <p className="text-sm text-gray-500 mt-2">Only .dll files are allowed</p>
+                    <p className="text-sm text-gray-500 mt-2">Any file type is allowed</p>
                   </FormItem>
                 )}
               />

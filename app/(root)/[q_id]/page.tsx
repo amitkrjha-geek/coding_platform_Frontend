@@ -20,6 +20,7 @@ import toast from 'react-hot-toast'
 import { getToken } from '@/config/token'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { fetchChallenges, getCompanyStats, getTopicStats, selectChallengeById } from '@/redux/features/challengeSlice'
+import { triggerRunAgent } from '../../../API/codeRunner'
 
 
 type ProgrammingLanguage = {
@@ -155,6 +156,31 @@ const QuestionPage = () => {
       toast.success("Code submitted successfully")
     } catch (error: any) {
       toast.error(error || "Error submitting code")
+      console.log("error", error)
+    }
+  }
+
+
+  const handleRunAgent = async () => {
+    if (!token) {
+      toast.error("Please login to submit code")
+      return
+    }
+    const submissionId = localStorage.getItem('submissionId')
+    if (!submissionId) {
+      toast.error("No submission found! Please compile the code first")
+      console.log("No submissionId found")
+      return
+    }
+    try {
+      const submissionResult = await triggerRunAgent(submissionId)
+      console.log("submissionResult", submissionResult)
+      if (submissionId) {
+        localStorage.removeItem('submissionId')
+      }
+      toast.success("Code run agent successfully")
+    } catch (error: any) {
+      toast.error(error || "Error running agent")
       console.log("error", error)
     }
   }
@@ -441,13 +467,23 @@ const QuestionPage = () => {
             </Button>
           </div>
           <div className="flex justify-end">
+            <div className="flex gap-x-1 sm:gap-x-2 lg:gap-x-3">
+            <Button
+              className="bg-purple h-8 text-white rounded-lg hover:bg-purple/90 transition-colors"
+              onClick={handleRunAgent}
+              size="sm"
+            >
+              Run Agent
+            </Button>
             <Button
               className="bg-purple h-8 text-white rounded-lg hover:bg-purple/90 transition-colors"
               onClick={handleSubmitCode}
               size="sm"
             >
-              Submit
+              Submit Challenge
             </Button>
+            </div>
+            
           </div>
         </div>
       </div>
