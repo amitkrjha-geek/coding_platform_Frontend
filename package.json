@@ -48,6 +48,7 @@
     "react-redux": "^9.2.0",
     "react-split": "^2.0.14",
     "recharts": "^2.15.1",
+    "socket.io-client": "^4.8.1",
     "svix": "^1.61.1",
     "tailwind-merge": "^3.0.1",
     "tailwind-scrollbar": "^3.0.0",

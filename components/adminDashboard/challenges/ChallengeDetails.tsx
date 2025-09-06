@@ -1,4 +1,4 @@
-import { FileText, Download, File } from "lucide-react";
+import { Download, File } from "lucide-react";
 
 interface FileObject {
   name: string;
