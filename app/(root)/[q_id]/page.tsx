@@ -6,7 +6,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Editor from '@monaco-editor/react'
 import Split from 'react-split'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Maximize2, RotateCcw, Code2, Minimize2, History } from "lucide-react"
+import { Maximize2, RotateCcw, Code2, Minimize2, History, Loader2, Webcam } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Button } from '@/components/ui/button'
 import DescriptionTab from '@/components/home/code/DescriptionTab'
@@ -50,6 +50,12 @@ const QuestionPage = () => {
   const { q_id } = useParams()
   const [selectedLanguage, setSelectedLanguage] = useState<ProgrammingLanguage['id']>('c')
   const token = getToken()
+  const [isRunningAgent, setIsRunningAgent] = useState(false)
+  const [isCompiling, setIsCompiling] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isRunning, setIsRunning] = useState(false)
+  const [sessionId, setSessionId] = useState<string | null>(null)
+
 
   const dispatch = useAppDispatch()
 
@@ -118,6 +124,7 @@ const QuestionPage = () => {
       code: code,
       language: selectedLanguage
     }
+    setIsCompiling(true)
     try {
       const res = await storeCode(codeData)
       console.log("res", res)
@@ -133,6 +140,8 @@ const QuestionPage = () => {
     } catch (error: any) {
       toast.error(error || "Error submitting code")
       console.log("error", error)
+    } finally {
+      setIsCompiling(false)
     }
   }
 
@@ -145,10 +154,16 @@ const QuestionPage = () => {
     if (!submissionId) {
       toast.error("No submission found! Please compile the code first")
       console.log("No submissionId found")
-      return
+      // return
     }
+    if (!isRunningAgent) {
+      toast.error("Please Run Agent First")
+      console.log("Agent is already running")
+      // return
+    }
+    setIsSubmitting(true)
     try {
-      const submissionResult = await triggerSubmission(submissionId)
+      const submissionResult = await triggerSubmission(submissionId ?? '')
       console.log("submissionResult", submissionResult)
       if (submissionId) {
         localStorage.removeItem('submissionId')
@@ -157,6 +172,8 @@ const QuestionPage = () => {
     } catch (error: any) {
       toast.error(error || "Error submitting code")
       console.log("error", error)
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -167,21 +184,32 @@ const QuestionPage = () => {
       return
     }
     const submissionId = localStorage.getItem('submissionId')
-    if (!submissionId) {
-      toast.error("No submission found! Please compile the code first")
-      console.log("No submissionId found")
-      return
-    }
+    // if (!submissionId) {
+    //   toast.error("No submission found! Please compile the code first")
+    //   console.log("No submissionId found")
+    //   return
+    // }
+    setIsRunning(true)
     try {
-      const submissionResult = await triggerRunAgent(submissionId)
-      console.log("submissionResult", submissionResult)
-      if (submissionId) {
-        localStorage.removeItem('submissionId')
+      const submissionResult = await triggerRunAgent(submissionId ?? '')
+      if (submissionResult.success) {
+        setIsRunningAgent(true)
+        // Capture sessionId for log streaming and start socket immediately
+        if (submissionResult.sessionId) {
+          console.log("📱 Session ID received, starting socket connection:", submissionResult.sessionId)
+          setSessionId(submissionResult.sessionId)
+          // Switch to logs tab to show real-time logs
+          setActiveTab("logs")
+        }
       }
+      console.log("submissionResult", submissionResult)
       toast.success("Code run agent successfully")
     } catch (error: any) {
       toast.error(error || "Error running agent")
       console.log("error", error)
+      setIsRunningAgent(false)
+    } finally {
+      setIsRunning(false)
     }
   }
 
@@ -308,7 +336,7 @@ const QuestionPage = () => {
             )
           )}
           {activeTab === "submissions" && <SubmissionsTab />}
-          {activeTab === "logs" && <LogsTab />}
+          {activeTab === "logs" && <LogsTab sessionId={sessionId || undefined} />}
           {activeTab === "accepted" && <AcceptedTab />}
         </div>
       </div>
@@ -336,6 +364,21 @@ const QuestionPage = () => {
 
             <TooltipProvider>
               <div className="flex items-center gap-2">
+              <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={"ghost"}
+                      size={"icon"}
+                      // onClick={handleFormat}
+                      className='h-8 w-8'
+                    >
+                      <Webcam   className= {`size-6 ${isRunningAgent ? "text-green-500" : "text-red-500"}`} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{isRunningAgent ? "Agent is running" : "Agent is not running"}</p>
+                  </TooltipContent>
+                </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -461,9 +504,15 @@ const QuestionPage = () => {
               className="bg-purple h-8 text-white rounded-lg hover:bg-purple/90 transition-colors"
               onClick={handleSubmitCompile}
               size="sm"
+              disabled={isCompiling}
             >
-              {/* Run Malware */}
-              Compile
+              {isCompiling ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                </>
+              ) : (
+                "Compile"
+              )}
             </Button>
           </div>
           <div className="flex justify-end">
@@ -472,15 +521,29 @@ const QuestionPage = () => {
               className="bg-purple h-8 text-white rounded-lg hover:bg-purple/90 transition-colors"
               onClick={handleRunAgent}
               size="sm"
+              disabled={isRunning}
             >
-              Run Agent
+              {isRunning ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                </>
+              ) : (
+                "Run Agent"
+              )}
             </Button>
             <Button
               className="bg-purple h-8 text-white rounded-lg hover:bg-purple/90 transition-colors"
               onClick={handleSubmitCode}
               size="sm"
+              disabled={isSubmitting}
             >
-              Submit Challenge
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                </>
+              ) : (
+                "Submit Challenge"
+              )}
             </Button>
             </div>
             
