@@ -170,13 +170,14 @@ const Page = () => {
             </BreadcrumbList>
           </Breadcrumb>
         </div>
-        <SectionHeader
+        {/* <SectionHeader
           title="Administrators"
           buttonText="Add Admin"
           onButtonClick={handleAddAdministrator}
           icon={<Plus />}
           className="mb-4"
-        />
+        /> */}
+        <h1 className="heading mb-4 mt-2">Administrators</h1>
 
         <div className="grid gap-4 md:grid-cols-3 mb-6 ">
           <SearchBar value={search} onChange={setSearch} />

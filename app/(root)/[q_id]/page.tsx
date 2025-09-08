@@ -296,19 +296,19 @@ const QuestionPage = () => {
               >
                 Description
               </TabsTrigger>
-              <TabsTrigger
+              {/* <TabsTrigger
                 value="submissions"
                 className="tabs-trigger-active"
               >
                 Submissions
-              </TabsTrigger>
+              </TabsTrigger> */}
               <TabsTrigger
                 value="logs"
                 className="tabs-trigger-active"
               >
                 Logs
               </TabsTrigger>
-              <TabsTrigger
+              {/* <TabsTrigger
                 value="accepted"
                 className="tabs-trigger-active"
               >
@@ -316,7 +316,7 @@ const QuestionPage = () => {
                   <History className="size-3.5 mr-1 -mb-[1.75px]" />
                   <span>Accepted</span>
                 </div>
-              </TabsTrigger>
+              </TabsTrigger> */}
             </TabsList>
           </Tabs>
         </div>          {/* Tab content with scrollable area */}

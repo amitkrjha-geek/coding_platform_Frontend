@@ -119,7 +119,7 @@ const ViewChallenges = () => {
             >
               Description
             </button>
-            <button
+            {/* <button
               onClick={() => setActiveTab('submissions')}
               className={`px-4 py-2 border-b-2 ${activeTab === 'submissions'
                   ? 'border-blue-500 font-medium'
@@ -127,7 +127,7 @@ const ViewChallenges = () => {
                 }`}
             >
               Submissions
-            </button>
+            </button> */}
           </div>
 
           {/* Content based on active tab */}

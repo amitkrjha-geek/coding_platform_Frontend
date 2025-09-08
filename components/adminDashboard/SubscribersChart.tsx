@@ -1,61 +1,91 @@
 import React from 'react';
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
 } from 'recharts';
 
-const data = [
-  { month: 'Jan', free: 500, planA: 1000, planB: 1500 },
-  { month: 'Feb', free: 800, planA: 1200, planB: 1700 },
-  { month: 'Mar', free: 1300, planA: 1400, planB: 2200 },
-  { month: 'Apr', free: 1800, planA: 1600, planB: 3000 },
-  { month: 'May', free: 2400, planA: 2000, planB: 3700 },
-  { month: 'June', free: 3000, planA: 2700, planB: 4500 },
-];
+interface SubscribersChartProps {
+  data: Array<{
+    _id: string;
+    count: number;
+    totalRevenue: number;
+  }>;
+}
 
-const SubscribersChart = () => {
+const SubscribersChart = ({ data }: SubscribersChartProps) => {
+  // Process data to create chart format
+  const processedData = data.map((item) => ({
+    plan: item._id,
+    subscribers: item.count,
+    revenue: item.totalRevenue,
+  }));
+
+  // Colors for the charts
+  const colors = ['#742193', '#22C55E', '#EF4444', '#3B82F6', '#F59E0B'];
+
+  // If no data, show empty state
+  if (!data || data.length === 0) {
+    return (
+      <div className="p-4">
+        <h2 className="text-xl font-bold">Plan Subscriptions</h2>
+        <div className="flex justify-center items-center h-64 text-gray-500">
+          No subscription data available
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="p-4 ">
-      <h2 className="text-xl font-bold">Subscribers</h2>
-      <div className="flex justify-end space-x-4 mb-2">
-        <select className="border rounded px-2 py-1">
-          <option>Monthly</option>
-          <option>Yearly</option>
-        </select>
-        <select className="border rounded px-2 py-1">
-          <option>2024</option>
-          <option>2023</option>
-        </select>
+    <div className="p-4">
+      <h2 className="text-xl font-bold mb-4">Plan Subscriptions</h2>
+      
+
+      {/* Pie Chart for Revenue Distribution */}
+      <div>
+        <h3 className="text-lg font-semibold mb-3 text-gray-700">Revenue Distribution</h3>
+        <ResponsiveContainer width="100%" height={250}>
+          <PieChart>
+            <Pie
+              data={processedData}
+              cx="50%"
+              cy="50%"
+              innerRadius={60}
+              outerRadius={100}
+              paddingAngle={5}
+              dataKey="revenue"
+              nameKey="plan"
+            >
+              {processedData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+              ))}
+            </Pie>
+            <Tooltip 
+              formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']}
+              labelFormatter={(label) => `Plan: ${label}`}
+            />
+            <Legend />
+          </PieChart>
+        </ResponsiveContainer>
       </div>
 
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="month" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Line type="monotone" dataKey="free" stroke="#606060" strokeWidth={2} dot={{ r: 6 }} />
-          <Line type="monotone" dataKey="planA" stroke="#742193" strokeWidth={2} dot={{ r: 6 }} />
-          <Line type="monotone" dataKey="planB" stroke="#F9A825" strokeWidth={2} dot={{ r: 6 }} />
-        </LineChart>
-      </ResponsiveContainer>
-      <div className="mt-2 flex justify-around text-sm">
-        <span className="flex items-center">
-          <span className="w-4 h-4 bg-gray-500 inline-block mr-2"></span> Free: 340
-        </span>
-        <span className="flex items-center">
-          <span className="w-4 h-4 bg-purple-700 inline-block mr-2"></span> Plan A: 340
-        </span>
-        <span className="flex items-center">
-          <span className="w-4 h-4 bg-yellow-500 inline-block mr-2"></span> Plan B: 4500
-        </span>
+      {/* Summary Stats */}
+      <div className="mt-4 grid grid-cols-2 gap-4">
+        <div className="bg-purple-50 p-3 rounded-lg">
+          <h4 className="text-sm font-medium text-purple-800">Total Subscribers</h4>
+          <p className="text-2xl font-bold text-purple-600">
+            {processedData.reduce((sum, item) => sum + item.subscribers, 0)}
+          </p>
+        </div>
+        <div className="bg-green-50 p-3 rounded-lg">
+          <h4 className="text-sm font-medium text-green-800">Total Revenue</h4>
+          <p className="text-2xl font-bold text-green-600">
+          ₹{processedData.reduce((sum, item) => sum + item.revenue, 0).toLocaleString()}
+          </p>
+        </div>
       </div>
     </div>
   );

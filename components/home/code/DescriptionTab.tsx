@@ -74,10 +74,10 @@ const DescriptionTab = ({ challenge }: { challenge: ChallengeData | undefined })
             />
 
             {/* Stats */}
-            <div className="flex gap-4 text-sm text-gray-600">
+            {/* <div className="flex gap-4 text-sm text-gray-600">
                 <span>Acceptance Rate: {challenge?.acceptanceRate}%</span>
                 <span>Submissions: {challenge?.submissions}</span>
-            </div>
+            </div> */}
         </motion.div>
     )
 }

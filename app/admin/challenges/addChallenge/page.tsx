@@ -1,5 +1,5 @@
-'use client'
-import React from 'react'
+"use client";
+import React from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,12 +7,9 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card"
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -20,25 +17,25 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 // import { Textarea } from "@/components/ui/textarea"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Badge } from '@/components/ui/badge'
-import { FileText, X } from 'lucide-react'
-import Tiptap from '@/components/Tiptap'
-import { createChallenge } from '@/API/challenges'
-import toast from 'react-hot-toast'
-import { useRouter } from 'next/navigation'
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { Badge } from "@/components/ui/badge";
+import { FileText, X } from "lucide-react";
+import Tiptap from "@/components/Tiptap";
+import { createChallenge } from "@/API/challenges";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 // First, update the formSchema to properly handle file validation
 const formSchema = z.object({
@@ -49,24 +46,29 @@ const formSchema = z.object({
   problemStatement: z.string().min(1, "Problem statement is required"),
   status: z.string().min(1, "Status is required"),
   companies: z.array(z.string()),
-  files: z.array(z.object({
-    name: z.string(),
-    content: z.string(),
-    type: z.string(),
-    size: z.number() // Added to track file size
-  })).optional()
-})
+  files: z
+    .array(
+      z.object({
+        name: z.string(),
+        content: z.string(),
+        type: z.string(),
+        size: z.number(), // Added to track file size
+      })
+    )
+    .optional(),
+});
 
 const AddChallenge = () => {
-  const router = useRouter()
-  const [newTag, setNewTag] = React.useState("")
-  const [newCompany, setNewCompany] = React.useState("")
-  const [newTopic, setNewTopic] = React.useState("")
+  const router = useRouter();
+  const [newTag, setNewTag] = React.useState("");
+  const [newCompany, setNewCompany] = React.useState("");
+  const [newTopic, setNewTopic] = React.useState("");
   const [formData, setFormData] = React.useState({
     tags: [] as string[],
     companies: [] as string[],
-    topics: [] as string[]
-  })
+    topics: [] as string[],
+  });
+  const [loading, setLoading] = React.useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -80,69 +82,75 @@ const AddChallenge = () => {
       companies: [],
       files: [], // Initialize as empty array, not undefined
     },
-  })
+  });
 
   const addTag = (tag: string) => {
     if (tag && !formData.tags.includes(tag)) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        tags: [...prev.tags, tag]
+        tags: [...prev.tags, tag],
       }));
-      form.setValue('keywords', [...formData.tags, tag]);
+      form.setValue("keywords", [...formData.tags, tag]);
       setNewTag("");
     }
   };
-  
+
   const removeTag = (tagToRemove: string) => {
-    const newTags = formData.tags.filter(tag => tag !== tagToRemove);
-    setFormData(prev => ({
+    const newTags = formData.tags.filter((tag) => tag !== tagToRemove);
+    setFormData((prev) => ({
       ...prev,
-      tags: newTags
+      tags: newTags,
     }));
-    form.setValue('keywords', newTags);
+    form.setValue("keywords", newTags);
   };
 
   const addCompany = (company: string) => {
     if (company && !formData.companies.includes(company)) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        companies: [...prev.companies, company]
+        companies: [...prev.companies, company],
       }));
-      form.setValue('companies', [...formData.companies, company]);
+      form.setValue("companies", [...formData.companies, company]);
       setNewCompany("");
     }
   };
-  
+
   const removeCompany = (companyToRemove: string) => {
-    const newCompanies = formData.companies.filter(company => company !== companyToRemove);
-    setFormData(prev => ({
+    const newCompanies = formData.companies.filter(
+      (company) => company !== companyToRemove
+    );
+    setFormData((prev) => ({
       ...prev,
-      companies: newCompanies
+      companies: newCompanies,
     }));
-    form.setValue('companies', newCompanies);
+    form.setValue("companies", newCompanies);
   };
 
   const addTopic = (topic: string) => {
     if (topic && !formData.topics.includes(topic)) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        topics: [...prev.topics, topic]
+        topics: [...prev.topics, topic],
       }));
-      form.setValue('topic', [...formData.topics, topic]);
+      form.setValue("topic", [...formData.topics, topic]);
       setNewTopic("");
     }
   };
-  
+
   const removeTopic = (topicToRemove: string) => {
-    const newTopics = formData.topics.filter(topic => topic !== topicToRemove);
-    setFormData(prev => ({
+    const newTopics = formData.topics.filter(
+      (topic) => topic !== topicToRemove
+    );
+    setFormData((prev) => ({
       ...prev,
-      topics: newTopics
+      topics: newTopics,
     }));
-    form.setValue('topic', newTopics);
+    form.setValue("topic", newTopics);
   };
 
-  const fileToBase64 = (file: File): Promise<{ name: string, content: string, type: string, size: number }> => {
+  const fileToBase64 = (
+    file: File
+  ): Promise<{ name: string; content: string; type: string; size: number }> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
@@ -150,42 +158,44 @@ const AddChallenge = () => {
         const base64String = reader.result as string;
         resolve({
           name: file.name,
-          content: base64String.split(',')[1], // Remove data URL prefix
-          type: file.type || 'application/octet-stream',
-          size: file.size
+          content: base64String.split(",")[1], // Remove data URL prefix
+          type: file.type || "application/octet-stream",
+          size: file.size,
         });
       };
       reader.onerror = (error) => reject(error);
     });
   };
 
-
   // Update the onSubmit function
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setLoading(true);
     try {
-      console.log('Submitting form with values:', {
+      console.log("Submitting form with values:", {
         ...values,
-        files: values.files?.map(f => ({
+        files: values.files?.map((f) => ({
           name: f.name,
           contentLength: f.content.length,
-          size: f.size
-        }))
+          size: f.size,
+        })),
       });
 
       const res = await createChallenge(values); // values already contains processed files
-      console.log('API Response:', res);
-      
-      // if (res) {
-      //   toast.success("Challenge created successfully");
-      //   router.push("/admin/challenges");
-      //   form.reset();
-      //   setFormData({ tags: [], companies: [], topics: [] });
-      // }
+      console.log("API Response:", res);
+
+      if (res) {
+        toast.success("Challenge created successfully");
+        router.push("/admin/challenges");
+        form.reset();
+        setFormData({ tags: [], companies: [], topics: [] });
+      }
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Failed to create challenge");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <section className="bg-white min-h-screen p-7">
@@ -197,7 +207,9 @@ const AddChallenge = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin/challenges">Challenges</BreadcrumbLink>
+              <BreadcrumbLink href="/admin/challenges">
+                Challenges
+              </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -236,7 +248,10 @@ const AddChallenge = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Difficulty</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select Difficulty Level" />
@@ -260,7 +275,10 @@ const AddChallenge = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Status</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select Status" />
@@ -282,7 +300,11 @@ const AddChallenge = () => {
                 <label className="text-sm font-medium">Topics</label>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {formData.topics.map((topic) => (
-                    <Badge key={topic} variant="secondary" className="px-3 py-1">
+                    <Badge
+                      key={topic}
+                      variant="secondary"
+                      className="px-3 py-1"
+                    >
                       {topic}
                       <button
                         type="button"
@@ -362,7 +384,11 @@ const AddChallenge = () => {
                 <label className="text-sm font-medium">Companies</label>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {formData.companies.map((company) => (
-                    <Badge key={company} variant="secondary" className="px-3 py-1">
+                    <Badge
+                      key={company}
+                      variant="secondary"
+                      className="px-3 py-1"
+                    >
                       {company}
                       <button
                         type="button"
@@ -405,8 +431,10 @@ const AddChallenge = () => {
                   <FormItem>
                     <FormLabel>Problem Statement</FormLabel>
                     <FormControl>
-                    
-                      <Tiptap problemStatement={field.value} onChange={field.onChange} />
+                      <Tiptap
+                        problemStatement={field.value}
+                        onChange={field.onChange}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -423,11 +451,14 @@ const AddChallenge = () => {
                     <FormControl>
                       <div className="border-2 border-dashed rounded-md p-4 text-center">
                         <p className="text-gray-500">Upload any type of file</p>
-                        
+
                         {/* Display uploaded files */}
                         <div className="mt-2 space-y-2">
                           {(field.value || []).map((file, index) => (
-                            <div key={index} className="flex items-center justify-between bg-gray-50 p-1 rounded">
+                            <div
+                              key={index}
+                              className="flex items-center justify-between bg-gray-50 p-1 rounded"
+                            >
                               <div className="flex items-center gap-2">
                                 <FileText className="w-4 h-4 text-blue-500" />
                                 <span className="text-sm">{file.name}</span>
@@ -450,54 +481,71 @@ const AddChallenge = () => {
                         </div>
 
                         <input
-  type="file"
-  onChange={async (e) => {
-    const files = Array.from(e.target.files || []);
+                          type="file"
+                          onChange={async (e) => {
+                            const files = Array.from(e.target.files || []);
 
-    try {
-      // Process all files without filtering by type
-      const processedFiles = await Promise.all(
-        files.map(fileToBase64) // returns { name, content, type, size }
-      );
+                            try {
+                              // Process all files without filtering by type
+                              const processedFiles = await Promise.all(
+                                files.map(fileToBase64) // returns { name, content, type, size }
+                              );
 
-      const currentFiles = field.value || [];
-      field.onChange([...currentFiles, ...processedFiles]);
+                              const currentFiles = field.value || [];
+                              field.onChange([
+                                ...currentFiles,
+                                ...processedFiles,
+                              ]);
 
-      console.log(
-        'Processed files:',
-        processedFiles.map(f => ({ name: f.name, size: f.size, contentLength: f.content.length }))
-      );
-    } catch (error) {
-      console.error('Error processing files:', error);
-      toast.error('Error processing files');
-    }
-  }}
-  className="hidden"
-  id="file-upload"
-  multiple
-/>
+                              console.log(
+                                "Processed files:",
+                                processedFiles.map((f) => ({
+                                  name: f.name,
+                                  size: f.size,
+                                  contentLength: f.content.length,
+                                }))
+                              );
+                            } catch (error) {
+                              console.error("Error processing files:", error);
+                              toast.error("Error processing files");
+                            }
+                          }}
+                          className="hidden"
+                          id="file-upload"
+                          multiple
+                        />
 
-                        <Button 
+                        <Button
                           type="button"
-                          variant="secondary" 
-                          className="mt-4" 
-                          onClick={() => document.getElementById('file-upload')?.click()}
+                          variant="secondary"
+                          className="mt-4"
+                          onClick={() =>
+                            document.getElementById("file-upload")?.click()
+                          }
                         >
                           Choose Files
                         </Button>
                       </div>
                     </FormControl>
                     <FormMessage />
-                    <p className="text-sm text-gray-500 mt-2">Any file type is allowed</p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Any file type is allowed
+                    </p>
                   </FormItem>
                 )}
               />
 
               <div className="flex gap-4">
-                <Button type="submit" className="bg-purple-600 text-white">
-                  Save Change
+                <Button type="submit" className="bg-purple-600 text-white" disabled={loading} >
+                   {loading ? "Creating..." : "Create Challenge"}
                 </Button>
-                <Button variant="outline" type="button" className="bg-orange-100 border-orange-200">
+                <Button
+                  variant="outline"
+                  type="button"
+                  className="bg-orange-100 border-orange-200"
+                  onClick={() => router.push("/admin/challenges")}
+                  disabled={loading}
+                >
                   Cancel
                 </Button>
               </div>
@@ -506,7 +554,7 @@ const AddChallenge = () => {
         </CardContent>
       </Card>
     </section>
-  )
-}
+  );
+};
 
-export default AddChallenge
+export default AddChallenge;
