@@ -5,17 +5,22 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import CheckoutModal from './CheckoutModal';
 import { CheckoutPage } from './CheckoutPage';
-import { getPayment } from '@/API/payment';
-import type { PaymentData } from '@/API/payment';
-import { toast } from 'react-hot-toast';
+// import { getPayment } from '@/API/payment';
+// import type { PaymentData } from '@/API/payment';
+// import { toast } from 'react-hot-toast';
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
 import { RootState } from '@/redux/store';
 import { fetchPlans } from '@/redux/features/planSlice';
-import { useUser } from '@clerk/nextjs';
-import { getCurrentUserId } from '@/config/token';
+// import { useUser } from '@clerk/nextjs';
+import {  getToken } from '@/config/token';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 export const PricingPlans = () => {
   const dispatch = useAppDispatch();
+  const token = getToken();
+  const router = useRouter();
+
   // const { user } = useUser();
   // const name = user?.fullName || '';
   // const email = user?.primaryEmailAddress?.emailAddress || '';
@@ -68,6 +73,18 @@ export const PricingPlans = () => {
   const handleCheckoutSuccess = (form: string) => {
     setForm(form);
     setIsCheckoutOpen(false);
+  };
+
+  const handlePlanSelect = (plan: typeof plans[0]) => {
+    if(!token){
+      toast.error("Please login to subscribe to a plan");
+      setTimeout(() => {
+        router.push("/sign-in");
+      }, 1000);
+      return;
+    }
+    setSelectedPlan(plan);
+    setIsCheckoutOpen(true);
   };
 
 
@@ -130,10 +147,7 @@ export const PricingPlans = () => {
 
             {/* Subscribe Button */}
             <button
-              onClick={() => {
-                setSelectedPlan(plan);
-                setIsCheckoutOpen(true);
-              }}
+              onClick={() => handlePlanSelect(plan)}
               className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 ${
                 plan.popular
                   ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg shadow-purple-600/25 hover:shadow-xl hover:shadow-purple-600/30'
