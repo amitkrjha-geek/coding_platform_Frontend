@@ -435,92 +435,92 @@ export const logData: LogEntry[] = [
   ];
 
 
-  export const transactions: Transaction[] = [
-    {
-      paymentId: "3445bd2",
-      paidBy: "Apple",
-      dateTime: "12/12/2020",
-      modeOfPayment: "Credit Card",
-      amount: 324,
-    },
-    {
-      paymentId: "7891cd3",
-      paidBy: "Microsoft",
-      dateTime: "15/12/2020",
-      modeOfPayment: "Debit Card",
-      amount: 499,
-    },
-    {
-      paymentId: "4567ef4",
-      paidBy: "Google",
-      dateTime: "18/12/2020",
-      modeOfPayment: "Net Banking",
-      amount: 799,
-    },
-    {
-      paymentId: "9012gh5",
-      paidBy: "Amazon",
-      dateTime: "20/12/2020",
-      modeOfPayment: "UPI",
-      amount: 249,
-    },
-    {
-      paymentId: "2345ij6",
-      paidBy: "Meta",
-      dateTime: "22/12/2020",
-      modeOfPayment: "Credit Card",
-      amount: 599,
-    },
-    {
-      paymentId: "6789kl7",
-      paidBy: "Netflix",
-      dateTime: "25/12/2020",
-      modeOfPayment: "Debit Card",
-      amount: 399,
-    },
-    {
-      paymentId: "1234mn8",
-      paidBy: "Spotify",
-      dateTime: "27/12/2020",
-      modeOfPayment: "UPI",
-      amount: 199,
-    },
-    {
-      paymentId: "5678pq9",
-      paidBy: "Adobe",
-      dateTime: "29/12/2020",
-      modeOfPayment: "Net Banking",
-      amount: 899,
-    },
-    {
-      paymentId: "8901rs0",
-      paidBy: "Twitter",
-      dateTime: "31/12/2020",
-      modeOfPayment: "Credit Card",
-      amount: 299,
-    },
-    {
-      paymentId: "3456tu1",
-      paidBy: "LinkedIn",
-      dateTime: "02/01/2021",
-      modeOfPayment: "Debit Card",
-      amount: 449,
-    },
-    {
-      paymentId: "7890vw2",
-      paidBy: "Samsung",
-      dateTime: "05/01/2021",
-      modeOfPayment: "UPI",
-      amount: 649,
-    },
-    {
-      paymentId: "2345xy3",
-      paidBy: "Intel",
-      dateTime: "07/01/2021",
-      modeOfPayment: "Net Banking",
-      amount: 749,
-    }
-  ];
+  // export const transactions: Transaction[] = [
+  //   {
+  //     paymentId: "3445bd2",
+  //     paidBy: "Apple",
+  //     dateTime: "12/12/2020",
+  //     modeOfPayment: "Credit Card",
+  //     amount: 324,
+  //   },
+  //   {
+  //     paymentId: "7891cd3",
+  //     paidBy: "Microsoft",
+  //     dateTime: "15/12/2020",
+  //     modeOfPayment: "Debit Card",
+  //     amount: 499,
+  //   },
+  //   {
+  //     paymentId: "4567ef4",
+  //     paidBy: "Google",
+  //     dateTime: "18/12/2020",
+  //     modeOfPayment: "Net Banking",
+  //     amount: 799,
+  //   },
+  //   {
+  //     paymentId: "9012gh5",
+  //     paidBy: "Amazon",
+  //     dateTime: "20/12/2020",
+  //     modeOfPayment: "UPI",
+  //     amount: 249,
+  //   },
+  //   {
+  //     paymentId: "2345ij6",
+  //     paidBy: "Meta",
+  //     dateTime: "22/12/2020",
+  //     modeOfPayment: "Credit Card",
+  //     amount: 599,
+  //   },
+  //   {
+  //     paymentId: "6789kl7",
+  //     paidBy: "Netflix",
+  //     dateTime: "25/12/2020",
+  //     modeOfPayment: "Debit Card",
+  //     amount: 399,
+  //   },
+  //   {
+  //     paymentId: "1234mn8",
+  //     paidBy: "Spotify",
+  //     dateTime: "27/12/2020",
+  //     modeOfPayment: "UPI",
+  //     amount: 199,
+  //   },
+  //   {
+  //     paymentId: "5678pq9",
+  //     paidBy: "Adobe",
+  //     dateTime: "29/12/2020",
+  //     modeOfPayment: "Net Banking",
+  //     amount: 899,
+  //   },
+  //   {
+  //     paymentId: "8901rs0",
+  //     paidBy: "Twitter",
+  //     dateTime: "31/12/2020",
+  //     modeOfPayment: "Credit Card",
+  //     amount: 299,
+  //   },
+  //   {
+  //     paymentId: "3456tu1",
+  //     paidBy: "LinkedIn",
+  //     dateTime: "02/01/2021",
+  //     modeOfPayment: "Debit Card",
+  //     amount: 449,
+  //   },
+  //   {
+  //     paymentId: "7890vw2",
+  //     paidBy: "Samsung",
+  //     dateTime: "05/01/2021",
+  //     modeOfPayment: "UPI",
+  //     amount: 649,
+  //   },
+  //   {
+  //     paymentId: "2345xy3",
+  //     paidBy: "Intel",
+  //     dateTime: "07/01/2021",
+  //     modeOfPayment: "Net Banking",
+  //     amount: 749,
+  //   }
+  // ];
 
 
 
