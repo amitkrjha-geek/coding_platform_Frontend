@@ -25,8 +25,8 @@ const CouponFormContent = () => {
     code: "",
     category: "",
     discountAmount: "",
-    discountPercent: "",
-    maxCap: "",
+    // discountPercent: "",
+    // maxCap: "",
     details: "",
   });
   const [loading, setLoading] = useState(false);
@@ -43,8 +43,8 @@ const CouponFormContent = () => {
       code: "",
       category: "",
       discountAmount: "",
-      discountPercent: "",
-      maxCap: "",
+      // discountPercent: "",
+      // maxCap: "",
       details: "",
     });
 
@@ -64,14 +64,14 @@ const CouponFormContent = () => {
       toast.error("Category is required!");
       return false;
     }
-    if (!formData.maxCap.trim()) {
-      toast.error("Max cap is required!");
-      return false;
-    }
-    if (!/^\d+$/.test(formData.maxCap.trim())) {
-      toast.error("Max cap must be a valid number!");
-      return false;
-    }
+    // if (!formData.maxCap.trim()) {
+    //   toast.error("Max cap is required!");
+    //   return false;
+    // }
+    // if (!/^\d+$/.test(formData.maxCap.trim())) {
+    //   toast.error("Max cap must be a valid number!");
+    //   return false;
+    // }
     if (!formData.details.trim()) {
       toast.error("Details are required!");
       return false;
@@ -84,10 +84,10 @@ const CouponFormContent = () => {
       toast.error("Discount amount must be a valid number with up to 2 decimal places!");
       return false;
     }
-    if (formData.discountPercent && !/^\d+(\.\d{1,2})?$/.test(formData.discountPercent)) {
-      toast.error("Discount percent must be a valid number with up to 2 decimal places!");
-      return false;
-    }
+    // if (formData.discountPercent && !/^\d+(\.\d{1,2})?$/.test(formData.discountPercent)) {
+    //   toast.error("Discount percent must be a valid number with up to 2 decimal places!");
+    //   return false;
+    // }
     return true;
   };
 
@@ -165,10 +165,10 @@ const CouponFormContent = () => {
                 className="w-full transition-all duration-200 focus:ring-2 focus:ring-coupon-primary/20"
               />
             </div>
-            <div className="flex items-center h-full pt-8">
+            {/* <div className="flex items-center h-full pt-8">
               <span className="text-gray-500 font-medium">OR</span>
-            </div>
-            <div className="flex-1 space-y-2">
+            </div> */}
+            {/* <div className="flex-1 space-y-2">
               <label className="text-sm font-bold text-gray-700">
                 Discount Percent
               </label>
@@ -183,8 +183,8 @@ const CouponFormContent = () => {
                 }
                 className="w-full transition-all duration-200 focus:ring-2 focus:ring-coupon-primary/20"
               />
-            </div>
-            <div className="flex-1 space-y-2">
+            </div> */}
+            {/* <div className="flex-1 space-y-2">
               <label className="text-sm font-bold text-gray-700">
                 Max Cap
               </label>
@@ -198,7 +198,7 @@ const CouponFormContent = () => {
                 }
                 className="w-full transition-all duration-200 focus:ring-2 focus:ring-coupon-primary/20"
               />
-            </div>
+            </div> */}
           </div>
         </div>
 

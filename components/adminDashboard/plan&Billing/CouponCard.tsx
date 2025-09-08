@@ -52,7 +52,7 @@ const CouponCard = ({
           <div className="flex items-center">
             <span className="darkText">Discount </span> <span className="font-bold ml-2">:</span>
             <span className="mx-2 text-xl font-bold text-gray-900">
-              ${discount}
+            ₹{discount}
             </span>
           </div>
           {/* <div className="flex items-center">

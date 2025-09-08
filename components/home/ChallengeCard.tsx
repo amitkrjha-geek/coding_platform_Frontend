@@ -62,9 +62,9 @@ const ChallengeCard = memo(({ title, difficulty, submissions, acceptanceRate, id
                         )}
                     </div>
                 </div>
-                <button className="text-gray-400 hover:text-yellow-400 transition-colors">
+                {/* <button className="text-gray-400 hover:text-yellow-400 transition-colors">
                     <Star className="w-5 h-5" />
-                </button>
+                </button> */}
             </div>
             <div className="flex items-center justify-between text-sm text-gray-600">
                 <div>

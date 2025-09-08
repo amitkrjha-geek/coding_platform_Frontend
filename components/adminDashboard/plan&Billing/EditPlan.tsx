@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Plus, X } from "lucide-react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
@@ -19,8 +20,9 @@ interface PlanDetail {
 interface PlanFormData {
   _id?: string;
   name: string;
-  monthlyPrice: string;
-  yearlyPrice: string;
+  popular: boolean;
+  priceMode: string;
+  price: number;
   details: PlanDetail[];
 }
 
@@ -28,7 +30,7 @@ interface EditPlanFormProps {
   initialData: PlanFormData;
 }
 
-const EditPlanForm = ({ initialData }: EditPlanFormProps) => {
+const EditPlanForm = ({ initialData }: EditPlanFormProps) => {  
   const dispatch = useAppDispatch()
   const router = useRouter()
   const [planDetails, setPlanDetails] = useState<PlanDetail[]>(initialData.details);
@@ -69,13 +71,8 @@ const EditPlanForm = ({ initialData }: EditPlanFormProps) => {
       return;
     }
 
-    if (!formData.monthlyPrice.trim() || isNaN(Number(formData.monthlyPrice))) {
-      toast.error("Valid monthly price is required!");
-      return;
-    }
-
-    if (!formData.yearlyPrice.trim() || isNaN(Number(formData.yearlyPrice))) {
-      toast.error("Valid yearly price is required!");
+    if (!formData.price || formData.price <= 0) {
+      toast.error("Valid price is required!");
       return;
     }
 
@@ -118,7 +115,22 @@ const EditPlanForm = ({ initialData }: EditPlanFormProps) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === 'name' ? value.toUpperCase() : (name === 'price' ? Number(value) : value),
+    }));
+  };
+
+  const handleSelectChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      priceMode: value,
+    }));
+  };
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: checked,
     }));
   };
 
@@ -144,31 +156,45 @@ const EditPlanForm = ({ initialData }: EditPlanFormProps) => {
               />
             </div>
 
-            {/* Monthly & Yearly Prices */}
+            {/* Popular Plan Toggle */}
+            <div className="space-y-2">
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  name="popular"
+                  checked={formData?.popular || false}
+                  onChange={handleCheckboxChange}
+                  className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                />
+                <span className="text-sm font-medium text-gray-700">Mark as Popular Plan</span>
+              </label>
+            </div>
+
+            {/* Price and Price Mode */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Monthly Price</label>
+                <label className="text-sm font-medium text-gray-700">Price</label>
                 <Input
-                  name="monthlyPrice"
+                  name="price"
                   placeholder="Enter Amount"
                   min="0"
                   type="number"
-                  value={formData?.monthlyPrice}
+                  value={formData?.price}
                   onChange={handleInputChange}
                   className="w-full transition-all duration-200 focus:ring-2 focus:ring-purple-500"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Yearly Price</label>
-                <Input
-                  name="yearlyPrice"
-                  min="0"
-                  placeholder="Enter Amount"
-                  type="number"
-                  value={formData?.yearlyPrice}
-                  onChange={handleInputChange}
-                  className="w-full transition-all duration-200 focus:ring-2 focus:ring-purple-500"
-                />
+                <label className="text-sm font-medium text-gray-700">Price Mode</label>
+                <Select value={formData.priceMode} onValueChange={handleSelectChange}>
+                  <SelectTrigger className="w-full transition-all duration-200 focus:ring-2 focus:ring-purple-500">
+                    <SelectValue placeholder="Select price mode" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Monthly">Monthly</SelectItem>
+                    <SelectItem value="Yearly">Yearly</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 

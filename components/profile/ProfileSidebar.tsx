@@ -1,91 +1,131 @@
 "use client";
 
+import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
+import { 
+  Trophy, 
+  Code, 
+  Star, 
 
-const languages = ["C++", "Java", "Python"];
-const skills = {
-  Advanced: [
-    { name: "Backtracking", count: 10 },
-    { name: "Dynamic Programming", count: 2 },
-    { name: "Monotonic Stack", count: 2 },
-  ],
-  Intermediate: [
-    { name: "Hash Table", count: 6 },
-    { name: "Binary Search", count: 6 },
-    { name: "Bit Manipulation", count: 6 },
-  ],
-  Fundamental: [
-    { name: "Array", count: 23 },
-    { name: "Two Pointers", count: 9 },
-    { name: "Linked List", count: 6 },
-  ],
-};
+  Target,
+  CheckCircle,
+  ChevronDown,
+  ChevronUp
+} from "lucide-react";
 
-const ProfileSidebar = () => {
+const languages = ["C", "C++", "C#"];
+
+const ProfileSidebar = ({ organizedData }: { organizedData: any }) => {
+  // console.log({ organizedData });
+  const { user } = useUser();
+  const name = user?.fullName || 'User';
+  const avatar = user?.imageUrl || 'https://github.com/shadcn.png';
+
+  console.log('📊 User:', user);
+
+  const [showAll, setShowAll] = useState({
+    easy: false,
+    medium: false,
+    hard: false,
+  });
+
+  const toggleShowAll = (difficulty: "easy" | "medium" | "hard") => {
+    setShowAll((prev) => ({
+      ...prev,
+      [difficulty]: !prev[difficulty],
+    }));
+  };
+
+  const getChallengesToShow = (
+    challenges: any[],
+    difficulty: "easy" | "medium" | "hard"
+  ) => {
+    if (!challenges) return [];
+    return showAll[difficulty] ? challenges : challenges.slice(0, 5);
+  };
+
+  const hasMoreChallenges = (challenges: any[]) => {
+    return challenges && challenges.length > 5;
+  };
+
   return (
-    <div className="space-y-8 md:space-y-0 lg:space-y-8 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-6 lg:block">
-      {/* Profile Info */}
-      <div className="text-center md:col-span-2 lg:col-auto">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-8">
+      {/* Profile Header */}
+      <div className="text-center">
         <Link href="/profile">
-          <div className="relative w-24 h-24 mx-auto mb-4">
-            <Image
-              src="https://github.com/shadcn.png"
-              alt="Profile"
-              fill
-              className="rounded-full object-cover hover:opacity-90 transition-opacity"
-              priority
-            />
+          <div className="relative w-20 h-20 mx-auto mb-4 group cursor-pointer">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full p-0.5 group-hover:p-1 transition-all duration-300">
+              <div className="w-full h-full bg-white rounded-full p-0.5">
+                <Image
+                  src={avatar}
+                  alt="Profile"
+                  fill
+                  className="rounded-full object-cover"
+                  priority
+                />
+              </div>
+            </div>
+            <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-2 border-white rounded-full flex items-center justify-center">
+              <div className="w-2 h-2 bg-white rounded-full"></div>
+            </div>
           </div>
         </Link>
         <Link href="/profile">
-          <h2 className="text-lg font-medium hover:text-purple transition-colors">
-            user804950
+          <h2 className="text-xl font-bold text-gray-900 hover:text-purple-600 transition-colors mb-1">
+            {name}
           </h2>
         </Link>
-        <p className="text-sm text-gray-500">@user804950</p>
-        <p className="text-sm text-gray-500">Rank 2,248,826</p>
-        <button className="mt-4 w-full py-2 rounded-lg bg-[#F8F5FF] text-purple hover:bg-purple hover:text-white transition-colors">
-          Edit Profile
-        </button>
       </div>
 
       {/* DPS */}
-      <div className="md:col-span-2 lg:col-auto">
+      {/* <div className="md:col-span-2 lg:col-auto">
         <span className="text-sm text-gray-500">DPS</span>
-      </div>
+      </div> */}
 
       {/* Community Stats */}
-      <div className="md:col-span-1 lg:col-auto">
-        <h3 className="font-medium mb-4">Community Stats</h3>
+      <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-4">
+        <div className="flex items-center gap-2 mb-4">
+          <Trophy className="w-5 h-5 text-purple-600" />
+          <h3 className="font-semibold text-gray-900">Community Stats</h3>
+        </div>
         <div className="space-y-3">
-          <div className="flex justify-between text-sm">
-            <span>Views</span>
-            <span className="text-gray-500">0</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-green-500" />
+              <span className="text-sm font-medium text-gray-700">Solutions</span>
+            </div>
+            <span className="text-sm font-bold text-gray-900">{organizedData?.total || 0}</span>
           </div>
-          <div className="flex justify-between text-sm">
-            <span>Solution</span>
-            <span className="text-gray-500">0</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Star className="w-4 h-4 text-yellow-500" />
+              <span className="text-sm font-medium text-gray-700">Reputation</span>
+            </div>
+            <span className="text-sm font-bold text-gray-900">{organizedData?.total || 0}</span>
           </div>
-          <div className="flex justify-between text-sm">
-            <span>Discuss</span>
-            <span className="text-gray-500">0</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span>Reputation</span>
-            <span className="text-gray-500">0</span>
-          </div>
+          {/* <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-blue-500" />
+              <span className="text-sm font-medium text-gray-700">Rank</span>
+            </div>
+            <span className="text-sm font-bold text-gray-900">#1,234</span>
+          </div> */}
         </div>
       </div>
 
       {/* Languages */}
-      <div className="md:col-span-1 lg:col-auto">
-        <h3 className="font-medium mb-4">Languages</h3>
+      <div>
+        <div className="flex items-center gap-2 mb-4">
+          <Code className="w-5 h-5 text-purple-600" />
+          <h3 className="font-semibold text-gray-900">Programming Languages</h3>
+        </div>
         <div className="flex flex-wrap gap-2">
           {languages.map((lang) => (
             <span
               key={lang}
-              className="px-3 py-1 rounded-full bg-[#F8F5FF] text-sm text-purple"
+              className="px-3 py-1.5 rounded-lg bg-purple-100 text-sm font-medium text-purple-700 hover:bg-purple-200 transition-colors cursor-pointer"
             >
               {lang}
             </span>
@@ -93,27 +133,174 @@ const ProfileSidebar = () => {
         </div>
       </div>
 
-      {/* Skills */}
-      <div className="md:col-span-2 lg:col-auto">
-        <h3 className="font-medium mb-4">Skills</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
-          {Object.entries(skills).map(([level, items]) => (
-            <div key={level} className="space-y-2">
-              <h4 className="text-sm text-red-500 mb-2">• {level}</h4>
-              <div className="space-y-2">
-                {items.map((skill) => (
-                  <div key={skill.name} className="flex justify-between text-sm">
-                    <span>{skill.name}</span>
-                    <span className="text-gray-500">×{skill.count}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
+      {/* Challenges Solved */}
+      <div>
+        <div className="flex items-center gap-2 mb-4">
+          <Target className="w-5 h-5 text-purple-600" />
+          <h3 className="font-semibold text-gray-900">Challenges Solved</h3>
         </div>
-        <button className="text-purple text-sm hover:underline mt-4">
-          Show more
-        </button>
+
+        <div className="space-y-4">
+          {organizedData && (
+            <>
+              {/* Easy Challenges */}
+              {organizedData.easy && organizedData.easy.length > 0 && (
+                <div className="bg-green-50 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <h4 className="text-sm font-semibold text-green-700">
+                        Easy Challenges
+                      </h4>
+                    </div>
+                    <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full font-medium">
+                      {organizedData.easy.length}
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    {getChallengesToShow(organizedData.easy, "easy").map(
+                      (submission: any) => (
+                        <div
+                          key={submission._id}
+                          className="flex items-center justify-between text-sm bg-white rounded-lg p-2 hover:shadow-sm transition-shadow"
+                        >
+                          <span className="truncate font-medium text-gray-700">
+                            {submission.challenge?.title}
+                          </span>
+                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                            {submission.language}
+                          </span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                  {hasMoreChallenges(organizedData.easy) && (
+                    <button
+                      onClick={() => toggleShowAll("easy")}
+                      className="flex items-center gap-1 text-green-600 text-xs font-medium hover:text-green-700 mt-2"
+                    >
+                      {showAll.easy ? (
+                        <>
+                          <ChevronUp className="w-3 h-3" />
+                          Show less
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="w-3 h-3" />
+                          Show more ({organizedData.easy.length - 5} more)
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Medium Challenges */}
+              {organizedData.medium && organizedData.medium.length > 0 && (
+                <div className="bg-yellow-50 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                      <h4 className="text-sm font-semibold text-yellow-700">
+                        Medium Challenges
+                      </h4>
+                    </div>
+                    <span className="text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full font-medium">
+                      {organizedData.medium.length}
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    {getChallengesToShow(organizedData.medium, "medium").map(
+                      (submission: any) => (
+                        <div
+                          key={submission._id}
+                          className="flex items-center justify-between text-sm bg-white rounded-lg p-2 hover:shadow-sm transition-shadow"
+                        >
+                          <span className="truncate font-medium text-gray-700">
+                            {submission.challenge?.title}
+                          </span>
+                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                            {submission.language}
+                          </span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                  {hasMoreChallenges(organizedData.medium) && (
+                    <button
+                      onClick={() => toggleShowAll("medium")}
+                      className="flex items-center gap-1 text-yellow-600 text-xs font-medium hover:text-yellow-700 mt-2"
+                    >
+                      {showAll.medium ? (
+                        <>
+                          <ChevronUp className="w-3 h-3" />
+                          Show less
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="w-3 h-3" />
+                          Show more ({organizedData.medium.length - 5} more)
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+              )}
+
+              {/* Hard Challenges */}
+              {organizedData.hard && organizedData.hard.length > 0 && (
+                <div className="bg-red-50 rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                      <h4 className="text-sm font-semibold text-red-700">
+                        Hard Challenges
+                      </h4>
+                    </div>
+                    <span className="text-xs bg-red-200 text-red-800 px-2 py-1 rounded-full font-medium">
+                      {organizedData.hard.length}
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    {getChallengesToShow(organizedData.hard, "hard").map(
+                      (submission: any) => (
+                        <div
+                          key={submission._id}
+                          className="flex items-center justify-between text-sm bg-white rounded-lg p-2 hover:shadow-sm transition-shadow"
+                        >
+                          <span className="truncate font-medium text-gray-700">
+                            {submission.challenge?.title}
+                          </span>
+                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                            {submission.language}
+                          </span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                  {hasMoreChallenges(organizedData.hard) && (
+                    <button
+                      onClick={() => toggleShowAll("hard")}
+                      className="flex items-center gap-1 text-red-600 text-xs font-medium hover:text-red-700 mt-2"
+                    >
+                      {showAll.hard ? (
+                        <>
+                          <ChevronUp className="w-3 h-3" />
+                          Show less
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="w-3 h-3" />
+                          Show more ({organizedData.hard.length - 5} more)
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

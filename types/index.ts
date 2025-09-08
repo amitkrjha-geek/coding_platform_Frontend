@@ -121,4 +121,7 @@ export interface MetricCardProps {
     dateTime: string;
     modeOfPayment: string;
     amount: number;
+    currency: string;
+    coupon: string;
+    plan: string;
   };

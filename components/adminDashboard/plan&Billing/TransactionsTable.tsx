@@ -1,22 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Transaction } from '@/types';
+import { getAllPayments } from '@/API/payment';
+import { formatDateTime } from '@/utils';
 
-interface TransactionsTableProps {
-  transactions: Transaction[];
-}
 
-const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
+const TransactionsTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("all");
   const [sortBy, setSortBy] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const filteredTransactions = transactions.filter(transaction => {
     const matchesSearch = transaction.paymentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          transaction.paidBy.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
+    
+    const matchesCategory = category === "all" || transaction.plan === category;
+    
+    return matchesSearch && matchesCategory;
+  }).sort((a, b) => {
+    if (sortBy === "date") {
+      return new Date(b.dateTime).getTime() - new Date(a.dateTime).getTime();
+    } else if (sortBy === "amount") {
+      return (b.amount || 0) - (a.amount || 0);
+    }
+    return 0;
   });
 
   // Calculate total pages
@@ -29,6 +39,33 @@ const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
     return filteredTransactions.slice(startIndex, endIndex);
   };
 
+
+
+  useEffect(() => {
+   
+    const fetchTransactions = async () => {
+      try {
+        const response = await getAllPayments();
+        console.log("response",response);
+        const formattedTransactions = response.data.map((transaction: any) => ({
+          paymentId: transaction.txnId,
+          paidBy: transaction.customerName,
+          dateTime: transaction.createdAt,
+          modeOfPayment: transaction.paymentMode,
+          amount: transaction.amount,
+          currency: transaction.currency,
+          coupon: transaction.couponId?.code,
+          plan: transaction.planId?.name,
+        }));
+        console.log("formattedTransactions",formattedTransactions);
+        setTransactions(formattedTransactions);
+        
+      } catch (error) {
+        console.error("Failed to fetch transactions", error);
+      }
+    };
+    fetchTransactions();
+  }, []);
   // Generate page numbers to display
   const getPageNumbers = () => {
     const pageNumbers = [];
@@ -80,6 +117,28 @@ const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
     setCurrentPage(prev => Math.min(prev + 1, totalPages));
   };
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1); // Reset to first page when searching
+  };
+
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setCategory(e.target.value);
+    setCurrentPage(1); // Reset to first page when filtering
+  };
+
+  const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSortBy(e.target.value);
+    setCurrentPage(1); // Reset to first page when sorting
+  };
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setCategory("all");
+    setSortBy("all");
+    setCurrentPage(1);
+  };
+
   return (
     <div className="mt-4">
       <div className="flex gap-4 mb-4">
@@ -89,7 +148,7 @@ const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
             placeholder="Enter Name or Payment ID"
             className="w-full p-2 pl-3 pr-10 border-2 rounded-md border-purple focus:border-purple focus:outline-none focus:ring-0" 
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={handleSearchChange}
           />
           <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
             <Search size={20} />
@@ -98,54 +157,119 @@ const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
         <select
           className="p-2 border-2 rounded-md border-purple focus:border-purple focus:outline-none focus:ring-0" 
           value={category}
-          onChange={(e) => setCategory(e.target.value)}
+          onChange={handleCategoryChange}
         >
-          <option value="all">All Categories</option>
-          <option value="subscription">Subscription</option>
-          <option value="onetime">One-time</option>
+          <option value="all">All Plans</option>
+          <option value="BASIC">Basic</option>
+          <option value="PREMIUM">Premium</option>
+          <option value="ENTERPRISE">Enterprise</option>
         </select>
         <select
           className="p-2 border-2 rounded-md border-purple focus:border-purple focus:outline-none focus:ring-0" 
           value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
+          onChange={handleSortChange}
         >
           <option value="all">Sort by</option>
-          <option value="date">Date</option>
+          <option value="date">Date & Time</option>
           <option value="amount">Amount</option>
         </select>
+        <button
+          onClick={clearFilters}
+          className="px-4 py-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors"
+        >
+          Clear Filters
+        </button>
       </div>
 
-      <h3 className="font-manrope font-semibold text-base leading-[21.86px] text-purple mb-4">Payment History</h3>
+      {/* Filter Status */}
+      {(searchTerm || category !== "all" || sortBy !== "all") && (
+        <div className="mb-4 p-3 bg-blue-50 rounded-md">
+          <div className="flex items-center gap-2 text-sm text-blue-700">
+            <span className="font-medium">Active Filters:</span>
+            {searchTerm && (
+              <span className="px-2 py-1 bg-blue-100 rounded-full">
+                Search: &quot;{searchTerm}&quot;
+              </span>
+            )}
+            {category !== "all" && (
+              <span className="px-2 py-1 bg-blue-100 rounded-full">
+                Plan: {category}
+              </span>
+            )}
+            {sortBy !== "all" && (
+              <span className="px-2 py-1 bg-blue-100 rounded-full">
+                Sort: {sortBy === "date" ? "Date & Time" : "Amount"}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
+      <h3 className="font-manrope font-semibold text-base leading-[21.86px] text-purple mb-4">
+        Payment History ({filteredTransactions.length} transactions)
+      </h3>
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="w-full">
-          <thead>
-            <tr className="border-b bg-[#7421931A]">
-              <th className="p-4 text-left">Payment ID</th>
-              <th className="p-4 text-left">Paid By</th>
-              <th className="p-4 text-left">Date and Time</th>
-              <th className="p-4 text-left">Mode of Payment</th>
-              <th className="p-4 text-left">Amount</th>
-              <th className="p-4 text-left">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {getCurrentPageItems().map((transaction) => (
-              <tr key={transaction.paymentId} className="border-b">
-                <td className="p-4">{transaction.paymentId}</td>
-                <td className="p-4">{transaction.paidBy}</td>
-                <td className="p-4">{transaction.dateTime}</td>
-                <td className="p-4">{transaction.modeOfPayment}</td>
-                <td className="p-4">₹ {transaction.amount}</td>
-                <td className="p-4">
-                  <button className="text-blue-600 hover:underline">
-                    Download Invoice
-                  </button>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[1200px]">
+            <thead>
+              <tr className="border-b bg-[#7421931A]">
+                <th className="p-3 text-left text-sm font-medium text-gray-700 w-32">Payment ID</th>
+                <th className="p-3 text-left text-sm font-medium text-gray-700 w-24">Paid By</th>
+                <th className="p-3 text-left text-sm font-medium text-gray-700 w-36">Date & Time</th>
+                <th className="p-3 text-left text-sm font-medium text-gray-700 w-20">Method</th>
+                <th className="p-3 text-left text-sm font-medium text-gray-700 w-20">Amount</th>
+                <th className="p-3 text-left text-sm font-medium text-gray-700 w-16">Currency</th>
+                <th className="p-3 text-left text-sm font-medium text-gray-700 w-20">Coupon</th>
+                <th className="p-3 text-left text-sm font-medium text-gray-700 w-20">Plan</th>
+                {/* <th className="p-3 text-left text-sm font-medium text-gray-700 w-24">Action</th> */}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {getCurrentPageItems().map((transaction) => (
+                <tr key={transaction.paymentId} className="border-b hover:bg-gray-50">
+                  <td className="p-3 text-sm">
+                    <div className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                      {transaction.paymentId}
+                    </div>
+                  </td>
+                  <td className="p-3 text-sm font-medium">{transaction.paidBy}</td>
+                  <td className="p-3 text-sm text-gray-600">
+                    {formatDateTime(transaction.dateTime)}
+                  </td>
+                  <td className="p-3 text-sm">
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      {transaction.modeOfPayment}
+                    </span>
+                  </td>
+                  <td className="p-3 text-sm font-semibold text-green-600">
+                    ₹{transaction.amount?.toLocaleString()}
+                  </td>
+                  <td className="p-3 text-sm text-gray-500">{transaction.currency}</td>
+                  <td className="p-3 text-sm">
+                    {transaction.coupon ? (
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                        {transaction.coupon}
+                      </span>
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
+                  </td>
+                  <td className="p-3 text-sm">
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      {transaction.plan}
+                    </span>
+                  </td>
+                  {/* <td className="p-3 text-sm">
+                    <button className="text-blue-600 hover:text-blue-800 hover:underline text-xs font-medium">
+                      Download
+                    </button>
+                  </td> */}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         <div className="p-4 flex justify-center items-center gap-2">
           <button 
             onClick={handlePrevious}

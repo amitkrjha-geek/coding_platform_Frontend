@@ -8,8 +8,8 @@ export interface CouponData {
     code: string;
     category: string;
     discountAmount: string;
-    discountPercent: string;
-    maxCap: string;
+    // discountPercent: string;
+    // maxCap: string;
     details: string;
     __v?: number;
 }

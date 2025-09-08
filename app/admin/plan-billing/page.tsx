@@ -168,8 +168,9 @@ const PlanBillingPage = () => {
               <PlanCard
                 key={plan._id}
                 title={plan.name}
-                monthlyPrice={Number(plan.monthlyPrice)}
-                yearlyPrice={Number(plan.yearlyPrice)}
+                price={plan.price}
+                priceMode={plan.priceMode}
+                popular={plan.popular}
                 details={plan?.details ?? []}
                 onEdit={() => handleEdit("plan", plan._id)}
                 onDelete={() => handleDelete("plan", plan._id)}
@@ -202,7 +203,7 @@ const PlanBillingPage = () => {
       )}
 
       {activeTab === "transactions" && (
-        <TransactionsTable transactions={transactions} />
+        <TransactionsTable />
       )}
     </section>
   );

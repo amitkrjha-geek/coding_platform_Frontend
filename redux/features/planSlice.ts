@@ -6,8 +6,9 @@ import toast from "react-hot-toast";
 export interface PlanData {
   _id: string;
   name: string;
-  monthlyPrice: string;
-  yearlyPrice: string;
+  popular: boolean;
+  priceMode: string;
+  price: number;
   details: string[];
   __v?: number;
 }

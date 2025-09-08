@@ -1,16 +1,42 @@
 "use client";
 
-import { plans } from '@/constants';
+// import { plans } from '@/constants';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import CheckoutModal from './CheckoutModal';
+import { CheckoutPage } from './CheckoutPage';
 import { getPayment } from '@/API/payment';
 import type { PaymentData } from '@/API/payment';
 import { toast } from 'react-hot-toast';
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { RootState } from '@/redux/store';
+import { fetchPlans } from '@/redux/features/planSlice';
+import { useUser } from '@clerk/nextjs';
+import { getCurrentUserId } from '@/config/token';
 
 export const PricingPlans = () => {
+  const dispatch = useAppDispatch();
+  // const { user } = useUser();
+  // const name = user?.fullName || '';
+  // const email = user?.primaryEmailAddress?.emailAddress || '';
+  // const currentUserId = getCurrentUserId();
+
+
+
+
+
+
   const [selectedPlan, setSelectedPlan] = useState<typeof plans[0] | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const { plans, status: planStatus } = useAppSelector((state: RootState) => state.plan);
+
+
+  useEffect(() => {
+    if ( !plans.length && planStatus === 'idle') {
+      dispatch(fetchPlans());
+    }
+  }, [dispatch, plans, planStatus]);
 
   // const handleSubscribe = (plan: typeof plans[0]) => {
   //   setSelectedPlan(plan);
@@ -29,31 +55,22 @@ export const PricingPlans = () => {
   },[form])
 
 
-  const handleSubscribe = async ({ amount, product, firstname, email, mobile }: PaymentData) => {
-    try {
-      const response = await getPayment({ amount, product, firstname, email, mobile });
-      setForm(response);
-    } catch (error: any) {
-      console.error("Payment error:", error);
-      toast.error(error.message || "Failed to initialize payment");
-    }
+  // const handleSubscribe = async ({ amount, product, firstname, email, mobile, userId, planId }: PaymentData) => {
+  //   try {
+  //     const response = await getPayment({ amount, product, firstname, email, mobile, userId, planId });
+  //     setForm(response);
+  //   } catch (error: any) {
+  //     console.error("Payment error:", error);
+  //     toast.error(error.message || "Failed to initialize payment");
+  //   }
+  // };
+
+  const handleCheckoutSuccess = (form: string) => {
+    setForm(form);
+    setIsCheckoutOpen(false);
   };
 
-  // const handleSubscribe = async({amount,product,firstname,email,mobile}:any)=>{
-  //   try {
-      
-  //       const data = await (await axios.post("http://localhost:8080/get-payment",{
-  //         amount,product,firstname,email,mobile
-  //       })).data
-  //         console.log("payment data",data);
-          
-  //       setForm(data);
-        
-  //   } catch (error:any) {
-  //     console.log("payment error",error.response.data.msg);
-      
-  //   }
-  // }
+
 
 
   return (
@@ -62,58 +79,68 @@ export const PricingPlans = () => {
         dangerouslySetInnerHTML={{ __html: form }}
         style={{ marginTop: "20px", border: "1px solid #ddd", padding: "10px" }}
         />
-      <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto px-4">
         {plans.map((plan) => (
           <motion.div
             key={plan.name}
-            whileHover={{ scale: 1.02 }}
-            className={`rounded-2xl p-8 ${plan.popular
-                ? 'popular_pricing'
-                : 'normal_pricing'
-              }`}
+            whileHover={{ scale: 1.02, y: -5 }}
+            transition={{ duration: 0.2 }}
+            className={`relative rounded-2xl p-8 transition-all duration-300 ${
+              plan.popular
+                ? 'bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 shadow-lg shadow-purple-200/50'
+                : 'bg-white border border-gray-200 shadow-md hover:shadow-lg'
+            }`}
           >
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <h3 className="text-lg font-medium">{plan.name}</h3>
-                <p className="text-sm text-gray-500">{plan.description}</p>
-              </div>
-              {plan.popular && (
-                <span className="px-3 py-1 text-sm text-purple bg-purple/10 rounded-full">
-                  Most popular
+            {/* Popular Badge */}
+            {plan.popular && (
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span className="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-4 py-1 text-sm font-medium rounded-full shadow-lg">
+                  Most Popular
                 </span>
-              )}
-            </div>
-
-            <div className="mb-6">
-              <p className="text-sm text-gray-600">{plan.note}</p>
-              <div className="flex items-baseline mt-2">
-                <span className="text-3xl font-bold">₹{plan.price}</span>
-                <span className="text-gray-500 ml-1">{plan.period}</span>
               </div>
-              <p className="text-sm text-gray-500 mt-2">{plan.subNote}</p>
+            )}
+
+            {/* Plan Header */}
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+              <div className="flex items-baseline justify-center">
+                <span className="text-4xl font-bold text-gray-900">₹{plan.price}</span>
+                <span className="text-gray-500 ml-2 text-lg">/{plan.priceMode}</span>
+              </div>
             </div>
 
+            {/* Features List */}
+            <div className="mb-8">
+              <ul className="space-y-4">
+                {plan.details.map((detail, index) => (
+                  <li
+                    key={index}
+                    className="flex items-start text-gray-700"
+                  >
+                    <div className="flex-shrink-0 w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                      <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <span className="text-sm leading-relaxed">{detail}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Subscribe Button */}
             <button
-              // onClick={() => handleSubscribe(plan)}
-              onClick={()=>{
-                handleSubscribe({
-                  amount:plan.price,
-                  product:'Ai courser',
-                  // product:{
-                  //   title:'ai courser',
-                  //   price:100
-                  // },
-                  firstname:'Ravi',
-                  email:`ravi${Math.floor(Math.random()*56)}@gmail.com`,
-                  mobile:`85${Math.floor(Math.random()*56000)}485`
-                })
+              onClick={() => {
+                setSelectedPlan(plan);
+                setIsCheckoutOpen(true);
               }}
-              className={`w-full py-3 rounded-lg font-medium transition-colors ${plan.buttonVariant === 'primary'
-                  ? 'bg-purple text-white hover:bg-purple/90'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
+              className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 ${
+                plan.popular
+                  ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg shadow-purple-600/25 hover:shadow-xl hover:shadow-purple-600/30'
+                  : 'bg-gray-900 text-white hover:bg-gray-800 shadow-lg hover:shadow-xl'
+              }`}
             >
-              {plan.buttonText}
+              Subscribe Now
             </button>
           </motion.div>
         ))}
@@ -124,6 +151,14 @@ export const PricingPlans = () => {
         onClose={() => setIsModalOpen(false)}
         plan={selectedPlan || plans[0]}
       />
+
+      {isCheckoutOpen && selectedPlan && (
+        <CheckoutPage
+          plan={selectedPlan}
+          onClose={() => setIsCheckoutOpen(false)}
+          onSuccess={handleCheckoutSuccess}
+        />
+      )}
     </>
   );
 }; 
