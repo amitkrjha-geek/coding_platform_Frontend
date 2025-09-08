@@ -38,8 +38,8 @@ const PageContent = () => {
     code: data?.code,
     category: data?.category,
     discountAmount: data?.discountAmount ?? 0,
-    discountPercent: data?.discountPercent ?? 0,
-    maxCap: data?.maxCap ?? 0,
+    // discountPercent: data?.discountPercent ?? 0,
+    // maxCap: data?.maxCap ?? 0,
     details: data?.details,
   };
 
