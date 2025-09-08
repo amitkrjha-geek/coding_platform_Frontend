@@ -19,7 +19,7 @@ import { usePathname } from "next/navigation";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
-  { icon: ChartNoAxesCombined, label: "Analytics", href: "/admin/analytics" },
+  // { icon: ChartNoAxesCombined, label: "Analytics", href: "/admin/analytics" },
   { icon: CodeXml, label: "Challenges", href: "/admin/challenges" },
   { icon: ShieldPlus, label: "Administrator", href: "/admin/administrator" },
   { icon: Users, label: "Users", href: "/admin/users" },

@@ -77,3 +77,12 @@ export const resetPassword = async (token:string, newPassword:string) => {
     throw error.response?.data?.message || "reset failed";
   }
 };
+
+export const getDashboardAnalytics = async () => {
+  try {
+    const response = await axiosInstance.get("/admin/analytics/dashboard");
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data?.message || "Failed to fetch analytics";
+  }
+};

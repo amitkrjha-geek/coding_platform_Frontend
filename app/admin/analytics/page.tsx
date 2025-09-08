@@ -4,8 +4,8 @@ import { Users, Landmark, CodeXml } from "lucide-react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import UserPieChart from "@/components/adminDashboard/userPieChart";
-import RevenueChart from "@/components/adminDashboard/RevenueChart";
-import SubscribersChart from "@/components/adminDashboard/SubscribersChart";
+// import RevenueChart from "@/components/adminDashboard/RevenueChart";
+// import SubscribersChart from "@/components/adminDashboard/SubscribersChart";
 import Link from "next/link";
 import {
   Breadcrumb,
@@ -126,7 +126,7 @@ export default function Page() {
         </MotionCard>
 
         <MotionCard className="p-4" variants={cardVariants} whileHover="hover">
-          <RevenueChart />
+          {/* <RevenueChart /> */}
         </MotionCard>
       </motion.div>
 
@@ -138,7 +138,7 @@ export default function Page() {
         animate="visible"
       >
         <MotionCard className="p-6 " variants={cardVariants} whileHover="hover">
-          <RevenueChart />
+          {/* <RevenueChart /> */}
           <motion.div
             className="relative w-48 h-4 mx-auto"
             initial={{ rotate: -90 }}
@@ -148,7 +148,7 @@ export default function Page() {
         </MotionCard>
 
         <MotionCard className=" p-4" variants={cardVariants} whileHover="hover">
-          <SubscribersChart />
+          {/* <SubscribersChart /> */}
         </MotionCard>
       </motion.div>
 

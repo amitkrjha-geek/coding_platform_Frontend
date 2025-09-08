@@ -80,12 +80,12 @@ export default function Navbar() {
                 </nav>
 
                 {/* Desktop Icons */}
-                <div className="hidden lg:flex items-center space-x-4">
+                <div className="hidden lg:flex items-center space-x-1.5">
                 <div className="flex items-center gap-2">
                    
 
                     {userId ? (
-                        <div>
+                        <div className='flex items-center'>
                             <UserButton/>
                         </div>
                     ):(
@@ -110,13 +110,13 @@ export default function Navbar() {
                         </div>
                     <div className="relative">
                         
-                        <button
+                        {/* <button
                             onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
                             className="p-2 hover:bg-gray-100 rounded-full relative"
                         >
                             <Bell className="w-5 h-5" />
                             <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
-                        </button>
+                        </button> */}
                         {mounted && <NotificationDropdown
                             isOpen={isNotificationsOpen}
                             onClose={() => setIsNotificationsOpen(false)}
@@ -127,7 +127,7 @@ export default function Navbar() {
                         whileTap={{ scale: 0.95 }}
                     >
                         <Link href="/profile">
-                            <div className="relative w-8 h-8">
+                            <div className="relative w-7 h-7">
                                 <Image
                                     src="https://github.com/shadcn.png"
                                     alt="Profile"
@@ -149,7 +149,7 @@ export default function Navbar() {
                 <div  className="flex items-center gap-4 lg:hidden">
 
                 {userId ? (
-                        <div>
+                        <div className='flex items-center gap-4'>
                             <UserButton/>
                         </div>
                     ):(
@@ -254,7 +254,7 @@ export default function Navbar() {
                                     </Link>
 
                                     
-                                    <Link
+                                    {/* <Link
                                         href="/notifications"
                                         className={`block p-4 rounded-lg transition-colors ${pathname === '/notifications' ? 'bg-purple/10 text-purple' : 'hover:bg-gray-50'
                                             }`}
@@ -264,7 +264,7 @@ export default function Navbar() {
                                             <Bell className="w-5 h-5" />
                                             <span>Notifications</span>
                                         </div>
-                                    </Link>
+                                    </Link> */}
                                     {role === 'admin' && !pathname.startsWith('/admin') && (
                         <Link href="/admin" className=" rounded-lg text-center  px-2 py-2 bg-purple-600 text-white hover:bg-purple-700 transition-all duration-200 font-medium shadow-sm hover:shadow-md">
                              Dashboard

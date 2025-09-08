@@ -53,7 +53,7 @@ const ChallengeDetails = ({ title, difficulty, stats, challenge }: ChallengeDeta
       </div>
 
       {/* Statistics */}
-      <div className="flex gap-8 mb-6 text-sm text-gray-600 border-b pb-4">
+      {/* <div className="flex gap-8 mb-6 text-sm text-gray-600 border-b pb-4">
         <div className="flex items-center gap-2">
           <span>✓ Accepted</span>
           <span className="font-medium">{stats.Accepted}</span>
@@ -66,7 +66,7 @@ const ChallengeDetails = ({ title, difficulty, stats, challenge }: ChallengeDeta
           <span>Acceptance Rate:</span>
           <span className="font-medium">{stats.acceptanceRate}</span>
         </div>
-      </div>
+      </div> */}
 
       {/* Topics */}
       {challenge.topic && challenge.topic.length > 0 && (
