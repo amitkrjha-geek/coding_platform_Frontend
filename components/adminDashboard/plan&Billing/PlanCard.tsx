@@ -3,8 +3,9 @@ import { motion } from "framer-motion";
 
 interface PricingCardProps {
   title: string;
-  monthlyPrice: number;
-  yearlyPrice: number;
+  price: number;
+  priceMode: string;
+  popular?: boolean;
   details: string[];
   onEdit?: () => void;
   onDelete?: () => void;
@@ -12,8 +13,9 @@ interface PricingCardProps {
 
 const PlanCard = ({
   title,
-  monthlyPrice,
-  yearlyPrice,
+  price,
+  priceMode,
+  popular = false,
   details,
   onEdit,
   onDelete,
@@ -27,7 +29,14 @@ const PlanCard = ({
     >
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold darkText">{title}</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-semibold darkText">{title}</h2>
+            {popular && (
+              <span className="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                Popular
+              </span>
+            )}
+          </div>
           <div className="flex gap-2">
             {onEdit && (
               <button
@@ -52,15 +61,9 @@ const PlanCard = ({
          <hr className="-mt-3 border border-[#919090]"/>
         <div className=" mt-3">
           <div className="flex items-center">
-            <span className="darkText">Monthly</span> <span className="font-bold ml-2">:</span>
+            <span className="darkText">Price ({priceMode})</span> <span className="font-bold ml-2">:</span>
             <span className="mx-2 text-xl font-bold text-gray-900">
-              ${monthlyPrice}
-            </span>
-          </div>
-          <div className="flex items-center">
-            <span className="darkText">Yearly</span> <span className="font-bold ml-2">:</span>
-            <span className="mx-2 text-xl font-bold text-gray-900">
-              ${yearlyPrice}
+            ₹{price}
             </span>
           </div>
         </div>

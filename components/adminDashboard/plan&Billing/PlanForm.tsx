@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Loader2, Plus, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from '@/redux/hooks';
@@ -19,8 +20,9 @@ interface PlanDetail {
 
 interface PlanFormData {
   name: string;
-  monthlyPrice: string;
-  yearlyPrice: string;
+  popular: boolean;
+  priceMode: string;
+  price: number;
   details: PlanDetail[];
 }
 
@@ -31,8 +33,9 @@ const PlanForm = () => {
   const [currentDetail, setCurrentDetail] = useState('');
   const [formData, setFormData] = useState<PlanFormData>({
     name: '',
-    monthlyPrice: '',
-    yearlyPrice: '',
+    popular: false,
+    priceMode: 'Monthly',
+    price: 0,
     details: [],
   });
   const [loading, setLoading] = useState(false);
@@ -41,8 +44,9 @@ const PlanForm = () => {
   const clearForm = () => {
     setFormData({
       name: '',
-      monthlyPrice: '',
-      yearlyPrice: '',
+      popular: false,
+      priceMode: 'Monthly',
+      price: 0,
       details: [],
     });
 
@@ -88,15 +92,11 @@ const PlanForm = () => {
       return;
     }
 
-    if (!formData.monthlyPrice.trim() || isNaN(Number(formData.monthlyPrice))) {
-      toast.error("Valid monthly price is required!");
+    if (!formData.price || formData.price <= 0) {
+      toast.error("Valid price is required!");
       return;
     }
 
-    if (!formData.yearlyPrice.trim() || isNaN(Number(formData.yearlyPrice))) {
-      toast.error("Valid yearly price is required!");
-      return;
-    }
 
     if (formData.details.length < 3) {
       toast.error("At least 3 features are required!");
@@ -130,7 +130,14 @@ const PlanForm = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'name' ? value.toUpperCase() : value,
+      [name]: name === 'name' ? value.toUpperCase() : (name === 'price' ? Number(value) : value),
+    }));
+  };
+
+  const handleSelectChange = (value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      priceMode: value,
     }));
   };
 
@@ -157,28 +164,28 @@ const PlanForm = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Monthly Price</label>
+                <label className="text-sm font-medium text-gray-700">Price</label>
                 <Input
-                  name="monthlyPrice"
+                  name="price"
                   placeholder="Enter Amount"
                   min="0"
                   type="number"
-                  value={formData?.monthlyPrice}
+                  value={formData?.price}
                   onChange={handleInputChange}
                   className="w-full transition-all duration-200 focus:ring-2 focus:ring-purple-500"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Yearly Price</label>
-                <Input
-                  name="yearlyPrice"
-                  placeholder="Enter Amount"
-                  min="0"
-                  type="number"
-                  value={formData?.yearlyPrice}
-                  onChange={handleInputChange}
-                  className="w-full transition-all duration-200 focus:ring-2 focus:ring-purple-500"
-                />
+                <label className="text-sm font-medium text-gray-700">Price Mode</label>
+                <Select value={formData.priceMode} onValueChange={handleSelectChange}>
+                  <SelectTrigger className="w-full transition-all duration-200 focus:ring-2 focus:ring-purple-500">
+                    <SelectValue placeholder="Select price mode" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Monthly">Monthly</SelectItem>
+                    <SelectItem value="Yearly">Yearly</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 

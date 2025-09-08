@@ -21,8 +21,8 @@ interface CouponFormData {
   code: string;
   category: string;
   discountAmount: string;
-  discountPercent: string;
-  maxCap: string;
+  // discountPercent: string;
+  // maxCap: string;
   details: string;
 }
 
@@ -50,10 +50,10 @@ const UpdateCouponForm = ({ initialData }: UpdateCouponFormProps) => {
       return;
     }
 
-    if (!formData.maxCap.trim() || isNaN(Number(formData.maxCap))) {
-      toast.error("Valid max cap is required!");
-      return;
-    }
+    //   if (!formData.maxCap.trim() || isNaN(Number(formData.maxCap))) {
+    //   toast.error("Valid max cap is required!");
+    //   return;
+    // }
 
     if (!formData.details.trim()) {
       toast.error("Details are required!");
@@ -73,15 +73,15 @@ const UpdateCouponForm = ({ initialData }: UpdateCouponFormProps) => {
       return;
     }
 
-    if (
-      formData.discountPercent &&
-      (isNaN(Number(formData.discountPercent)) ||
-        Number(formData.discountPercent) < 0 ||
-        Number(formData.discountPercent) > 100)
-    ) {
-      toast.error("Discount percent must be a valid number between 0 and 100!");
-      return;
-    }
+    // if (
+    //   formData.discountPercent &&
+    //   (isNaN(Number(formData.discountPercent)) ||
+    //     Number(formData.discountPercent) < 0 ||
+    //     Number(formData.discountPercent) > 100)
+    // ) {
+    //   toast.error("Discount percent must be a valid number between 0 and 100!");
+    //   return;
+    // }
 
     setLoading(true);
 
@@ -90,8 +90,8 @@ const UpdateCouponForm = ({ initialData }: UpdateCouponFormProps) => {
     const transformedData: Omit<CouponFormData, "_id"> = {
       ...dataWithoutId,
       discountAmount: formData.discountAmount.trim(),
-      discountPercent: formData.discountPercent.trim(),
-      maxCap: formData.maxCap.trim(),
+      // discountPercent: formData.discountPercent.trim(),
+      // maxCap: formData.maxCap.trim(),
       details: formData.details.trim(),
     };
 
@@ -167,11 +167,11 @@ const UpdateCouponForm = ({ initialData }: UpdateCouponFormProps) => {
               />
             </div>
 
-            <div className="flex items-center h-full pt-8">
+            {/* <div className="flex items-center h-full pt-8">
               <span className="text-gray-500 font-medium">OR</span>
-            </div>
+            </div> */}
 
-            <div className="flex-1 space-y-2">
+            {/* <div className="flex-1 space-y-2">
               <label className="text-sm font-bold text-gray-700">Discount Percent</label>
               <Input
                 type="number"
@@ -182,9 +182,9 @@ const UpdateCouponForm = ({ initialData }: UpdateCouponFormProps) => {
                 onChange={(e) => setFormData({ ...formData, discountPercent: e.target.value })}
                 className="w-full transition-all duration-200 focus:ring-2 focus:ring-coupon-primary/20"
               />
-            </div>
+            </div> */}
 
-            <div className="flex-1 space-y-2">
+            {/* <div className="flex-1 space-y-2">
               <label className="text-sm font-bold text-gray-700">Max Cap</label>
               <Input
                 type="number"
@@ -194,7 +194,7 @@ const UpdateCouponForm = ({ initialData }: UpdateCouponFormProps) => {
                 onChange={(e) => setFormData({ ...formData, maxCap: e.target.value })}
                 className="w-full transition-all duration-200 focus:ring-2 focus:ring-coupon-primary/20"
               />
-            </div>
+            </div> */}
           </div>
         </div>
 

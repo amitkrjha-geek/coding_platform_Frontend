@@ -34,8 +34,9 @@ const PageContent = () => {
   const transformedPlan = {
     _id: data?._id,
     name: data?.name,
-    monthlyPrice: data?.monthlyPrice,
-    yearlyPrice: data?.yearlyPrice,
+    price: data?.price, 
+    priceMode: data?.priceMode, 
+    popular: data?.popular,
     details: data?.details?.map((detail, index) => ({
       id: index + 1,
       detail,

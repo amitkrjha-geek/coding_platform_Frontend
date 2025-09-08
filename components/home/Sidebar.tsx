@@ -32,7 +32,7 @@ const Sidebar = ({ selectedCompany, onCompanySelect }: {
   return (
     <div className="w-[280px] space-y-8 py-8 pr-8">
       {/* Submissions Stats */}
-      <div>
+      {/* <div>
         <div className="relative w-32 h-32 mx-auto">
           <svg className="w-full h-full" viewBox="0 0 100 100">
             <circle
@@ -60,7 +60,7 @@ const Sidebar = ({ selectedCompany, onCompanySelect }: {
           </div>
         </div>
 
-        {/* Difficulty Stats */}
+        Difficulty Stats
         <div className="space-y-2 mt-6">
           {difficultyStats.map((stat) => (
             <div key={stat.level} className="flex items-center justify-between">
@@ -71,7 +71,7 @@ const Sidebar = ({ selectedCompany, onCompanySelect }: {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Trending Companies */}
       <div>

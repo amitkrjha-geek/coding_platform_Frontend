@@ -3,6 +3,8 @@ export const setToken = (token: string): void => {
     localStorage.setItem("token", token);
 };
 
+
+
 export const getToken = (): string | null => {
     if (typeof window === "undefined") return null;
     return localStorage.getItem("token");
@@ -14,7 +16,22 @@ export const removeToken = (): void => {
 };
 
 
+export const setCurrentUserId = (id: string): void => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem("currentUserId", id);
+};
 
+
+export const getCurrentUserId = (): string | null => {
+    if (typeof window === "undefined") return null;
+    return localStorage.getItem("currentUserId");
+};
+
+
+export const removeCurrentUserId = (): void => {
+    if (typeof window === "undefined") return;
+    localStorage.removeItem("currentUserId");
+};
 // export const setAdminData = (admin: any): void => {
 //     if (typeof window === "undefined") return;
 //     localStorage.setItem("adminData", JSON.stringify(admin));

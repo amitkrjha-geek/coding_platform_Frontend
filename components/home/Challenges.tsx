@@ -22,7 +22,7 @@ import toast from "react-hot-toast";
 import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { RootState } from "@/redux/store";
 import { fetchUsers } from "@/redux/features/userSlice";
-import { getToken, setToken } from "@/config/token";
+import { getToken, setCurrentUserId, setToken } from "@/config/token";
 import { fetchChallenges, getCompanyStats, getTopicStats } from "@/redux/features/challengeSlice";
 
 const useDynamicTopics = (topicStats: { [key: string]: number }, showMore: boolean) => {
@@ -197,6 +197,7 @@ const Challenges = () => {
             console.log("Response:", response);
             if (response?.token) {
               setToken(response?.token);
+              setCurrentUserId(response?.user?._id);
             }
           })
           .catch((error) => {
