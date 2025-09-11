@@ -50,6 +50,7 @@ export interface MetricCardProps {
     title: string;
     value:  string;
     icon: React.ReactNode;
+    link?: string;
   }
 
 

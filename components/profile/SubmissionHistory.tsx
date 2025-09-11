@@ -4,7 +4,7 @@ import { format, startOfYear, endOfYear, eachDayOfInterval, getDay } from 'date-
 import { useMemo, useState, useEffect } from 'react';
 import useIsMounted from '@/hooks/useIsMounted';
 import { getSubmissionHistory } from '@/API/submission';
-import { getCurrentUserId } from '@/config/token';
+import { useSearchParams } from 'next/navigation';
 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -33,7 +33,11 @@ interface SubmissionHistoryData {
 
 const SubmissionHistory = () => {
   const isMounted = useIsMounted();
-  const userId = getCurrentUserId();
+
+
+  const params = useSearchParams();
+  const userId = params.get("id");
+
 
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [historyData, setHistoryData] = useState<SubmissionHistoryData | null>(null);

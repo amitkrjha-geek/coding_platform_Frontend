@@ -1,99 +1,52 @@
-"use client";
-import ProfileSidebar from "@/components/profile/ProfileSidebar";
-import SubmissionHistory from "@/components/profile/SubmissionHistory";
-import RecentSubmissions from "@/components/profile/RecentSubmissions";
-import ProfileStats from "@/components/profile/ProfileStats";
-import PaymentHistory from "@/components/profile/PaymentHistory";
-import { getSubmissionByUserId } from "@/API/submission";
-import { useEffect, useState } from "react";
-import { getCurrentUserId } from "@/config/token";
-import { getUserPaymentHistory } from "@/API/payment";
+'use client'
+import React, { Suspense } from 'react'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import ProfilePage from '@/components/adminDashboard/users/UserProfile';
+import Loading from '@/components/Loading';
 
-const ProfilePage = () => {
-  const userId = getCurrentUserId();
-  const [organizedData, setOrganizedData] = useState<any>(null);
-  const [currentData, setCurrentData] = useState<any>(null);
-  const [paymentHistory, setPaymentHistory] = useState<any>(null);
-  const [plan, setPlan] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchSubmissions = async () => {
-      try {
-        const paymentHistory = await getUserPaymentHistory(userId || "");
-        // console.log("📊 Payment History:", paymentHistory);
-        setPaymentHistory(paymentHistory?.data);
-        const formattedPaymentHistory = paymentHistory?.data?.map((payment: any) => ({
-          plan: payment.planId,
-        }));
-        setPlan(formattedPaymentHistory);
-        const response = await getSubmissionByUserId(userId || "");
-        const submissions = response.data;
-        // console.log("📊 Submissions:", submissions);
-
-        const formattedSubmissions = submissions.map((submission: any) => ({
-          title: submission?.challenge?.title,
-          timeAgo: submission?.createdAt,
-        }));
-        setCurrentData(formattedSubmissions);
-
-        // Extract and organize data by difficulty
-        const organizedData = organizeSubmissionsByDifficulty(submissions);
-        setOrganizedData(organizedData);
-
-        // console.log('📊 Submissions organized by difficulty:', organizedData);
-      } catch (error) {
-        console.log("❌ Error fetching submissions:", error);
-      }
-    };
-    fetchSubmissions();
-  }, [userId]);
-
-  // Function to organize submissions by difficulty
-  const organizeSubmissionsByDifficulty = (submissions: any[]) => {
-    const organized = {
-      easy: [] as any[],
-      medium: [] as any[],
-      hard: [] as any[],
-      total: submissions.length,
-    };
-
-    submissions.forEach((submission) => {
-      const difficulty =
-        submission.challenge?.difficulty?.toLowerCase() || "unknown";
-
-      // Group by difficulty
-      if (difficulty === "easy") {
-        organized.easy.push(submission);
-      } else if (difficulty === "medium") {
-        organized.medium.push(submission);
-      } else if (difficulty === "hard") {
-        organized.hard.push(submission);
-      }
-    });
-
-    // Calculate average score
-
-    return organized;
-  };
-
+const PageContent = () => {
+  
   return (
-    <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
-      <div className="flex flex-col lg:flex-row gap-4">
-        {/* Left Sidebar */}
-        <div className="w-full lg:w-[19rem] min-w-[19rem] bg-white p-3 sm:p-4 rounded-lg">
-          <ProfileSidebar organizedData={organizedData} />
-        </div>
-
-        {/* Main Content */}
-        <div className="flex-1 w-full space-y-4 sm:space-y-6 overflow-hidden">
-          <ProfileStats organizedData={organizedData} plan={plan}/> 
-          <SubmissionHistory />
-          <RecentSubmissions currentData={currentData} />
-          <PaymentHistory paymentHistory={paymentHistory} />
-        </div>
+    <section className="bg-[#f9f9f9] h-50 p-3">
+      <div>
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/admin/users">Users</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>User Profile</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
       </div>
-    </div>
+
+      <div>
+      <ProfilePage  />
+      </div>
+
+    </section>
+  )
+}
+
+const Page = () => {
+  return (
+    <Suspense fallback={<div className="p-5"><Loading /></div>}>
+      <PageContent />
+    </Suspense>
   );
 };
 
-export default ProfilePage;
+export default Page

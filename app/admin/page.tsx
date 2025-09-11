@@ -4,7 +4,7 @@ import { Users, Landmark, CodeXml } from "lucide-react";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import DailyUsersChart from "@/components/adminDashboard/DailyUsersChart";
-import RevenueChart from "@/components/adminDashboard/RevenueChart";
+// import RevenueChart from "@/components/adminDashboard/RevenueChart";
 import SubscribersChart from "@/components/adminDashboard/SubscribersChart";
 import ChallengeChart from "@/components/adminDashboard/ChallengeChart";
 import Link from "next/link";
@@ -15,6 +15,8 @@ import { MetricCardProps } from "@/types";
 import { getAllPayments, getPaymentStats } from "@/API/payment";
 import { getAllPlans } from "@/API/plan";
 import { getAllUsers } from "@/API/user";
+import Loading from "@/components/Loading";
+import { useRouter } from "next/navigation";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -158,11 +160,7 @@ export default function Page() {
 
   if (loading) {
     return (
-      <div className="hidden lg:block min-h-screen bg-gray-50 p-8">
-        <div className="flex justify-center items-center h-64">
-          <div className="text-xl">Loading dashboard...</div>
-        </div>
-      </div>
+      <Loading />
     );
   }
 
@@ -208,16 +206,19 @@ export default function Page() {
             title: "Total Users",
             value: dashboardData.totals.users.toString(),
             icon: <Users className="h-5 w-5 text-[#742193]" />,
+            link: "/admin/users",
           },
           {
             title: "Total Challenges",
             value: dashboardData.totals.challenges.toString(),
             icon: <CodeXml className="h-5 w-5 text-[#742193]" />,
+            link: "/admin/challenges",
           },
           {
             title: "Total Revenue",
             value: paymentData ? `₹${paymentData.totalRevenue.toLocaleString()}` : "₹ 0",
             icon: <Landmark className="h-5 w-5 text-[#742193]" />,
+            link: "/admin",
           },
         ].map((metric, index) => (
           <MetricCard key={index} {...metric} />
@@ -373,14 +374,20 @@ export default function Page() {
   );
 }
 
-function MetricCard({ title, value, icon }: MetricCardProps) {
+function MetricCard({ title, value, icon, link }: MetricCardProps) {
+  const router = useRouter();
   return (
-    <MotionCard className="p-4" variants={cardVariants} whileHover="hover">
+    <MotionCard className="p-4" variants={cardVariants} whileHover="hover"> 
       <motion.div
         className="flex flex-col justify-between "
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
+        onClick={() => {
+          if (link) {
+            router.push(link);
+          }
+        }}
       >
         <div className="flex justify-between ">
           <p className="text-xl font-bold">{title}</p>

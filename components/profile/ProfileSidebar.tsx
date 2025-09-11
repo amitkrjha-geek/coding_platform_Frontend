@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+// import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -17,13 +17,13 @@ import {
 
 const languages = ["C", "C++", "C#"];
 
-const ProfileSidebar = ({ organizedData }: { organizedData: any }) => {
+const ProfileSidebar = ({ organizedData, UserName, Useravatar }: { organizedData: any, UserName?: any, Useravatar?: any }) => {
   // console.log({ organizedData });
-  const { user } = useUser();
-  const name = user?.fullName || 'User';
-  const avatar = user?.imageUrl || 'https://github.com/shadcn.png';
+  // const { user } = useUser();
+  const name = UserName || 'User';
+  const avatar = Useravatar || 'https://github.com/shadcn.png';
 
-  console.log('📊 User:', user);
+  console.log('📊 User:', name, avatar);
 
   const [showAll, setShowAll] = useState({
     easy: false,

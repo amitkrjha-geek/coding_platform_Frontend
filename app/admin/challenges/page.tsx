@@ -33,6 +33,7 @@ import SectionHeader from "@/components/adminDashboard/SectionHeader";
 import { useRouter } from "next/navigation";
 import { deleteChallenge, getAllChallenges } from "@/API/challenges";
 import toast from "react-hot-toast";
+import Loading from "@/components/Loading";
 // import { error } from "console";
 
 interface Challenge {
@@ -51,6 +52,7 @@ interface Challenge {
 }
 
 const Page = () => {
+  const [loading, setLoading] = useState(true);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
@@ -132,6 +134,7 @@ const Page = () => {
   };
 
   const getAllChallengesData = async () => {
+    setLoading(true);
     try {
       const res = await getAllChallenges();
 
@@ -151,7 +154,11 @@ const Page = () => {
       setChallenges(formattedData);
     } catch (error) {
       console.error("Error fetching challenges:", error);
-    }
+      toast.error("Error fetching challenges");
+      setLoading(false);
+    } finally {
+      setLoading(false);
+      }
   };
 
   useEffect(() => {
@@ -243,6 +250,10 @@ const Page = () => {
     }
     return pageNumbers;
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="p-7 bg-gray-50">

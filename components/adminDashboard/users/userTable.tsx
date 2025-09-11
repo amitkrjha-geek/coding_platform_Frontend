@@ -27,13 +27,15 @@ import { UserType } from "@/types";
 interface UserTableProps {
   users: UserType[];
   onDelete: (id: string) => void;
+  currentPage: number;
+  itemsPerPage: number;
 }
 
-const UserTable = ({ users, onDelete }: UserTableProps) => {
+const UserTable = ({ users, onDelete, currentPage, itemsPerPage }: UserTableProps) => {
   const router = useRouter()
 
   const handleViewDetails = (user: UserType) => {
-    router.push(`/admin/users/profile?id=${user?.id}`)
+    router.push(`/admin/users/profile?id=${user?.id}&name=${user?.name}&avatar=${user?.avatar}`)
     };
   
   return (
@@ -52,7 +54,7 @@ const UserTable = ({ users, onDelete }: UserTableProps) => {
         <TableBody>
           {users.map((user, idx) => (
             <TableRow key={user.id}>
-              <TableCell>{idx + 1}</TableCell>
+              <TableCell>{(currentPage - 1) * itemsPerPage + idx + 1}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
                   <Avatar className="h-6 w-6">

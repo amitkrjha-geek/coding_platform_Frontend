@@ -55,7 +55,7 @@ const formSchema = z.object({
         size: z.number(), // Added to track file size
       })
     )
-    .optional(),
+    .min(1, "At least one file is required"),
 });
 
 const AddChallenge = () => {
@@ -169,6 +169,19 @@ const AddChallenge = () => {
 
   // Update the onSubmit function
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    // Check for required fields
+    const missingFields = [];
+    if (!values.title) missingFields.push("Challenge Name");
+    if (!values.difficulty) missingFields.push("Difficulty");
+    if (!values.status) missingFields.push("Status");
+    if (!values.topic || values.topic.length === 0) missingFields.push("Topics");
+    if (!values.problemStatement) missingFields.push("Problem Statement");
+    if (!values.files || values.files.length === 0) missingFields.push("Upload Files");
+
+    if (missingFields.length > 0) {
+      toast.error(`Please fill in the required fields: ${missingFields.join(", ")}`);
+      return;
+    }
     setLoading(true);
     try {
       console.log("Submitting form with values:", {
@@ -231,7 +244,7 @@ const AddChallenge = () => {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Challenge Name</FormLabel>
+                    <FormLabel>Challenge Name <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
                       <Input placeholder="Challenge Name" {...field} />
                     </FormControl>
@@ -247,7 +260,7 @@ const AddChallenge = () => {
                   name="difficulty"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Difficulty</FormLabel>
+                      <FormLabel>Difficulty <span className="text-red-500">*</span></FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -274,7 +287,7 @@ const AddChallenge = () => {
                   name="status"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Status</FormLabel>
+                      <FormLabel>Status <span className="text-red-500">*</span></FormLabel>
                       <Select
                         onValueChange={field.onChange}
                         defaultValue={field.value}
@@ -297,7 +310,7 @@ const AddChallenge = () => {
 
               {/* Topics */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">Topics</label>
+                <label className="text-sm font-medium">Topics <span className="text-red-500">*</span></label>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {formData.topics.map((topic) => (
                     <Badge
@@ -429,7 +442,7 @@ const AddChallenge = () => {
                 name="problemStatement"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Problem Statement</FormLabel>
+                    <FormLabel>Problem Statement <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
                       <Tiptap
                         problemStatement={field.value}
@@ -447,7 +460,7 @@ const AddChallenge = () => {
                 name="files"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Upload Files</FormLabel>
+                    <FormLabel>Upload Files <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
                       <div className="border-2 border-dashed rounded-md p-4 text-center">
                         <p className="text-gray-500">Upload any type of file</p>
