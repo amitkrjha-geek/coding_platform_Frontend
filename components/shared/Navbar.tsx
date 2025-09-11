@@ -8,10 +8,15 @@ import { usePathname } from 'next/navigation';
 import Image from "next/image";
 import NotificationDropdown from "./NotificationDropdown";
 // import { auth } from '@clerk/nextjs/server';
-import { useAuth, UserButton } from '@clerk/nextjs';
+import { useAuth, UserButton, useUser } from '@clerk/nextjs';
 import { useCheckRole } from '@/hooks/useCheckRole';
 
 export default function Navbar() {
+    const {user} = useUser();
+    // console.log("user",user);
+    const name = user?.fullName || 'User';
+    const avatar = user?.imageUrl || 'https://github.com/shadcn.png';
+    const email = user?.emailAddresses[0].emailAddress || 'User@example.com';
 
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     const pathname = usePathname();
@@ -126,15 +131,9 @@ export default function Navbar() {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                     >
-                        <Link href="/profile">
-                            <div className="relative w-7 h-7">
-                                <Image
-                                    src="https://github.com/shadcn.png"
-                                    alt="Profile"
-                                    fill
-                                    className="rounded-full object-cover cursor-pointer"
-                                />
-                            </div>
+                        <Link href="/profile" className=" rounded-lg px-4 py-2 bg-purple-600 text-white hover:bg-purple-700 transition-all duration-200 font-medium shadow-sm hover:shadow-md">
+                           
+                        Profile
                         </Link>
                     </motion.div>
                     {role === 'admin' && !pathname.startsWith('/admin') && (
@@ -217,7 +216,7 @@ export default function Navbar() {
                                     <Link href="/profile">
                                         <div className="relative w-10 h-10">
                                             <Image
-                                                src="https://github.com/shadcn.png"
+                                                src={avatar}
                                                 alt="Profile"
                                                 fill
                                                 className="rounded-full object-cover cursor-pointer"
@@ -225,8 +224,8 @@ export default function Navbar() {
                                         </div>
                                     </Link>
                                     <div>
-                                        <p className="font-medium">John Doe</p>
-                                        <p className="text-sm text-gray-500">john@example.com</p>
+                                        <p className="font-medium">{name}</p>
+                                        <p className="text-sm text-gray-500">{email}</p>
                                     </div>
                                 </div>
 

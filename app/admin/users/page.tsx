@@ -28,20 +28,24 @@ import SearchBar from "@/components/adminDashboard/SearchBar";
 import CategoryFilter from "@/components/adminDashboard/CategoryFilter";
 import SortSelect from "@/components/adminDashboard/SortSelect";
 import UserTable from "@/components/adminDashboard/users/userTable";
+import Loading from "@/components/Loading";
+import { getAllPlans } from "@/API/plan";
 
 
 const ITEMS_PER_PAGE = 5;
-const subscriptionOptions = ["All", "Free", "Plan A", "Plan B", "Plan C"];
 
 const Page = () => {
   const dispatch = useAppDispatch();
-  const { users: allUsers, status } = useAppSelector(
+  const { users: allUsers, status, loading } = useAppSelector(
     (state: RootState) => state.user
-  );
+  );  // console.log(plans);
+
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [sortBy, setSortBy] = useState("id_asc");
   const [currentPage, setCurrentPage] = useState(1);
+
+  const [plans, setPlans] = useState<any[]>([]);
 
   useEffect(() => {
     if (status === "idle" && !allUsers.length) {
@@ -49,20 +53,40 @@ const Page = () => {
     }
   }, [dispatch, allUsers, status]);
 
-  const regularUsers = allUsers.filter((user) => user.role === "user");
 
-  console.log(regularUsers);
+  useEffect(() => {
+    const getPlans = async () => {
+      const res = await getAllPlans();
+      const formattedData = res?.map((plan: any) => ({
+        id: plan._id,
+        name: plan.name,
+      }));
+      console.log({formattedData});
+      setPlans(formattedData);
+    }
+    getPlans();
+  }, []);
 
-  // console.log(allUsers);
+  // const regularUsers = allUsers.filter((user) => user.role == "user" && user.role !== "user");
+
+  //  console.log(allUsers);
+
+  console.log(allUsers);
 
   // Filter and sort users
-  const filteredUsers = formatUserData(regularUsers)
+  const filteredUsers = formatUserData(allUsers)
     .filter((user) => {
       const matchesSearch = user.name
         .toLowerCase()
         .includes(search.toLowerCase());
-      const matchesCategory =
-        category === "All" || user.subscription === category;
+      
+      // Handle subscription filtering with proper case matching
+      let matchesCategory = true;
+      if (category !== "All") {
+        // Convert both to uppercase for comparison to handle case differences
+        matchesCategory = user.subscription?.toUpperCase() === category.toUpperCase();
+      }
+      
       return matchesSearch && matchesCategory;
     })
     .sort((a, b) => {
@@ -101,6 +125,14 @@ const Page = () => {
     }
   };
 
+    const planOptions = plans.map((plan ) => plan.name);
+  const subscriptionOptions = ["All", ...planOptions];
+  console.log({subscriptionOptions});
+
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <section className="h-auto   p-7">
       <div className="container mx-auto">
@@ -131,7 +163,12 @@ const Page = () => {
 
         {/* <UserTable users={paginatedUsers} onDelete={handleDelete} /> */}
         {typeof window !== "undefined" && (
-          <UserTable users={paginatedUsers} onDelete={handleDelete} />
+          <UserTable 
+            users={paginatedUsers} 
+            onDelete={handleDelete} 
+            currentPage={currentPage}
+            itemsPerPage={ITEMS_PER_PAGE}
+          />
         )}
 
         <div className="mt-4">

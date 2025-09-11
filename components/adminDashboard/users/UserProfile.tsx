@@ -5,12 +5,17 @@ import RecentSubmissions from "@/components/profile/RecentSubmissions";
 import ProfileStats from "@/components/profile/ProfileStats";
 import PaymentHistory from "@/components/profile/PaymentHistory";
 import { getSubmissionByUserId } from "@/API/submission";
-import { useEffect, useState, Suspense } from "react";
-import { getCurrentUserId } from "@/config/token";
+import { useEffect, useState } from "react";
+// import { getCurrentUserId } from "@/config/token";
 import { getUserPaymentHistory } from "@/API/payment";
+import { useSearchParams } from "next/navigation";
 
 const ProfilePage = () => {
-  const userId = getCurrentUserId();
+  // const userId = getCurrentUserId();
+  const params = useSearchParams();
+  const userId = params.get("id");
+  const name = params.get("name");
+  const avatar = params.get("avatar");
   const [organizedData, setOrganizedData] = useState<any>(null);
   const [currentData, setCurrentData] = useState<any>(null);
   const [paymentHistory, setPaymentHistory] = useState<any>(null);
@@ -81,15 +86,13 @@ const ProfilePage = () => {
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Left Sidebar */}
         <div className="w-full lg:w-[19rem] min-w-[19rem] bg-white p-3 sm:p-4 rounded-lg">
-          <ProfileSidebar organizedData={organizedData} />
+          <ProfileSidebar organizedData={organizedData} UserName={name} Useravatar={avatar} />
         </div>
 
         {/* Main Content */}
         <div className="flex-1 w-full space-y-4 sm:space-y-6 overflow-hidden">
-          <ProfileStats organizedData={organizedData} plan={plan}/> 
-          <Suspense fallback={<div className="bg-white rounded-xl p-6"><div className="h-[300px] bg-gray-100 rounded-lg animate-pulse" /></div>}>
-            <SubmissionHistory />
-          </Suspense>
+          <ProfileStats organizedData={organizedData} plan={plan} /> 
+          <SubmissionHistory />
           <RecentSubmissions currentData={currentData} />
           <PaymentHistory paymentHistory={paymentHistory} />
         </div>

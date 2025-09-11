@@ -35,6 +35,7 @@ import { FileText, X } from "lucide-react";
 import { getChallengeById, updateChallenge } from "@/API/challenges";
 import toast from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
+import Loading from "@/components/Loading";
 
 interface EditChallengeFormProps {
   challengeId: string;
@@ -239,14 +240,13 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
     }
   }
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
     <Card>
     <CardContent className="pt-6">
-      {loading && (
-        <div className="flex justify-center items-center py-8 mb-4">
-          <div className="text-gray-500">Loading challenge data...</div>
-        </div>
-      )}
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
