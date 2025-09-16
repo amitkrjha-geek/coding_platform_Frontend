@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createUser } from '@/API/user';
 
-const CLERK_WEBHOOK_SECRET = process.env.NEXT_PUBLIC_CLERK_WEBHOOK_SECRET_KEY;
+// Use proper server-side environment variable (not NEXT_PUBLIC_)
+const CLERK_WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
 
 export async function POST(req: Request) {
   const headers = req.headers;
@@ -9,7 +10,8 @@ export async function POST(req: Request) {
   const body = await req.json();
 
   // Verify the webhook signature (Recommended)
-  if (!signature || signature !== CLERK_WEBHOOK_SECRET) {
+  if (!signature || !CLERK_WEBHOOK_SECRET || signature !== CLERK_WEBHOOK_SECRET) {
+    console.error('Webhook verification failed:', { signature: !!signature, secret: !!CLERK_WEBHOOK_SECRET });
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
