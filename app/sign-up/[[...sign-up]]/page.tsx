@@ -5,9 +5,9 @@ export default function Page() {
     <div className=" mt-10 w-full flex items-center justify-center bg-gradient-to-br from-purple-50 to-indigo-50">
       <div className="w-full max-w-md p-6">
         <SignUp 
-          redirectUrl="/"
-          afterSignUpUrl="/"
-          signInUrl="/sign-in"
+          // redirectUrl="/"
+          // afterSignUpUrl="/"
+          // signInUrl="/sign-in"
           appearance={{
             elements: {
               rootBox: "mx-auto",

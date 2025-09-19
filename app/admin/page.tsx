@@ -37,7 +37,7 @@ const cardVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 100,
       damping: 15,
     },
@@ -45,7 +45,7 @@ const cardVariants = {
   hover: {
     scale: 1.02,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 400,
       damping: 10,
     },
@@ -405,7 +405,7 @@ function MetricCard({ title, value, icon, link }: MetricCardProps) {
             initial={{ scale: 0.5 }}
             animate={{ scale: 1 }}
             transition={{
-              type: "spring",
+              type: "spring" as const,
               stiffness: 200,
               damping: 10,
             }}
