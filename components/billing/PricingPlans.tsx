@@ -27,15 +27,10 @@ export const PricingPlans = () => {
   // const currentUserId = getCurrentUserId();
 
 
-
-
-
-
   const [selectedPlan, setSelectedPlan] = useState<typeof plans[0] | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const { plans, status: planStatus } = useAppSelector((state: RootState) => state.plan);
-
 
   useEffect(() => {
     if ( !plans.length && planStatus === 'idle') {
@@ -97,7 +92,7 @@ export const PricingPlans = () => {
         style={{ marginTop: "20px", border: "1px solid #ddd", padding: "10px" }}
         />
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto px-4">
-        {plans.map((plan) => (
+        {plans.filter((plan) => plan.priceMode !== "Per Challenge").map((plan) => (
           <motion.div
             key={plan.name}
             whileHover={{ scale: 1.02, y: -5 }}

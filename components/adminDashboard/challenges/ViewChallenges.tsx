@@ -50,8 +50,6 @@ const ViewChallenges = () => {
   const [challenge, setChallenge] = useState<Challenge | null>(null);
   const [loading, setLoading] = useState(true);
 
-  console.log("id", id);
-
   const handleEditChallenge = () => {
     router.push(`/admin/challenges/edit?id=${id}`);
   };

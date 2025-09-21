@@ -24,6 +24,8 @@ interface PlanFormData {
   priceMode: string;
   price: number;
   details: PlanDetail[];
+  startDate?: string;
+  endDate?: string;
 }
 
 interface EditPlanFormProps {
@@ -35,7 +37,18 @@ const EditPlanForm = ({ initialData }: EditPlanFormProps) => {
   const router = useRouter()
   const [planDetails, setPlanDetails] = useState<PlanDetail[]>(initialData.details);
   const [currentDetail, setCurrentDetail] = useState('');
-  const [formData, setFormData] = useState<PlanFormData>(initialData);
+  
+  // Convert ISO dates to YYYY-MM-DD format for date inputs
+  const formatDateForInput = (isoDate: string | undefined) => {
+    if (!isoDate) return '';
+    return new Date(isoDate).toISOString().split('T')[0];
+  };
+  
+  const [formData, setFormData] = useState<PlanFormData>({
+    ...initialData,
+    startDate: formatDateForInput(initialData.startDate),
+    endDate: formatDateForInput(initialData.endDate),
+  });
   const [loading, setLoading] = useState(false);
 
   const handleAddPoint = () => {
@@ -81,6 +94,22 @@ const EditPlanForm = ({ initialData }: EditPlanFormProps) => {
       return;
     }
 
+    // Validate dates for subscription plans
+    if (formData.priceMode !== 'Per Challenge') {
+      if (!formData.startDate) {
+        toast.error("Start date is required for subscription plans!");
+        return;
+      }
+      if (!formData.endDate) {
+        toast.error("End date is required for subscription plans!");
+        return;
+      }
+      if (new Date(formData.startDate) >= new Date(formData.endDate)) {
+        toast.error("End date must be after start date!");
+        return;
+      }
+    }
+
     setLoading(true);
 
     const { _id, ...dataWithoutId } = formData;
@@ -107,7 +136,11 @@ const EditPlanForm = ({ initialData }: EditPlanFormProps) => {
 
 
   const handleReset = () => {
-    setFormData(initialData);
+    setFormData({
+      ...initialData,
+      startDate: formatDateForInput(initialData.startDate),
+      endDate: formatDateForInput(initialData.endDate),
+    });
     setPlanDetails(initialData.details);
   };
 
@@ -191,12 +224,44 @@ const EditPlanForm = ({ initialData }: EditPlanFormProps) => {
                     <SelectValue placeholder="Select price mode" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="Per Challenge">Per Challenge</SelectItem>
                     <SelectItem value="Monthly">Monthly</SelectItem>
                     <SelectItem value="Yearly">Yearly</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
+
+            {/* Date Fields for Subscription Plans */}
+            {formData.priceMode !== 'Per Challenge' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">Start Date <span className="text-red-500">*</span></label>
+                  <Input
+                    name="startDate"
+                    type="date"
+                    value={formData?.startDate}
+                    onChange={handleInputChange}
+                    className="w-full transition-all duration-200 focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-700">End Date <span className="text-red-500">*</span></label>
+                  <Input
+                    name="endDate"
+                    type="date"
+                    value={formData?.endDate}
+                    onChange={handleInputChange}
+                    className="w-full transition-all duration-200 focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+                <div className="col-span-1 md:col-span-2">
+                  <p className="text-xs text-blue-600 font-medium">
+                    📅 These dates define the subscription validity period for {formData.priceMode.toLowerCase()} plans
+                  </p>
+                </div>
+              </div>
+            )}
 
             {/* Plan Details */}
             <div className="space-y-4">

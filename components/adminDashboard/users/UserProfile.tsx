@@ -27,10 +27,28 @@ const ProfilePage = () => {
         const paymentHistory = await getUserPaymentHistory(userId || "");
         // console.log("📊 Payment History:", paymentHistory);
         setPaymentHistory(paymentHistory?.data);
-        const formattedPaymentHistory = paymentHistory?.data?.map((payment: any) => ({
-          plan: payment.planId,
-        }));
-        setPlan(formattedPaymentHistory);
+        const subscribedChallenges = paymentHistory?.data?.filter(
+          (subscription: any) => 
+            subscription.status === "success" && 
+            subscription.challengeId === null && 
+            subscription.planId?.priceMode !== "Per Challenge"
+        ) || [];
+        // console.log("subscribedChallenges", subscribedChallenges);
+
+        if (subscribedChallenges.length > 0) {
+          // Get the latest subscription based on paymentCompletedAt
+          const latestSubscription = subscribedChallenges.reduce((latest: any, current: any) => {
+              const latestDate = new Date(latest.paymentCompletedAt);
+              const currentDate = new Date(current.paymentCompletedAt);
+              return currentDate > latestDate ? current : latest;
+          });
+
+          // console.log("latestSubscription", latestSubscription);
+          setPlan(latestSubscription?.planId);
+
+
+      }
+   
         const response = await getSubmissionByUserId(userId || "");
         const submissions = response.data;
         // console.log("📊 Submissions:", submissions);

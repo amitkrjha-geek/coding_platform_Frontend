@@ -10,9 +10,11 @@ import NotificationDropdown from "./NotificationDropdown";
 // import { auth } from '@clerk/nextjs/server';
 import { useAuth, UserButton, useUser } from '@clerk/nextjs';
 import { useCheckRole } from '@/hooks/useCheckRole';
+import { getCurrentUserId } from '@/config/token';
 
 export default function Navbar() {
     const {user} = useUser();
+    const id = getCurrentUserId();
     // console.log("user",user);
     const name = user?.fullName || 'User';
     const avatar = user?.imageUrl || 'https://github.com/shadcn.png';
@@ -25,7 +27,7 @@ export default function Navbar() {
     const { checkUserRole } = useCheckRole();
 
     
-        const role = checkUserRole();
+     const role = checkUserRole();
   
 
     const { userId } = useAuth();
@@ -131,7 +133,7 @@ export default function Navbar() {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.95 }}
                     >
-                        <Link href="/profile" className=" rounded-lg px-4 py-2 bg-purple-600 text-white hover:bg-purple-700 transition-all duration-200 font-medium shadow-sm hover:shadow-md">
+                        <Link href={`/profile?id=${id}`} className="  rounded-lg px-4 py-2 bg-purple-600 text-white hover:bg-purple-700 transition-all duration-200 font-medium shadow-sm hover:shadow-md">
                            
                         Profile
                         </Link>
@@ -213,7 +215,7 @@ export default function Navbar() {
                                 </div>
 
                                 <div className="flex items-center gap-4 mb-8 p-4 bg-gray-50 rounded-lg">
-                                    <Link href="/profile">
+                                    <Link href={`/profile?id=${id}`}>
                                         <div className="relative w-10 h-10">
                                             <Image
                                                 src={avatar}
@@ -245,7 +247,7 @@ export default function Navbar() {
                                         Billing
                                     </Link>
                                     <Link
-                                        href="/profile"
+                                        href={`/profile?id=${id}`}
                                         className={`block p-4 rounded-lg transition-colors ${pathname === '/profile' ? 'bg-purple/10 text-purple' : 'hover:bg-gray-50'}`}
                                         onClick={() => setIsMenuOpen(false)}
                                     >

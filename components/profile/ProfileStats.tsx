@@ -25,23 +25,47 @@ const ProfileStats = ({ organizedData, plan }: { organizedData: any, plan: any }
   // console.log('📊 Organized Data:', organizedData);
   
 
-  console.log('📊 Plan:', plan);
+  // console.log('📊 Plan:', plan);
   const isMounted = useIsMounted();
 
   // Get the latest plan from payment history
   const getLatestPlan = () => {
-    if (!plan || !Array.isArray(plan) || plan.length === 0) {
+    if (!plan) {
       return null; // Return null when no plan data
     }
 
-    // Get the most recent plan (assuming the array is ordered by date)
-    const latestPayment = plan[plan.length - 1];
-    if (latestPayment?.plan) {
+    // Handle both array and single object cases
+    let planData;
+    if (Array.isArray(plan)) {
+      if (plan.length === 0) return null;
+      planData = plan[plan.length - 1];
+    } else {
+      planData = plan;
+    }
+
+    // Check if planData has the expected structure
+    if (planData && planData.name && planData.price !== undefined) {
+      // Calculate next billing date based on endDate
+      let nextBillingDate = "N/A";
+      if (planData.endDate) {
+        const endDate = new Date(planData.endDate);
+        nextBillingDate = endDate.toLocaleDateString('en-US', { 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+      }
+
       return {
-        name: latestPayment.plan.name,
-        price: latestPayment.plan.price,
-        priceMode: latestPayment.plan.priceMode,
-        nextBillingDate: "Next month" // You can calculate this based on payment date
+        name: planData.name,
+        price: planData.price,
+        priceMode: planData.priceMode || 'month',
+        nextBillingDate: nextBillingDate,
+        // isActive: planData.isActive || false,
+        durationDays: planData.durationDays || 30,
+        details: planData.details || [],
+        startDate: planData.startDate,
+        endDate: planData.endDate
       };
     }
 
@@ -49,6 +73,11 @@ const ProfileStats = ({ organizedData, plan }: { organizedData: any, plan: any }
   };
 
   const currentPlan = getLatestPlan();
+  const today = new Date();
+  const planEndDate = new Date(currentPlan?.endDate);
+  const isActive = planEndDate >= today;
+
+  console.log('📊 Current Plan:', currentPlan);
 
   // Calculate stats from organized data
   const stats = organizedData ? {
@@ -208,8 +237,10 @@ const ProfileStats = ({ organizedData, plan }: { organizedData: any, plan: any }
             <div className="flex items-center justify-between mb-3 sm:mb-4">
               <h2 className="text-base sm:text-lg font-normal text-gray-700">Your Current Plan</h2>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-xs text-green-600 font-medium">Active</span>
+                <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                <span className={`text-xs font-medium ${isActive ? 'text-green-600' : 'text-red-600'}`}>
+                  {isActive ? 'Active' : 'Inactive'}
+                </span>
               </div>
             </div>
             <div className="flex flex-col gap-3 sm:gap-4">
@@ -217,6 +248,11 @@ const ProfileStats = ({ organizedData, plan }: { organizedData: any, plan: any }
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-lg sm:text-xl font-semibold text-purple">{currentPlan.name}</span>
+                    {!isActive && (
+                      <span className="px-2 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full">
+                        Expired
+                      </span>
+                    )}
                     {currentPlan.name === 'ENTERPRISE' && (
                       <span className="px-2 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded-full">
                         Pro
@@ -228,14 +264,24 @@ const ProfileStats = ({ organizedData, plan }: { organizedData: any, plan: any }
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-xs sm:text-sm">
-                  <span className="text-gray-500">Next Billing Date:</span>
+                  <span className="text-gray-500">Plan Duration:</span>
+                  <span className="font-medium">{currentPlan.durationDays} days</span>
+                </div>
+                <div className="flex items-center justify-between text-xs sm:text-sm">
+                  <span className="text-gray-500">Expires On:</span>
                   <span className="font-medium">{currentPlan.nextBillingDate}</span>
                 </div>
-                {currentPlan.name === 'ENTERPRISE' && (
+                {(currentPlan.name === 'MONTHLY' || currentPlan.name === 'YEARLY') && (
                   <div className="mt-3 p-3 bg-purple-50 rounded-lg">
                     <div className="text-xs text-purple-700 font-medium mb-1">Plan Features:</div>
                     <div className="text-xs text-purple-600">
-                      • Unlimited challenges • Priority support • Advanced analytics
+                      {currentPlan?.details && currentPlan?.details?.length > 0 ? (
+                        currentPlan?.details.map((detail: string, index: number) => (
+                          <div key={index}>• {detail}</div>
+                        ))
+                      ) : (
+                        <div>• Unlimited challenges • Priority support • Advanced analytics</div>
+                      )}
                     </div>
                   </div>
                 )}

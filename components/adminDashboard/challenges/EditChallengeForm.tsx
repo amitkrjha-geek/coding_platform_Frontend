@@ -33,6 +33,7 @@ import Tiptap from "@/components/Tiptap";
 import { Card, CardContent } from "@/components/ui/card";
 import { FileText, X } from "lucide-react";
 import { getChallengeById, updateChallenge } from "@/API/challenges";
+import { getAllPlans } from "@/API/plan";
 import toast from "react-hot-toast";
 import { Badge } from "@/components/ui/badge";
 import Loading from "@/components/Loading";
@@ -49,16 +50,26 @@ const formSchema = z.object({
   problemStatement: z.string().min(1, "Problem statement is required"),
   status: z.string().min(1, "Status is required"),
   companies: z.array(z.string()),
+  paymentMode: z.string().min(1, "Payment mode is required"),
+  planId: z.string().optional(),
   files: z.array(z.object({
     name: z.string(),
     content: z.string(),
     type: z.string(),
     size: z.number()
   })).optional(),
+}).refine((data) => {
+  // If payment mode is paid, planId is required
+  if (data.paymentMode === "paid" && !data.planId) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Plan selection is required for paid challenges",
+  path: ["planId"],
 })
 
 
-type FormData = z.infer<typeof formSchema>;
 
 const fileToBase64 = (file: File): Promise<{ name: string, content: string, type: string, size: number }> => {
   return new Promise((resolve, reject) => {
@@ -83,6 +94,7 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
   const [newTag, setNewTag] = React.useState("")
   const [newCompany, setNewCompany] = React.useState("")
   const [newTopic, setNewTopic] = React.useState("")
+  const [plans, setPlans] = React.useState<any[]>([]);
   const [formData, setFormData] = React.useState({
     tags: [] as string[],
     companies: [] as string[],
@@ -100,6 +112,8 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
       problemStatement: "",
       status: "active",
       companies: [],
+      paymentMode: "",
+      planId: "",
       files: [],
     },
   })
@@ -183,6 +197,8 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
             problemStatement: challenge?.problemStatement || '',
             status: challenge?.status || 'active',
             companies: challenge?.companies || [],
+            paymentMode: challenge?.paymentMode || "",
+            planId: challenge?.planId?._id || "",
             files: challenge?.files || [],
           });
           
@@ -200,10 +216,28 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
         setLoading(false);
       }
     };
+
+    const getPlans = async () => {
+      try {
+        const res = await getAllPlans();
+        // Filter plans to show only "Per Challenge" price mode
+        const filteredPlans = res?.filter((plan: any) => plan.priceMode === "Per Challenge");
+        const formattedData = filteredPlans?.map((plan: any) => ({
+          id: plan._id,
+          name: plan.name,
+          priceMode: plan.priceMode,
+          price: plan.price,
+        }));
+        setPlans(formattedData);
+      } catch (error) {
+        console.log(error);
+      }
+    };
     
     if (challengeId) {
       getChallenge();
     }
+    getPlans();
   }, [challengeId, form]);
 
   const handleCancel = () => {
@@ -224,7 +258,15 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
         }))
       });
 
-      const res = await updateChallenge(challengeId, values)
+      // Clean up the data before sending to backend
+      const cleanedValues = { ...values };
+      
+      // Remove planId if payment mode is free or if planId is empty
+      if (values.paymentMode === "free" || !values.planId) {
+        delete cleanedValues.planId;
+      }
+
+      const res = await updateChallenge(challengeId, cleanedValues)
       console.log({res})
       
       if (res) {
@@ -256,7 +298,7 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
             name="title"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Challenge Name</FormLabel>
+                <FormLabel>Challenge Name <span className="text-red-500">*</span></FormLabel>
                 <FormControl>
                   <Input placeholder="Challenge Name" {...field} />
                 </FormControl>
@@ -272,7 +314,7 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
               name="difficulty"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Difficulty</FormLabel>
+                  <FormLabel>Difficulty <span className="text-red-500">*</span></FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
@@ -296,7 +338,7 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
               name="status"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Status</FormLabel>
+                  <FormLabel>Status <span className="text-red-500">*</span></FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
@@ -314,9 +356,74 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
             />
           </div>
 
+          <div className="grid grid-cols-2 gap-6">
+            {/* Payment Mode */}
+            <FormField
+              control={form.control}
+              name="paymentMode"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Payment Mode <span className="text-red-500">*</span></FormLabel>
+                  <Select
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      // Reset planId when switching payment modes
+                      if (value === "free") {
+                        form.setValue("planId", "");
+                      }
+                    }}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select Payment Mode" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="free">Free</SelectItem>
+                      <SelectItem value="paid">Paid</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Plans - Only show when payment mode is paid */}
+            {form.watch("paymentMode") === "paid" && (
+              <FormField
+                control={form.control}
+                name="planId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Plan <span className="text-red-500">*</span></FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a Plan" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {plans.map((plan) => (
+                          <SelectItem key={plan.id} value={plan.id}>
+                            {plan.name} - ₹{plan.price} ({plan.priceMode})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+          </div>
+
           {/* Topics */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Topics</label>
+            <label className="text-sm font-medium">Topics <span className="text-red-500">*</span></label>
             <div className="flex flex-wrap gap-2 mb-2">
               {formData.topics.map((topic) => (
                 <Badge key={topic} variant="secondary" className="px-3 py-1">
@@ -440,7 +547,7 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
             name="problemStatement"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Problem Statement</FormLabel>
+                <FormLabel>Problem Statement <span className="text-red-500">*</span></FormLabel>
                 <FormControl>
                 
                 <Tiptap
@@ -459,7 +566,7 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
             name="files"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Upload Files</FormLabel>
+                <FormLabel>Upload Files <span className="text-red-500">*</span></FormLabel>
                 <FormControl>
                   <div className="border-2 border-dashed rounded-md p-4 text-center">
                     <p className="text-gray-500">Upload any type of file</p>

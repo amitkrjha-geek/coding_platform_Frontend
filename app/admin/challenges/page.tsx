@@ -49,6 +49,13 @@ interface Challenge {
   acceptanceRate: number;
   status: string;
   companies?: string[];
+  paymentMode?: string;
+  planId?: {
+    _id: string;
+    name: string;
+    price: number;
+    priceMode: string;
+  } | null;
 }
 
 const Page = () => {
@@ -57,7 +64,6 @@ const Page = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
-  const [selectedTags, setSelectedTags] = useState<string>("all");
   const [selectedTopic, setSelectedTopic] = useState("all");
   const [selectedCompany, setSelectedCompany] = useState("all");
   const router = useRouter();
@@ -115,7 +121,6 @@ const Page = () => {
     setSearchQuery("");
     setSelectedDifficulty("all");
     setSelectedStatus("all");
-    setSelectedTags("all");
     setSelectedTopic("all");
     setSelectedCompany("all");
     setCurrentPage(1);
@@ -139,7 +144,7 @@ const Page = () => {
       const res = await getAllChallenges();
 
       console.log(res?.data);
-      const formattedData = res?.data?.map((item: Challenge) => ({
+      const formattedData = res?.data?.map((item: any) => ({
         id: item?._id,
         title: item?.title,
         difficulty: item?.difficulty,
@@ -150,6 +155,8 @@ const Page = () => {
         keywords: item?.keywords,
         problemStatement: item?.problemStatement,
         companies: item?.companies,
+        paymentMode: item?.paymentMode,
+        planId: item?.planId,
       }));
       setChallenges(formattedData);
     } catch (error) {

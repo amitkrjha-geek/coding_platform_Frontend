@@ -9,6 +9,13 @@ interface Challenge {
   submissions: number;
   acceptanceRate: number;
   status: string;
+  paymentMode?: string;
+  planId?: {
+    _id: string;
+    name: string;
+    price: number;
+    priceMode: string;
+  } | null;
 }
 interface TopicCardProps {
   challenge: Challenge;
@@ -26,7 +33,27 @@ export const TopicCard = ({ challenge, onView, onEdit, onDelete, index }: TopicC
           <h3 className="text-lg font-medium">{index + 1}. {challenge?.title}</h3>
           <div className="flex gap-4  text-sm text-gray-600 mt-1">
             <div>Submissions: <strong>{challenge?.submissions?.toLocaleString()}</strong></div>
-            <div>Acceptance Rate: <strong>{challenge?.acceptanceRate}%</strong></div>
+            <div className="flex items-center gap-2">
+              <span className="text-gray-600">Payment:</span>
+              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                challenge?.paymentMode === "free" 
+                  ? "bg-green-100 text-green-700" 
+                  : "bg-blue-100 text-blue-700"
+              }`}>
+                {challenge?.paymentMode?.toUpperCase() || "FREE"}
+              </span>
+            </div>
+          </div>
+          <div className="flex gap-4 text-sm mt-2">
+            
+            {challenge?.paymentMode === "paid" && challenge?.planId && (
+              <div className="flex items-center gap-2">
+                <span className="text-gray-600">Plan:</span>
+                <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
+                  {challenge.planId.name} - ₹{challenge.planId.price}/{challenge.planId.priceMode}
+                </span>
+              </div>
+            )}
           </div>
         </div>
         <span className={`text-sm ${

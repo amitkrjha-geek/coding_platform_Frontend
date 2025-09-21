@@ -1,6 +1,20 @@
 import { getAllChallenges } from "@/API/challenges";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
+export interface PlanData {
+    _id: string;
+    name: string;
+    price: number;
+    priceMode: string;
+    startDate: string;
+    endDate: string;
+    durationDays: number;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
+    __v?: number;
+}
+
 export interface ChallengeData {
     _id: string;
     title: string;
@@ -15,6 +29,8 @@ export interface ChallengeData {
     submissions: number;
     isFeatured: boolean;
     companies: string[];
+    paymentMode: string;
+    planId: PlanData;
     createdAt: string;
     __v?: number;
 }
@@ -46,6 +62,7 @@ const initialState: ChallengeState = {
 export const fetchChallenges = createAsyncThunk("challenge/fetchAll", async (_, { rejectWithValue }) => {
     try {
         const response = await getAllChallenges();
+        // console.log({response});
         return response;
     } catch (error: any) {
         return rejectWithValue(error);

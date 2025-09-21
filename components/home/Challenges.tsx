@@ -67,6 +67,7 @@ const Challenges = () => {
   );
 
   const { status: challengesStatus, challenges, topicStats, loading, error } = useAppSelector((state) => state.challenge);
+  // console.log({challenges});
 
   const topics = useDynamicTopics(topicStats || {}, showMore);
 
@@ -180,6 +181,7 @@ const Challenges = () => {
             console.log("Response:", response);
             if (response?.token) {
               setToken(response?.token);
+              setCurrentUserId(response?.user?._id);
             }
             router.push("/");
             console.log("User created successfully");

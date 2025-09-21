@@ -1,8 +1,11 @@
 "use client";
 
+import { getUserPaymentHistory } from "@/API/payment";
 import ChallengeCard from "./ChallengeCard";
 import { ChallengeData } from '@/redux/features/challengeSlice';
 import { motion } from 'framer-motion';
+import { useEffect, useState } from "react";
+import { getCurrentUserId, getToken } from "@/config/token";
 
 const LoadingSkeleton = () => (
   <>
@@ -36,6 +39,65 @@ const NoResults = () => (
 );
 
 const ChallengeList = ({ challenges, loading }: { challenges: ChallengeData[], loading: boolean }) => {
+  const userId = getCurrentUserId();
+  const token = getToken();
+  const [hasSubscribed, setHasSubscribed] = useState(false);
+  
+  
+  
+  
+  
+  useEffect(() => {
+    const fetchUserSubscriptions = async () => {
+        try {
+            const userSubscriptions = await getUserPaymentHistory(userId || "");
+            console.log("userSubscriptions", userSubscriptions?.data);
+            
+            // Filter for successful subscriptions with non-Per Challenge plans
+            const subscribedChallenges = userSubscriptions?.data?.filter(
+              (subscription: any) => 
+                subscription.status === "success" && 
+                subscription.challengeId === null && 
+                subscription.planId?.priceMode !== "Per Challenge"
+            ) || [];
+            
+            console.log("subscribedChallenges", subscribedChallenges);
+
+            if (subscribedChallenges.length > 0) {
+                // Get the latest subscription based on paymentCompletedAt
+                const latestSubscription = subscribedChallenges.reduce((latest: any, current: any) => {
+                    const latestDate = new Date(latest.paymentCompletedAt);
+                    const currentDate = new Date(current.paymentCompletedAt);
+                    return currentDate > latestDate ? current : latest;
+                });
+
+                console.log("latestSubscription", latestSubscription);
+
+                // Check if the plan's endDate is after today's date
+                const today = new Date();
+                const planEndDate = new Date(latestSubscription.planId?.endDate);
+                
+                console.log("today:", today);
+                console.log("planEndDate:", planEndDate);
+                console.log("isActive:", planEndDate >= today);
+
+                // Set subscription status based on plan end date
+                setHasSubscribed(planEndDate >= today);
+            } else {
+                setHasSubscribed(false);
+            }
+
+        } catch (error) {
+            console.error("Error fetching user subscriptions:", error);
+        }
+    };
+    
+    if (userId && token) {
+        fetchUserSubscriptions();
+    }
+}, [userId, token]);
+
+
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -67,6 +129,9 @@ const ChallengeList = ({ challenges, loading }: { challenges: ChallengeData[], l
             difficulty={challenge.difficulty}
             submissions={challenge.submissions.toString()}
             acceptanceRate={`${challenge.acceptanceRate}%`}
+            paymentMode={challenge.paymentMode}
+            planId={challenge.planId}
+            hasSubscribed={hasSubscribed}
           />
         </motion.div>
       ))}

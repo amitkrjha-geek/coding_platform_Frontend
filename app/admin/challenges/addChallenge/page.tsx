@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -36,6 +36,7 @@ import Tiptap from "@/components/Tiptap";
 import { createChallenge } from "@/API/challenges";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { getAllPlans } from "@/API/plan";
 
 // First, update the formSchema to properly handle file validation
 const formSchema = z.object({
@@ -46,6 +47,8 @@ const formSchema = z.object({
   problemStatement: z.string().min(1, "Problem statement is required"),
   status: z.string().min(1, "Status is required"),
   companies: z.array(z.string()),
+  paymentMode: z.string().min(1, "Payment mode is required"),
+  planId: z.string().optional(),
   files: z
     .array(
       z.object({
@@ -56,6 +59,15 @@ const formSchema = z.object({
       })
     )
     .min(1, "At least one file is required"),
+}).refine((data) => {
+  // If payment mode is paid, planId is required
+  if (data.paymentMode === "paid" && !data.planId) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Plan selection is required for paid challenges",
+  path: ["planId"],
 });
 
 const AddChallenge = () => {
@@ -63,6 +75,7 @@ const AddChallenge = () => {
   const [newTag, setNewTag] = React.useState("");
   const [newCompany, setNewCompany] = React.useState("");
   const [newTopic, setNewTopic] = React.useState("");
+  const [plans, setPlans] = React.useState<any[]>([]);
   const [formData, setFormData] = React.useState({
     tags: [] as string[],
     companies: [] as string[],
@@ -80,6 +93,8 @@ const AddChallenge = () => {
       problemStatement: "",
       status: "active",
       companies: [],
+      paymentMode: "",
+      planId: "",
       files: [], // Initialize as empty array, not undefined
     },
   });
@@ -167,6 +182,30 @@ const AddChallenge = () => {
     });
   };
 
+
+  useEffect(() => {
+    const getPlans = async () => {
+     try {
+      const res = await getAllPlans();
+      // console.log({res});
+      // Filter plans to show only "Per Challenge" price mode
+      const filteredPlans = res?.filter((plan: any) => plan.priceMode === "Per Challenge");
+      const formattedData = filteredPlans?.map((plan: any) => ({
+        id: plan._id,
+        name: plan.name,
+        priceMode: plan.priceMode,
+        price: plan.price,
+      }));
+      setPlans(formattedData);
+     } catch (error) {
+      console.log(error);
+     }
+    }
+    getPlans();
+  }, []);
+
+  console.log({plans});
+
   // Update the onSubmit function
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // Check for required fields
@@ -174,6 +213,8 @@ const AddChallenge = () => {
     if (!values.title) missingFields.push("Challenge Name");
     if (!values.difficulty) missingFields.push("Difficulty");
     if (!values.status) missingFields.push("Status");
+    if (!values.paymentMode) missingFields.push("Payment Mode");
+    if (values.paymentMode === "paid" && !values.planId) missingFields.push("Plan Selection");
     if (!values.topic || values.topic.length === 0) missingFields.push("Topics");
     if (!values.problemStatement) missingFields.push("Problem Statement");
     if (!values.files || values.files.length === 0) missingFields.push("Upload Files");
@@ -193,7 +234,15 @@ const AddChallenge = () => {
         })),
       });
 
-      const res = await createChallenge(values); // values already contains processed files
+      // Clean up the data before sending to backend
+      const cleanedValues = { ...values };
+      
+      // Remove planId if payment mode is free or if planId is empty
+      if (values.paymentMode === "free" || !values.planId) {
+        delete cleanedValues.planId;
+      }
+
+      const res = await createChallenge(cleanedValues);
       console.log("API Response:", res);
 
       if (res) {
@@ -306,6 +355,71 @@ const AddChallenge = () => {
                     </FormItem>
                   )}
                 />
+              </div>
+
+              <div className="grid grid-cols-2 gap-6">
+                {/* Payment Mode */}
+                <FormField
+                  control={form.control}
+                  name="paymentMode"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Payment Mode <span className="text-red-500">*</span></FormLabel>
+                      <Select
+                        onValueChange={(value) => {
+                          field.onChange(value);
+                          // Reset planId when switching payment modes
+                          if (value === "free") {
+                            form.setValue("planId", "");
+                          }
+                        }}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Payment Mode" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="free">Free</SelectItem>
+                          <SelectItem value="paid">Paid</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Plans - Only show when payment mode is paid */}
+                {form.watch("paymentMode") === "paid" && (
+                  <FormField
+                    control={form.control}
+                    name="planId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Select Plan <span className="text-red-500">*</span></FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a Plan" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {plans.map((plan) => (
+                              <SelectItem key={plan.id} value={plan.id}>
+                                {plan.name} - ₹{plan.price} ({plan.priceMode})
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
               </div>
 
               {/* Topics */}
