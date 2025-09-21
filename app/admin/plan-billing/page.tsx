@@ -36,6 +36,9 @@ const PlanBillingPage = () => {
   const { plans, status: planStatus } = useAppSelector((state: RootState) => state.plan);
   const { coupons, status: couponsStatus } = useAppSelector((state: RootState) => state.coupon);
 
+  console.log('plans', plans);
+
+  
   const [activeTab, setActiveTab] = useState<
     "plans" | "coupons" | "transactions"
   >("plans");
@@ -161,21 +164,27 @@ const PlanBillingPage = () => {
       </div>
 
       {activeTab === "plans" && (
-        <div className="min-w-xl mx-auto grid grid-cols-1  gap-4">
-          <h2 className="text-black font-semibold mb-2">All Plans</h2>
+        <div className="w-full">
+          <h2 className="text-black font-semibold mb-4">All Plans</h2>
           {plans?.length > 0 ? (
-            plans.map((plan) => (
-              <PlanCard
-                key={plan._id}
-                title={plan.name}
-                price={plan.price}
-                priceMode={plan.priceMode}
-                popular={plan.popular}
-                details={plan?.details ?? []}
-                onEdit={() => handleEdit("plan", plan._id)}
-                onDelete={() => handleDelete("plan", plan._id)}
-              />
-            ))
+            <div className="grid grid-cols-1 md:grid-cols-2  xl:grid-cols-3 gap-4">
+              {plans.map((plan) => (
+                <PlanCard
+                  key={plan._id}
+                  title={plan.name}
+                  price={plan.price}
+                  priceMode={plan.priceMode}
+                  popular={plan.popular}
+                  details={plan?.details ?? []}
+                  durationDays={plan.durationDays}
+                  isActive={plan.isActive}
+                  startDate={plan.startDate}
+                  endDate={plan.endDate}
+                  onEdit={() => handleEdit("plan", plan._id)}
+                  onDelete={() => handleDelete("plan", plan._id)}
+                />
+              ))}
+            </div>
           ) : (
             <p className="text-gray-500">No plans found.</p>
           )}

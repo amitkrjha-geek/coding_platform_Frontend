@@ -37,6 +37,10 @@ const PageContent = () => {
     price: data?.price, 
     priceMode: data?.priceMode, 
     popular: data?.popular,
+    startDate: data?.startDate,
+    endDate: data?.endDate,
+    durationDays: data?.durationDays,
+    isActive: data?.isActive,
     details: data?.details?.map((detail, index) => ({
       id: index + 1,
       detail,

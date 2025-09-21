@@ -34,9 +34,10 @@ interface CheckoutPageProps {
   plan: Plan;
   onClose: () => void;
   onSuccess: (form: string) => void;
+  challengeId?: string;
 }
 
-export const CheckoutPage = ({ plan, onClose, onSuccess }: CheckoutPageProps) => {
+export const CheckoutPage = ({ plan, onClose, onSuccess, challengeId }: CheckoutPageProps) => {
   const { user } = useUser();
   const name = user?.fullName || '';
   const email = user?.primaryEmailAddress?.emailAddress || '';
@@ -115,6 +116,7 @@ export const CheckoutPage = ({ plan, onClose, onSuccess }: CheckoutPageProps) =>
 
   const handleCheckout = async () => {
     setIsProcessing(true);
+    console.log("challengeId", challengeId);
     try {
       const response = await getPayment({
         amount: finalPrice,
@@ -125,8 +127,10 @@ export const CheckoutPage = ({ plan, onClose, onSuccess }: CheckoutPageProps) =>
         userId: currentUserId || undefined,
         planId: plan._id,
         couponId: appliedCoupon?._id,
-        realAmount: originalPrice
+        realAmount: originalPrice,
+        ...(challengeId && { challengeId: challengeId })
       });
+
       
       onSuccess(response);
     } catch (error: any) {

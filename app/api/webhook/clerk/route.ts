@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { Webhook } from 'svix';
 import { createUser, updateUser, deleteUser } from '@/API/user';
-import { getCurrentUserId } from '@/config/token';
+import { getCurrentUserId, setCurrentUserId, setToken } from '@/config/token';
 
 const CLERK_WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET!;
 if (!CLERK_WEBHOOK_SECRET) {
@@ -21,6 +21,7 @@ export async function POST(req: Request) {
   };
 
   const userId = getCurrentUserId()
+  
   // Verify signature using svix
   const wh = new Webhook(CLERK_WEBHOOK_SECRET);
   let evt: any;
@@ -50,7 +51,13 @@ export async function POST(req: Request) {
       };
 
       // createUser should be idempotent (or check existence inside)
-      await createUser(userData);
+      const userResponse = await createUser(userData);
+      if (userResponse?.token) { 
+        setToken(userResponse?.token);
+        setCurrentUserId(userResponse?.user?._id);
+      }
+
+      // console.log('user crreatenmbd', userResponse);
       return NextResponse.json({ message: 'user.created handled' }, { status: 201 });
     }
 
@@ -72,7 +79,6 @@ export async function POST(req: Request) {
     }
 
     if (type === 'user.deleted') {
-      const user = data;
       await deleteUser(userId!);
       return NextResponse.json({ message: 'user.deleted handled' }, { status: 200 });
     }

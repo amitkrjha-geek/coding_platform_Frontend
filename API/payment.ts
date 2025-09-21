@@ -10,6 +10,7 @@ export interface PaymentData {
   planId?: string;
   couponId?: string;
   realAmount?: number;
+  challengeId?: string;
 }
 
 

@@ -10,6 +10,10 @@ export interface PlanData {
   priceMode: string;
   price: number;
   details: string[];
+  startDate: string;
+  endDate: string;
+  durationDays: number;
+  isActive: boolean;
   __v?: number;
 }
 

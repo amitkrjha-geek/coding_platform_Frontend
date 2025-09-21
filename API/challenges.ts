@@ -12,6 +12,7 @@ export const createChallenge = async (data: any) => {
 
 // Get all challenges
 export const getAllChallenges = async () => {
+    
     try {
         const response = await axiosInstance.get("/challenges");
         return response.data;

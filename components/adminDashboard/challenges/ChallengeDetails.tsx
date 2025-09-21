@@ -22,6 +22,13 @@ interface Challenge {
   submissions: number;
   isFeatured: boolean;
   companies: string[];
+  paymentMode?: string;
+  planId?: {
+    _id: string;
+    name: string;
+    price: number;
+    priceMode: string;
+  } | null;
   createdAt: string;
   __v: number;
 }
@@ -38,6 +45,7 @@ interface ChallengeDetailsProps {
 }
 
 const ChallengeDetails = ({ title, difficulty, stats, challenge }: ChallengeDetailsProps) => {
+  // console.log("challenge", challenge);
   return (
     <div className="prose max-w-none">
       {/* Challenge Title and Difficulty */}
@@ -50,6 +58,34 @@ const ChallengeDetails = ({ title, difficulty, stats, challenge }: ChallengeDeta
         }`}>
           {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
         </span>
+      </div>
+
+      {/* Payment Information */}
+      <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
+        <h3 className="font-medium mb-3 text-gray-800">Payment Information</h3>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-gray-600">Payment Mode:</span>
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+              challenge.paymentMode === "free" 
+                ? "bg-green-100 text-green-700" 
+                : "bg-blue-100 text-blue-700"
+            }`}>
+              {challenge.paymentMode?.toUpperCase() || "FREE"}
+            </span>
+          </div>
+          {challenge.paymentMode === "paid" && challenge.planId && (
+            <div className="flex items-center gap-2">
+              <span className="text-gray-600">Plan:</span>
+              <span className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-700">
+                {challenge.planId.name}
+              </span>
+              <span className="px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-700">
+              ₹{challenge.planId.price}/{challenge.planId.priceMode}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Statistics */}

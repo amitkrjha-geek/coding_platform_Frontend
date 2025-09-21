@@ -163,6 +163,9 @@ const TransactionsTable = () => {
           <option value="BASIC">Basic</option>
           <option value="PREMIUM">Premium</option>
           <option value="ENTERPRISE">Enterprise</option>
+          <option value="MONTHLY">Monthly</option>
+          <option value="YEARLY">Yearly</option>
+          <option value="PER_CHALLENGE">Per Challenge</option>
         </select>
         <select
           className="p-2 border-2 rounded-md border-purple focus:border-purple focus:outline-none focus:ring-0" 
