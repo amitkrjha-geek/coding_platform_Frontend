@@ -17,7 +17,7 @@ import { generateCodeTemplate } from '@/lib/utils'
 // import { questionsData } from '@/constants'
 import { storeCode, triggerSubmission } from '@/API/codeRunner'
 import toast from 'react-hot-toast'
-// import { getToken } from '@/config/token'
+import { getToken } from '@/config/token'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { fetchChallenges, getCompanyStats, getTopicStats, selectChallengeById } from '@/redux/features/challengeSlice'
 import { triggerRunAgent } from '../../../API/codeRunner'
@@ -49,7 +49,7 @@ type TabValue = "description" | "submissions" | "logs" | "accepted";
 const QuestionPage = () => {
   const { q_id } = useParams()
   const [selectedLanguage, setSelectedLanguage] = useState<ProgrammingLanguage['id']>('c')
-  // const token = getToken()
+  const token = getToken()
   const [isRunningAgent, setIsRunningAgent] = useState(false)
   const [isCompiling, setIsCompiling] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -115,10 +115,10 @@ const QuestionPage = () => {
 
   const handleSubmitCompile = async () => {
     console.log("Submitted code:", { code, q_id, selectedLanguage })
-    // if (!token) {
-    //   toast.error("Please login to submit code")
-    //   return
-    // }
+    if (!token) {
+      toast.error("Please login to compile code")
+      return
+    }
     const codeData = {
       challengeId: q_id,
       code: code,
@@ -146,10 +146,10 @@ const QuestionPage = () => {
   }
 
   const handleSubmitCode = async () => {
-    // if (!token) {
-    //   toast.error("Please login to submit code")
-    //   return
-    // }
+    if (!token) {
+      toast.error("Please login to submit challenge")
+      return
+    }
     const submissionId = localStorage.getItem('submissionId')
     if (!submissionId) {
       toast.error("No submission found! Please compile the code first")
@@ -179,16 +179,16 @@ const QuestionPage = () => {
 
 
   const handleRunAgent = async () => {
-    // if (!token) {
-    //   toast.error("Please login to submit code")
-    //   return
-    // }
+    if (!token) {
+      toast.error("Please login to run agent")
+      return
+    }
     const submissionId = localStorage.getItem('submissionId')
-    // if (!submissionId) {
-    //   toast.error("No submission found! Please compile the code first")
-    //   console.log("No submissionId found")
-    //   return
-    // }
+    if (!submissionId) {
+      toast.error("No submission found! Please compile the code first")
+      console.log("No submissionId found")
+      return
+    }
     setIsRunning(true)
     try {
       const submissionResult = await triggerRunAgent(submissionId ?? '')

@@ -42,11 +42,11 @@ export async function POST(req: Request) {
       const userData = {
         clerkId: user.id,
         email: user.primary_email_address?.email_address ?? null,
-        firstName: user.first_name ?? null,
-        lastName: user.last_name ?? null,
+        firstName: user.first_name ?? "first",
+        lastName: user.last_name ?? "last",
         role: user.public_metadata?.role ?? 'user',
-        name: `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim(),
-        username: user.username ?? undefined,
+        name: `${user.first_name ?? user.primary_email_address?.email_address}`.trim(),
+        username: user.username ?? "user",
         avatar: user.image_url ?? null,
       };
 
