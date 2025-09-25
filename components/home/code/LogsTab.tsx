@@ -156,7 +156,7 @@ const LogsTab = ({ sessionId, isConnected = false }: LogsTabProps) => {
             </span>
           )}
         </div>
-        <div className="flex items-center space-x-2">
+        {/* <div className="flex items-center space-x-2">
           <label className="flex items-center space-x-1 text-sm text-gray-600">
             <input
               type="checkbox"
@@ -172,7 +172,7 @@ const LogsTab = ({ sessionId, isConnected = false }: LogsTabProps) => {
           >
             Clear
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* Logs container */}

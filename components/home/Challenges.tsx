@@ -167,11 +167,11 @@ const Challenges = () => {
         const userData = {
           clerkId: user.id,
           email: userEmail || undefined,
-          firstName: user.firstName || undefined,
-          lastName: user.lastName || undefined,
+          firstName: user.firstName || "First",
+          lastName: user.lastName || "last",
           role: (user.publicMetadata?.role as string) || 'user',
-          name: user.fullName || undefined,
-          username: user.username || undefined,
+          name: user.fullName || userEmail || 'User',
+          username: user.username || "User",
           avatar: user.imageUrl
         };
         console.log("Creating new user:", userData);
