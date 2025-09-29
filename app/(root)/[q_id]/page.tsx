@@ -6,7 +6,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Editor from '@monaco-editor/react'
 import Split from 'react-split'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Maximize2, RotateCcw, Code2, Minimize2, History, Loader2, Webcam } from "lucide-react"
+import { Maximize2, RotateCcw, Code2, Minimize2, Loader2, Webcam } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Button } from '@/components/ui/button'
 import DescriptionTab from '@/components/home/code/DescriptionTab'
@@ -35,7 +35,7 @@ type CodeTemplates = {
 const languages: ProgrammingLanguage[] = [
   { id: 'c', name: 'C' },
   { id: 'cpp', name: 'C++' },
-  { id: 'csharp', name: 'C#' }
+  // { id: 'csharp', name: 'C#' }
 ];
 
 const defaultCode: CodeTemplates = {
@@ -119,6 +119,13 @@ const QuestionPage = () => {
       toast.error("Please login to compile code")
       return
     }
+    // Prevent compiling if code is unchanged from the template
+    const templatesForCheck = generateCodeTemplate();
+    const isTemplateCode = (code?.trim() || '') === (templatesForCheck[selectedLanguage]?.trim() || '');
+    if (isTemplateCode) {
+      toast.error("Please write some code before compiling");
+      return;
+    }
     const codeData = {
       challengeId: q_id,
       code: code,
@@ -154,12 +161,12 @@ const QuestionPage = () => {
     if (!submissionId) {
       toast.error("No submission found! Please compile the code first")
       console.log("No submissionId found")
-      // return
+      return
     }
     if (!isRunningAgent) {
       toast.error("Please Run Agent First")
       console.log("Agent is already running")
-      // return
+      return
     }
     setIsSubmitting(true)
     try {
@@ -504,7 +511,7 @@ const QuestionPage = () => {
               className="bg-purple h-8 text-white rounded-lg hover:bg-purple/90 transition-colors"
               onClick={handleSubmitCompile}
               size="sm"
-              disabled={isCompiling}
+              disabled={(() => { const t = generateCodeTemplate(); return isCompiling || (code?.trim() || '') === (t[selectedLanguage]?.trim() || ''); })()}
             >
               {isCompiling ? (
                 <>

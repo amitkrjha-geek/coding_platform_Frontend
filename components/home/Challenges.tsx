@@ -159,8 +159,12 @@ const Challenges = () => {
 
 
   useEffect(() => {
-    if (isSignedIn && user && allUsers.length > 0) {
+    if (isSignedIn && user) {
       const userEmail = user.primaryEmailAddress?.emailAddress;
+      // console.log("userEmail",userEmail);
+      // console.log("allUsers",allUsers);
+
+      
       const userExists = allUsers.some(existingUser => existingUser.email === userEmail);
 
       if (!userExists) {
@@ -174,7 +178,7 @@ const Challenges = () => {
           username: user.username || "User",
           avatar: user.imageUrl
         };
-        console.log("Creating new user:", userData);
+        // console.log("Creating new user:", userData);
 
         createUser(userData)
           .then((response) => {
