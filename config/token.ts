@@ -48,3 +48,10 @@ export const removeAdminData = (): void => {
     if (typeof window === "undefined") return;
     localStorage.removeItem("adminData");
 };
+
+export const logout = (): void => {
+    if (typeof window === "undefined") return;
+    removeToken();
+    removeCurrentUserId();
+    removeAdminData();
+};
