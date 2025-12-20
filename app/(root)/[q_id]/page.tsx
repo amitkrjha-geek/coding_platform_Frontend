@@ -115,39 +115,69 @@ const QuestionPage = () => {
     }
   };
 
-  const handleSubmitCompile = async () => {
+const handleSubmitCompile = async () => {
     console.log("Submitted code:", { code, q_id, selectedLanguage })
     if (!token) {
       toast.error("Please login to compile code")
       return
     }
-    // Prevent compiling if code is unchanged from the template
+
+    // 1. Prevent compiling empty/template code
     const templatesForCheck = generateCodeTemplate();
     const isTemplateCode = (code?.trim() || '') === (templatesForCheck[selectedLanguage]?.trim() || '');
     if (isTemplateCode) {
       toast.error("Please write some code before compiling");
       return;
     }
+    
+    // 2. [SMART INJECTION] Check for missing headers required by our Run function
+    let headerInjection = "";
+    if (!code?.includes("#include <windows.h>")) {
+        headerInjection += "#include <windows.h>\n";
+    }
+    if (!code?.includes("#include <iostream>")) {
+        headerInjection += "#include <iostream>\n";
+    }
+
+    // 3. Define the Run function (The Entry Point for the DLL)
+    const runFunctionInjection = `
+
+// [INJECTED BY VIOETHAT] Entry point for the Agent
+extern "C" __declspec(dllexport) void Run(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow) {
+    std::cout << "[*] Run Function: Execution Started." << std::endl;
+
+    // Trigger a MessageBox. 
+    // If the user wrote a Hook, this text will be intercepted!
+    // If not, it will just be closed by the Agent's auto-closer.
+    MessageBoxA(NULL, "This is the original text", "Original Caption", MB_OK);
+
+    std::cout << "[*] Run Function: Execution Finished." << std::endl;
+}
+`;
+    
+    // 4. Combine: Headers + User Code + Run Function
+    const finalCode = headerInjection + code + runFunctionInjection;
+    
     const codeData = {
       challengeId: q_id,
-      code: code,
+      code: finalCode,
       language: selectedLanguage
     }
+
     setIsCompiling(true)
     try {
       const res = await storeCode(codeData)
       console.log("res", res)
 
-      // Store the submissionId in localStorage
       if (res?.success) {
         localStorage.setItem('submissionId', res?.submissionId)
-        toast.success("Code submitted successfully")
-      }else {
-        toast.error(res?.error || "Error submitting code")
+        toast.success("Code compiled successfully")
+      } else {
+        toast.error(res?.error || "Error compiling code")
       }
 
     } catch (error: any) {
-      toast.error(error || "Error submitting code")
+      toast.error(error || "Error compiling code")
       console.log("error", error)
       if(error === "Invalid Token Please login Again"){
         router.push('/sign-in')

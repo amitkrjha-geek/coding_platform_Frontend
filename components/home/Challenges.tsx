@@ -211,6 +211,20 @@ const Challenges = () => {
             toast.error('Failed to create user');
           });
         console.log("User already exists");
+      } else if (userExists) {
+        loginUser(userEmail || '')
+          .then((response) => {
+            console.log("Response:", response);
+            if (response?.token) {
+              setToken(response?.token);
+              setCurrentUserId(response?.user?._id);
+            }
+          })
+          .catch((error) => {
+            console.error('Error creating user:', error);
+            toast.error('Failed to create user');
+          });
+        console.log("User already exists");
       }
     }
   }, [isSignedIn, user, allUsers, dispatch, router, token]);
