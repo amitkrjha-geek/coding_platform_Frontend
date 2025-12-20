@@ -21,6 +21,7 @@ import { getToken } from '@/config/token'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { fetchChallenges, getCompanyStats, getTopicStats, selectChallengeById } from '@/redux/features/challengeSlice'
 import { triggerRunAgent } from '../../../API/codeRunner'
+import { useRouter } from 'next/navigation'
 
 
 type ProgrammingLanguage = {
@@ -48,6 +49,7 @@ type TabValue = "description" | "submissions" | "logs" | "accepted";
 
 const QuestionPage = () => {
   const { q_id } = useParams()
+  const router = useRouter()
   const [selectedLanguage, setSelectedLanguage] = useState<ProgrammingLanguage['id']>('c')
   const token = getToken()
   const [isRunningAgent, setIsRunningAgent] = useState(false)
@@ -147,6 +149,9 @@ const QuestionPage = () => {
     } catch (error: any) {
       toast.error(error || "Error submitting code")
       console.log("error", error)
+      if(error === "Invalid Token Please login Again"){
+        router.push('/sign-in')
+      }
     } finally {
       setIsCompiling(false)
     }
