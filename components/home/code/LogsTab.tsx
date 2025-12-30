@@ -68,14 +68,29 @@ const LogsTab = ({ sessionId, isConnected = false }: LogsTabProps) => {
         });
 
         socket.on('log-message', (logData: Omit<LogEntry, 'id'>) => {
-          const newLog: LogEntry = {
-            ...logData,
-            id: uuid()
-          };
-          setLogs(prev => [...prev, newLog]);
+          setLogs(prev => {
+            // 1. Check if we have logs
+            if (prev.length > 0) {
+              const lastLog = prev[prev.length - 1];
+              
+              // 2. Compare the new log with the last log
+              // If the message and timestamp are identical, it's a duplicate -> Ignore it
+              if (lastLog.message === logData.message && 
+                  lastLog.timestamp === logData.timestamp) {
+                return prev;
+              }
+            }
+
+            // 3. If unique, add it
+            const newLog: LogEntry = {
+              ...logData,
+              id: uuid()
+            };
+            return [...prev, newLog];
+          });
         });
 
-        socket.on('connect_error', (error) => {
+        socket.on('connect_error', (error: any) => {
           console.error('❌ Socket.IO connection error:', error);
           setIsSocketConnected(false);
         });
@@ -91,6 +106,7 @@ const LogsTab = ({ sessionId, isConnected = false }: LogsTabProps) => {
     return () => {
       if (socketRef.current) {
         socketRef.current.emit('leave-session', sessionId);
+        socketRef.current.off('log-message');
         socketRef.current.disconnect();
       }
     };
@@ -100,8 +116,6 @@ const LogsTab = ({ sessionId, isConnected = false }: LogsTabProps) => {
   const clearLogs = () => {
     setLogs([]);
   };
-
-  console.log("logs", logs)
 
   // Get log level styling
   const getLogLevelStyle = (level: LogEntry['level']) => {
@@ -156,23 +170,6 @@ const LogsTab = ({ sessionId, isConnected = false }: LogsTabProps) => {
             </span>
           )}
         </div>
-        {/* <div className="flex items-center space-x-2">
-          <label className="flex items-center space-x-1 text-sm text-gray-600">
-            <input
-              type="checkbox"
-              checked={autoScroll}
-              onChange={(e) => setAutoScroll(e.target.checked)}
-              className="rounded"
-            />
-            <span>Auto-scroll</span>
-          </label>
-          <button
-            onClick={clearLogs}
-            className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded transition-colors"
-          >
-            Clear
-          </button>
-        </div> */}
       </div>
 
       {/* Logs container */}
@@ -220,4 +217,3 @@ const LogsTab = ({ sessionId, isConnected = false }: LogsTabProps) => {
 }
 
 export default LogsTab
-

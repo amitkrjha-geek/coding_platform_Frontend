@@ -41,7 +41,57 @@ const languages: ProgrammingLanguage[] = [
 
 const defaultCode: CodeTemplates = {
   c: '#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    // Write your C code here\n    \n    return 0;\n}\n',
-  cpp: '#include <iostream>\n#include <vector>\nusing namespace std;\n\nint main() {\n    // Write your C++ code here\n    \n    return 0;\n}\n',
+  
+  cpp: `#include <windows.h>
+#include <iostream>
+#include <string>
+#include "MinHook.h"
+#include "logger.hpp"
+
+// Pointer to original MessageBoxA
+typedef int (WINAPI* MessageBoxA_t)(HWND, LPCSTR, LPCSTR, UINT);
+MessageBoxA_t OriginalMessageBoxA = nullptr;
+
+// THE HOOK FUNCTION
+int WINAPI HookedMessageBoxA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType) {
+    
+    // 1. Log the Header
+    Logger::LogMessage("[+] HOOK SUCCESS: MessageBoxA Intercepted!");
+    Sleep(50); // Small delay to prevent Pipe Jam
+
+    // 2. Log the Arguments
+    std::string captionLog = "> Captured Caption: " + std::string(lpCaption ? lpCaption : "(null)");
+    Logger::LogMessage(captionLog);
+    Sleep(50); // Small delay
+
+    std::string textLog = "> Captured Text:      " + std::string(lpText ? lpText : "(null)");
+    Logger::LogMessage(textLog);
+
+    // 3. Return IDOK (Prevents freezing)
+    return IDOK; 
+}
+
+// DLL ENTRY POINT
+BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved) {
+    if (dwReason == DLL_PROCESS_ATTACH) {
+        // Logger::LogMessage("[DLL-LOG] Injected into process!"); 
+
+        if (MH_Initialize() != MH_OK) return FALSE;
+
+        if (MH_CreateHookApi(L"user32", "MessageBoxA", &HookedMessageBoxA, reinterpret_cast<LPVOID*>(&OriginalMessageBoxA)) != MH_OK) {
+            Logger::LogMessage("[ERROR] MH_CreateHookApi Failed"); // Debugging
+            return FALSE;
+        }
+
+        if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK) return FALSE;
+    }
+    else if (dwReason == DLL_PROCESS_DETACH) {
+        MH_DisableHook(MH_ALL_HOOKS);
+        MH_Uninitialize();
+    }
+    return TRUE;
+}`,
+
   csharp: 'using System;\nusing System.Collections.Generic;\n\npublic class Solution {\n    public static void Main(string[] args) {\n        // Write your C# code here\n        \n    }\n}\n'
 };
 
@@ -144,14 +194,15 @@ const handleSubmitCompile = async () => {
 
 // [INJECTED BY VIOETHAT] Entry point for the Agent
 extern "C" __declspec(dllexport) void Run(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow) {
-    std::cout << "[*] Run Function: Execution Started." << std::endl;
+    // Log Start
+    Logger::LogMessage("[*] Run Function: Execution Started.");
+    Sleep(100); // Give Agent time to process log
 
-    // Trigger a MessageBox. 
-    // If the user wrote a Hook, this text will be intercepted!
-    // If not, it will just be closed by the Agent's auto-closer.
+    // Trigger the MessageBox
     MessageBoxA(NULL, "This is the original text", "Original Caption", MB_OK);
 
-    std::cout << "[*] Run Function: Execution Finished." << std::endl;
+    Sleep(100); // Give Agent time to reset
+    Logger::LogMessage("[*] Run Function: Execution Finished.");
 }
 `;
     
@@ -221,6 +272,7 @@ extern "C" __declspec(dllexport) void Run(HWND hwnd, HINSTANCE hinst, LPSTR lpsz
 
 
   const handleRunAgent = async () => {
+    if (isRunning) return;
     if (!token) {
       toast.error("Please login to run agent")
       return
