@@ -31,7 +31,7 @@ import {
 import { z } from "zod";
 import Tiptap from "@/components/Tiptap";
 import { Card, CardContent } from "@/components/ui/card";
-import { FileText, X } from "lucide-react";
+import { FileText, Plus, Minus, X } from "lucide-react";
 import { getChallengeById, updateChallenge } from "@/API/challenges";
 import { getAllPlans } from "@/API/plan";
 import toast from "react-hot-toast";
@@ -58,6 +58,12 @@ const formSchema = z.object({
     type: z.string(),
     size: z.number()
   })).optional(),
+  flags: z.array(
+    z.object({
+      question: z.string().min(1, "Question is required"),
+      answer: z.string().min(1, "Answer is required"),
+    })
+  ).optional(),
 }).refine((data) => {
   // If payment mode is paid, planId is required
   if (data.paymentMode === "paid" && !data.planId) {
@@ -91,6 +97,7 @@ const fileToBase64 = (file: File): Promise<{ name: string, content: string, type
 const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => { 
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [flags, setFlags] = useState<{ question: string; answer: string }[]>([]);
   const [newTag, setNewTag] = React.useState("")
   const [newCompany, setNewCompany] = React.useState("")
   const [newTopic, setNewTopic] = React.useState("")
@@ -115,6 +122,7 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
       paymentMode: "",
       planId: "",
       files: [],
+      flags: [],
     },
   })
 
@@ -178,6 +186,26 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
     form.setValue('topic', newTopics);
   };
 
+  const addFlag = () => {
+    const newFlags = [...flags, { question: "", answer: "" }];
+    setFlags(newFlags);
+    form.setValue("flags", newFlags);
+  };
+
+  const removeFlag = (index: number) => {
+    const newFlags = flags.filter((_, i) => i !== index);
+    setFlags(newFlags);
+    form.setValue("flags", newFlags);
+  };
+
+  const updateFlag = (index: number, field: "question" | "answer", value: string) => {
+    const newFlags = flags.map((flag, i) =>
+      i === index ? { ...flag, [field]: value } : flag
+    );
+    setFlags(newFlags);
+    form.setValue("flags", newFlags);
+  };
+
   useEffect(() => {
     const getChallenge = async () => {
       try {
@@ -189,6 +217,7 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
           const challenge = res?.data;
           
           // Set form values
+          const existingFlags = challenge?.flags || [];
           form.reset({
             title: challenge?.title,
             difficulty: challenge?.difficulty,
@@ -200,14 +229,16 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
             paymentMode: challenge?.paymentMode || "",
             planId: challenge?.planId?._id || "",
             files: challenge?.files || [],
+            flags: existingFlags,
           });
-          
-          // Set local state for tags, companies, and topics
+
+          // Set local state for tags, companies, topics, and flags
           setFormData({
             tags: challenge.keywords || [],
             companies: challenge.companies || [],
             topics: challenge.topic || []
           });
+          setFlags(existingFlags);
         }
       } catch (error) {
         console.error('Error fetching challenge:', error);
@@ -640,9 +671,61 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
             )}
           />
 
+          {/* Flags */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium">Add Flag</label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addFlag}
+                className="flex items-center gap-1"
+              >
+                <Plus size={14} /> Add Flag
+              </Button>
+            </div>
+            {flags.map((flag, index) => (
+              <div key={index} className="border rounded-md p-4 space-y-3 bg-gray-50">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-600">Flag {index + 1}</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeFlag(index)}
+                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <Minus size={14} />
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-gray-500">Question</label>
+                  <textarea
+                    value={flag.question}
+                    onChange={(e) => updateFlag(index, "question", e.target.value)}
+                    placeholder="Enter flag question"
+                    rows={2}
+                    className="w-full border rounded-md px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-gray-500">Answer</label>
+                  <textarea
+                    value={flag.answer}
+                    onChange={(e) => updateFlag(index, "answer", e.target.value)}
+                    placeholder="Enter flag answer"
+                    rows={2}
+                    className="w-full border rounded-md px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+
           <div className="flex gap-4">
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="bg-purple-600 text-white"
               disabled={loading}
             >
