@@ -48,6 +48,7 @@ const formSchema = z.object({
   topic: z.array(z.string()).min(1, "At least one topic is required"),
   keywords: z.array(z.string()),
   problemStatement: z.string().min(1, "Problem statement is required"),
+  codeTemplate: z.string().min(1, "Code template is required"),
   status: z.string().min(1, "Status is required"),
   companies: z.array(z.string()),
   paymentMode: z.string().min(1, "Payment mode is required"),
@@ -117,6 +118,7 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
       topic: [],
       keywords: [],
       problemStatement: "",
+      codeTemplate: "",
       status: "active",
       companies: [],
       paymentMode: "",
@@ -224,6 +226,7 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
             topic: challenge?.topic || [],
             keywords: challenge?.keywords || [],
             problemStatement: challenge?.problemStatement || '',
+            codeTemplate: challenge?.codeTemplate || '',
             status: challenge?.status || 'active',
             companies: challenge?.companies || [],
             paymentMode: challenge?.paymentMode || "",
@@ -585,6 +588,27 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
                       problemStatement={field.value}
                       onChange={field.onChange}
                     />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Code Template */}
+          <FormField
+            control={form.control}
+            name="codeTemplate"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Code Template <span className="text-red-500">*</span></FormLabel>
+                <FormControl>
+                  <textarea
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Paste your code template here..."
+                    rows={12}
+                    className="w-full border rounded-md px-3 py-2 text-sm font-mono resize-vertical focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-50"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

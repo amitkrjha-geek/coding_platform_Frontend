@@ -22,6 +22,7 @@ export interface ChallengeData {
     topic: string[];
     keywords: string[];
     problemStatement: string;
+    codeTemplate: string;
     constraints: string[];
     files: string[];
     status: string;
