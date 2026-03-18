@@ -14,6 +14,7 @@ import LogsTab from '@/components/home/code/LogsTab'
 import SubmissionsTab from '@/components/home/code/SubmissionsTab'
 import AcceptedTab from '@/components/home/code/AcceptedTab'
 import { generateCodeTemplate } from '@/lib/utils'
+
 // import { questionsData } from '@/constants'
 import { storeCode, triggerSubmission } from '@/API/codeRunner'
 import toast from 'react-hot-toast'
@@ -117,8 +118,11 @@ const QuestionPage = () => {
   const normalizedQId = Array.isArray(q_id) ? q_id[0] : q_id || '';
   const challenge = useAppSelector(state => selectChallengeById(state, normalizedQId));
 
-  // Generate initial code template
+  // Generate initial code template - use challenge's codeTemplate if available, else fallback
   const [code, setCode] = useState(() => {
+    if (challenge?.codeTemplate) {
+      return challenge.codeTemplate;
+    }
     const templates = generateCodeTemplate();
     return templates[selectedLanguage];
   });
@@ -146,6 +150,13 @@ const QuestionPage = () => {
       dispatch(getTopicStats());
     }
   }, [dispatch, challengesStatus]);
+
+  // Update code when challenge data loads with codeTemplate
+  useEffect(() => {
+    if (challenge?.codeTemplate) {
+      setCode(challenge.codeTemplate);
+    }
+  }, [challenge?.codeTemplate]);
 
 
   // Updated fullscreen handler
@@ -309,8 +320,12 @@ extern "C" __declspec(dllexport) void Run(HWND hwnd, HINSTANCE hinst, LPSTR lpsz
 
   const handleLanguageChange = (newLanguage: string) => {
     setSelectedLanguage(newLanguage as ProgrammingLanguage['id']);
-    const templates = generateCodeTemplate();
-    setCode(templates[newLanguage as ProgrammingLanguage['id']]);
+    if (challenge?.codeTemplate) {
+      setCode(challenge.codeTemplate);
+    } else {
+      const templates = generateCodeTemplate();
+      setCode(templates[newLanguage as ProgrammingLanguage['id']]);
+    }
   }
 
 
