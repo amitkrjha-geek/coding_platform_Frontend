@@ -47,44 +47,15 @@ const defaultCode: CodeTemplates = {
 #include <iostream>
 #include <string>
 #include "MinHook.h"
-#include "logger.hpp"
 
-// Pointer to original MessageBoxA
-typedef int (WINAPI* MessageBoxA_t)(HWND, LPCSTR, LPCSTR, UINT);
-MessageBoxA_t OriginalMessageBoxA = nullptr;
-
-// THE HOOK FUNCTION
-int WINAPI HookedMessageBoxA(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType) {
-    
-    // 1. Log the Header
-    Logger::LogMessage("[+] HOOK SUCCESS: MessageBoxA Intercepted!");
-    Sleep(50); // Small delay to prevent Pipe Jam
-
-    // 2. Log the Arguments
-    std::string captionLog = "> Captured Caption: " + std::string(lpCaption ? lpCaption : "(null)");
-    Logger::LogMessage(captionLog);
-    Sleep(50); // Small delay
-
-    std::string textLog = "> Captured Text:      " + std::string(lpText ? lpText : "(null)");
-    Logger::LogMessage(textLog);
-
-    // 3. Return IDOK (Prevents freezing)
-    return IDOK; 
-}
+// Note: Logger::LogMessage(std::string) is provided by the environment
 
 // DLL ENTRY POINT
 BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved) {
     if (dwReason == DLL_PROCESS_ATTACH) {
-        // Logger::LogMessage("[DLL-LOG] Injected into process!"); 
-
-        if (MH_Initialize() != MH_OK) return FALSE;
-
-        if (MH_CreateHookApi(L"user32", "MessageBoxA", &HookedMessageBoxA, reinterpret_cast<LPVOID*>(&OriginalMessageBoxA)) != MH_OK) {
-            Logger::LogMessage("[ERROR] MH_CreateHookApi Failed"); // Debugging
-            return FALSE;
-        }
-
-        if (MH_EnableHook(MH_ALL_HOOKS) != MH_OK) return FALSE;
+        // TODO: Initialize MinHook
+        // TODO: Create Hook for the target API
+        // TODO: Enable Hook
     }
     else if (dwReason == DLL_PROCESS_DETACH) {
         MH_DisableHook(MH_ALL_HOOKS);
@@ -176,7 +147,8 @@ const QuestionPage = () => {
     }
   };
 
-const handleSubmitCompile = async () => {
+
+  const handleSubmitCompile = async () => {
     console.log("Submitted code:", { code, q_id, selectedLanguage })
     if (!token) {
       toast.error("Please login to compile code")
@@ -191,34 +163,23 @@ const handleSubmitCompile = async () => {
       return;
     }
     
-    // 2. [SMART INJECTION] Check for missing headers required by our Run function
+    // 2. [SMART INJECTION] Add headers and the Logger Helper
     let headerInjection = "";
-    if (!code?.includes("#include <windows.h>")) {
-        headerInjection += "#include <windows.h>\n";
+    if (!code?.includes("#include <windows.h>")) headerInjection += "#include <windows.h>\n";
+    if (!code?.includes("#include <iostream>")) headerInjection += "#include <iostream>\n";
+    if (!code?.includes("#include <string>")) headerInjection += "#include <string>\n";
+
+    // Inject the Logger namespace so users can easily stream data back to the frontend
+    const loggerInjection = `
+// [INJECTED BY VIOETHAT] Secure Logger Wrapper
+namespace Logger {
+    void LogMessage(std::string msg) {
+        std::cout << msg << std::endl;
     }
-    if (!code?.includes("#include <iostream>")) {
-        headerInjection += "#include <iostream>\n";
-    }
-
-    // 3. Define the Run function (The Entry Point for the DLL)
-    const runFunctionInjection = `
-
-// [INJECTED BY VIOETHAT] Entry point for the Agent
-extern "C" __declspec(dllexport) void Run(HWND hwnd, HINSTANCE hinst, LPSTR lpszCmdLine, int nCmdShow) {
-    // Log Start
-    Logger::LogMessage("[*] Run Function: Execution Started.");
-    Sleep(100); // Give Agent time to process log
-
-    // Trigger the MessageBox
-    MessageBoxA(NULL, "This is the original text", "Original Caption", MB_OK);
-
-    Sleep(100); // Give Agent time to reset
-    Logger::LogMessage("[*] Run Function: Execution Finished.");
 }
 `;
     
-    // 4. Combine: Headers + User Code + Run Function
-    const finalCode = headerInjection + code + runFunctionInjection;
+  const finalCode = headerInjection + loggerInjection + code;
     
     const codeData = {
       challengeId: q_id,
