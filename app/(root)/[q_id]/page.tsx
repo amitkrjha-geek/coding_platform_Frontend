@@ -24,6 +24,8 @@ import { fetchChallenges, getCompanyStats, getTopicStats, selectChallengeById } 
 import { triggerRunAgent } from '../../../API/codeRunner'
 import { useRouter } from 'next/navigation'
 
+import { verifyChallengeFlags } from '@/API/submission'
+
 
 type ProgrammingLanguage = {
   id: 'c' | 'cpp' | 'csharp';
@@ -79,6 +81,10 @@ const QuestionPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isRunning, setIsRunning] = useState(false)
   const [sessionId, setSessionId] = useState<string | null>(null)
+
+  const [showFlagModal, setShowFlagModal] = useState(false)
+  const [flagAnswers, setFlagAnswers] = useState<{[key: string]: string}>({})
+  const [isVerifyingFlags, setIsVerifyingFlags] = useState(false)
 
 
   const dispatch = useAppDispatch()
@@ -226,6 +232,13 @@ namespace Logger {
       console.log("Agent is already running")
       return
     }
+
+    // [NEW CTF LOGIC] If the challenge has flags, open the modal instead!
+    if (challenge?.flags && challenge.flags.length > 0) {
+      setShowFlagModal(true);
+      return; 
+    }
+
     setIsSubmitting(true)
     try {
       const submissionResult = await triggerSubmission(submissionId ?? '')
@@ -241,6 +254,38 @@ namespace Logger {
       setIsSubmitting(false)
     }
   }
+
+  const handleVerifyFlags = async () => {
+    const submissionId = localStorage.getItem('submissionId');
+    if (!submissionId) return;
+
+    // Format answers into the array structure the backend expects
+    const formattedAnswers = Object.keys(flagAnswers).map(questionId => ({
+      questionId,
+      answer: flagAnswers[questionId]
+    }));
+
+    setIsVerifyingFlags(true);
+    try {
+      const res = await verifyChallengeFlags({
+        submissionId,
+        challengeId: normalizedQId,
+        userAnswers: formattedAnswers
+      });
+
+      toast.success(res.message || "Challenge Passed!");
+      setShowFlagModal(false);
+      localStorage.removeItem('submissionId');
+      
+      // Optional: Automatically switch to accepted tab or clear editor
+      // setActiveTab("accepted");
+      
+    } catch (error: any) {
+      toast.error(error.message || "Incorrect flags. Check your logs!");
+    } finally {
+      setIsVerifyingFlags(false);
+    }
+  };
 
 
   const handleRunAgent = async () => {
@@ -351,6 +396,58 @@ namespace Logger {
           {renderEditor()}
         </div>
       </Split>
+
+      {/* CTF FLAG SUBMISSION MODAL */}
+      {showFlagModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 m-4 border border-gray-100">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-bold text-gray-800">🚩 Capture The Flag</h2>
+              <button onClick={() => setShowFlagModal(false)} className="text-gray-400 hover:text-gray-600">
+                ✕
+              </button>
+            </div>
+            
+            <p className="text-sm text-gray-600 mb-6">
+              Review your execution logs. Based on the data you intercepted, answer the following security questions to prove your exploit worked.
+            </p>
+
+            <div className="space-y-4">
+              {challenge?.flags?.map((flag: any) => (
+                <div key={flag._id} className="space-y-2">
+                  <label className="text-sm font-semibold text-gray-700">
+                    {flag.question}
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter the captured flag..."
+                    className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple focus:border-purple outline-none transition-all"
+                    value={flagAnswers[flag._id] || ''}
+                    onChange={(e) => setFlagAnswers({...flagAnswers, [flag._id]: e.target.value})}
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="flex gap-3 mt-8">
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={() => setShowFlagModal(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                className="flex-1 bg-purple text-white hover:bg-purple/90"
+                onClick={handleVerifyFlags}
+                disabled={isVerifyingFlags || Object.keys(flagAnswers).length !== challenge?.flags?.length}
+              >
+                {isVerifyingFlags ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify Flags"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 

@@ -15,6 +15,12 @@ export interface PlanData {
     __v?: number;
 }
 
+export interface FlagData {
+    _id: string;
+    question: string;
+    answer: string;
+}
+
 export interface ChallengeData {
     _id: string;
     title: string;
@@ -32,6 +38,7 @@ export interface ChallengeData {
     companies: string[];
     paymentMode: string;
     planId: PlanData;
+    flags: FlagData[];
     createdAt: string;
     __v?: number;
 }

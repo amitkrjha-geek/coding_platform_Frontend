@@ -59,3 +59,17 @@ export const getPaginatedSubmissions = async (
         };
     }
 };
+
+// Verify CTF Flags
+export const verifyChallengeFlags = async (data: { 
+    submissionId: string, 
+    challengeId: string, 
+    userAnswers: { questionId: string, answer: string }[] 
+}) => {
+    try {
+        const response = await axiosInstance.post("/submissions/verify-flags", data);
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || { message: "Verification failed" };
+    }
+};
