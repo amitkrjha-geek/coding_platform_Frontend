@@ -46,25 +46,23 @@ const defaultCode: CodeTemplates = {
   c: '#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    // Write your C code here\n    \n    return 0;\n}\n',
   
   cpp: `#include <windows.h>
-#include <iostream>
-#include <string>
-#include "MinHook.h"
+  #include "MinHook.h"
 
-// Note: Logger::LogMessage(std::string) is provided by the environment
+  // Note: Logger::LogMessage(std::string) is provided by the platform
 
-// DLL ENTRY POINT
-BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved) {
-    if (dwReason == DLL_PROCESS_ATTACH) {
-        // TODO: Initialize MinHook
-        // TODO: Create Hook for the target API
-        // TODO: Enable Hook
-    }
-    else if (dwReason == DLL_PROCESS_DETACH) {
-        MH_DisableHook(MH_ALL_HOOKS);
-        MH_Uninitialize();
-    }
-    return TRUE;
-}`,
+  // DLL ENTRY POINT
+  BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved) {
+      if (dwReason == DLL_PROCESS_ATTACH) {
+          // TODO: Initialize MinHook
+          // TODO: Create Hook for the target API
+          // TODO: Enable Hook
+      }
+      else if (dwReason == DLL_PROCESS_DETACH) {
+          MH_DisableHook(MH_ALL_HOOKS);
+          MH_Uninitialize();
+      }
+      return TRUE;
+  }`,
 
   csharp: 'using System;\nusing System.Collections.Generic;\n\npublic class Solution {\n    public static void Main(string[] args) {\n        // Write your C# code here\n        \n    }\n}\n'
 };
@@ -170,22 +168,21 @@ const QuestionPage = () => {
     }
     
     // 2. [SMART INJECTION] Add headers and the Logger Helper
-    let headerInjection = "";
-    if (!code?.includes("#include <windows.h>")) headerInjection += "#include <windows.h>\n";
-    if (!code?.includes("#include <iostream>")) headerInjection += "#include <iostream>\n";
-    if (!code?.includes("#include <string>")) headerInjection += "#include <string>\n";
+    const systemInjection = `// --- PLATFORM WRAPPER START ---
+    #include <iostream>
+    #include <string>
 
-    // Inject the Logger namespace so users can easily stream data back to the frontend
-    const loggerInjection = `
-// [INJECTED BY VIOETHAT] Secure Logger Wrapper
-namespace Logger {
-    void LogMessage(std::string msg) {
-        std::cout << msg << std::endl;
+    namespace Logger {
+        void LogMessage(std::string msg) {
+            std::cout << msg << std::endl;
+        }
     }
-}
-`;
+    // --- PLATFORM WRAPPER END ---
+
+    `;
     
-  const finalCode = headerInjection + loggerInjection + code;
+    // Combine the safe system injection with the user's code
+    const finalCode = systemInjection + code;
     
     const codeData = {
       challengeId: q_id,
