@@ -5,6 +5,7 @@ import { CheckoutPage } from "@/components/billing/CheckoutPage";
 import { getToken, getCurrentUserId } from '@/config/token';
 import toast from 'react-hot-toast';
 import { getUserPaymentHistory } from '@/API/payment';
+import { useUser } from "@clerk/nextjs";
 
 interface ChallengeCardProps {
     title: string;
@@ -45,6 +46,8 @@ const difficultyConfig = {
 } as const;
 
 const ChallengeCard = memo(({ title, difficulty, submissions, id, paymentMode, planId, hasSubscribed = false  }: ChallengeCardProps) => {
+        const {isSignedIn } = useUser();
+
     const router = useRouter();
     const token = getToken();
     const userId = getCurrentUserId();
@@ -54,6 +57,12 @@ const ChallengeCard = memo(({ title, difficulty, submissions, id, paymentMode, p
     const [hasPaid, setHasPaid] = useState(false);
 
     const handleStartChallenge = () => {
+
+        if(!isSignedIn){
+      toast.error("Please login to Start the Challenge");
+            router.push("/sign-in")
+            return;
+        }
         router.push(`/${id}`);
     };
 
