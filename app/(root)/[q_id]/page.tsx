@@ -13,6 +13,7 @@ import DescriptionTab from '@/components/home/code/DescriptionTab'
 import LogsTab from '@/components/home/code/LogsTab'
 import SubmissionsTab from '@/components/home/code/SubmissionsTab'
 import AcceptedTab from '@/components/home/code/AcceptedTab'
+import SolutionHintTab from '@/components/home/code/SolutionHintTab'
 import { generateCodeTemplate } from '@/lib/utils'
 
 // import { questionsData } from '@/constants'
@@ -67,7 +68,7 @@ const defaultCode: CodeTemplates = {
   csharp: 'using System;\nusing System.Collections.Generic;\n\npublic class Solution {\n    public static void Main(string[] args) {\n        // Write your C# code here\n        \n    }\n}\n'
 };
 
-type TabValue = "description" | "submissions" | "logs" | "accepted";
+type TabValue = "description" | "submissions" | "logs" | "accepted" | "solution-hint";
 
 const QuestionPage = () => {
   const { q_id } = useParams()
@@ -92,6 +93,9 @@ const QuestionPage = () => {
   // Normalize q_id to string
   const normalizedQId = Array.isArray(q_id) ? q_id[0] : q_id || '';
   const challenge = useAppSelector(state => selectChallengeById(state, normalizedQId));
+
+  console.log({challenge});
+  
 
   // Generate initial code template - use challenge's codeTemplate if available, else fallback
   const [code, setCode] = useState(() => {
@@ -472,6 +476,14 @@ const QuestionPage = () => {
               >
                 Logs
               </TabsTrigger>
+              {challenge?.answerFileUrl && (
+                <TabsTrigger
+                  value="solution-hint"
+                  className="tabs-trigger-active"
+                >
+                  Solution Hint
+                </TabsTrigger>
+              )}
               {/* <TabsTrigger
                 value="accepted"
                 className="tabs-trigger-active"
@@ -502,6 +514,12 @@ const QuestionPage = () => {
           {activeTab === "submissions" && <SubmissionsTab />}
           {activeTab === "logs" && <LogsTab sessionId={sessionId || undefined} />}
           {activeTab === "accepted" && <AcceptedTab />}
+          {activeTab === "solution-hint" && challenge?.answerFileUrl && (
+            <SolutionHintTab
+              answerFileUrl={challenge.answerFileUrl}
+              challengeId={normalizedQId}
+            />
+          )}
         </div>
       </div>
     )

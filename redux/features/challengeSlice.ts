@@ -38,6 +38,7 @@ export interface ChallengeData {
     companies: string[];
     paymentMode: string;
     planId: PlanData;
+    answerFileUrl?: string | null;
     flags: FlagData[];
     createdAt: string;
     __v?: number;
