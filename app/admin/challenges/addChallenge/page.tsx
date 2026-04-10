@@ -31,12 +31,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Badge } from "@/components/ui/badge";
-import { FileText, Plus, Minus, X } from "lucide-react";
+import { FileText, Plus, Minus, X, Upload, Loader2, FileCheck } from "lucide-react";
 import Tiptap from "@/components/Tiptap";
 import { createChallenge } from "@/API/challenges";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { getAllPlans } from "@/API/plan";
+import { uploadPdfToCloudinary } from "@/lib/cloudinaryUpload";
 
 // First, update the formSchema to properly handle file validation
 const formSchema = z.object({
@@ -50,6 +51,7 @@ const formSchema = z.object({
   companies: z.array(z.string()),
   paymentMode: z.string().min(1, "Payment mode is required"),
   planId: z.string().optional(),
+  answerFileUrl: z.string().optional(),
   files: z
     .array(
       z.object({
@@ -90,6 +92,9 @@ const AddChallenge = () => {
   });
   const [loading, setLoading] = React.useState(false);
   const [flags, setFlags] = React.useState<{ question: string; answer: string }[]>([]);
+  const [answerFileUploading, setAnswerFileUploading] = React.useState(false);
+  const [answerFileName, setAnswerFileName] = React.useState<string | null>(null);
+  const answerFileInputRef = React.useRef<HTMLInputElement>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -104,6 +109,7 @@ const AddChallenge = () => {
       companies: [],
       paymentMode: "",
       planId: "",
+      answerFileUrl: "",
       files: [],
       flags: [],
     },
@@ -212,6 +218,47 @@ const AddChallenge = () => {
     });
   };
 
+
+  const handleAnswerFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+      toast.error("Only PDF files are allowed for answer file");
+      if (answerFileInputRef.current) answerFileInputRef.current.value = "";
+      return;
+    }
+
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error("File size must be less than 20MB");
+      if (answerFileInputRef.current) answerFileInputRef.current.value = "";
+      return;
+    }
+
+    setAnswerFileUploading(true);
+    try {
+      const result = await uploadPdfToCloudinary(file);
+      if (result.success && result.url) {
+        form.setValue("answerFileUrl", result.url);
+        setAnswerFileName(file.name);
+        toast.success("Answer file uploaded successfully");
+      } else {
+        throw new Error(result.error || "Upload failed");
+      }
+    } catch (error) {
+      console.error("Answer file upload error:", error);
+      toast.error("Failed to upload answer file. Please try again.");
+    } finally {
+      setAnswerFileUploading(false);
+      if (answerFileInputRef.current) answerFileInputRef.current.value = "";
+    }
+  };
+
+  const removeAnswerFile = () => {
+    form.setValue("answerFileUrl", "");
+    setAnswerFileName(null);
+    if (answerFileInputRef.current) answerFileInputRef.current.value = "";
+  };
 
   useEffect(() => {
     const getPlans = async () => {
@@ -714,6 +761,100 @@ const AddChallenge = () => {
                   </FormItem>
                 )}
               />
+
+              {/* Answer File Upload (PDF) */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">
+                  Add Answer File{" "}
+                  <span className="text-gray-400 font-normal">(PDF only)</span>
+                </label>
+
+                {/* Hidden file input */}
+                <input
+                  ref={answerFileInputRef}
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handleAnswerFileUpload}
+                  className="hidden"
+                  id="answer-file-upload"
+                />
+
+                {form.watch("answerFileUrl") ? (
+                  /* Uploaded state */
+                  <div className="border border-green-200 bg-green-50 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                          <FileCheck className="w-5 h-5 text-green-600" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-green-800">
+                            {answerFileName || "Answer File"}
+                          </p>
+                          <a
+                            href={form.watch("answerFileUrl")}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-green-600 hover:underline"
+                          >
+                            View uploaded PDF
+                          </a>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="text-gray-500 hover:text-purple-600 border-gray-200"
+                          onClick={() => answerFileInputRef.current?.click()}
+                          disabled={answerFileUploading}
+                        >
+                          <Upload size={14} className="mr-1" />
+                          Replace
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                          onClick={removeAnswerFile}
+                          disabled={answerFileUploading}
+                        >
+                          <X size={16} />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ) : answerFileUploading ? (
+                  /* Uploading state */
+                  <div className="border-2 border-dashed border-purple-300 bg-purple-50 rounded-lg p-6 flex flex-col items-center justify-center">
+                    <Loader2 className="w-8 h-8 text-purple-500 animate-spin mb-2" />
+                    <p className="text-sm font-medium text-purple-600">
+                      Uploading answer file...
+                    </p>
+                    <p className="text-xs text-purple-400 mt-1">
+                      Please wait while the file is being uploaded
+                    </p>
+                  </div>
+                ) : (
+                  /* Empty / upload state */
+                  <div
+                    className="border-2 border-dashed border-gray-200 hover:border-purple-300 rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-colors group"
+                    onClick={() => answerFileInputRef.current?.click()}
+                  >
+                    <div className="w-12 h-12 rounded-full bg-gray-100 group-hover:bg-purple-100 flex items-center justify-center mb-3 transition-colors">
+                      <Upload className="w-5 h-5 text-gray-400 group-hover:text-purple-500 transition-colors" />
+                    </div>
+                    <p className="text-sm font-medium text-gray-600 group-hover:text-purple-600 transition-colors">
+                      Click to upload answer file
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      PDF format only, max 20MB
+                    </p>
+                  </div>
+                )}
+              </div>
 
               {/* Flags */}
               <div className="space-y-3">

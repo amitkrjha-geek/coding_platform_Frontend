@@ -15,11 +15,14 @@ import { fetchPlans } from '@/redux/features/planSlice';
 import {  getToken } from '@/config/token';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@clerk/nextjs';
 
 export const PricingPlans = () => {
   const dispatch = useAppDispatch();
   const token = getToken();
   const router = useRouter();
+      const { userId } = useAuth();      
+  
 
   // const { user } = useUser();
   // const name = user?.fullName || '';
@@ -71,7 +74,7 @@ export const PricingPlans = () => {
   };
 
   const handlePlanSelect = (plan: typeof plans[0]) => {
-    if(!token){
+    if(!userId){
       toast.error("Please login to subscribe to a plan");
       setTimeout(() => {
         router.push("/sign-in");
