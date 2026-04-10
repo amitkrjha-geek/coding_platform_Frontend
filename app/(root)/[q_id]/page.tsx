@@ -1,7 +1,7 @@
 'use client'
 
-import { useParams } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import { useState, useEffect, useMemo } from 'react'
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Editor from '@monaco-editor/react'
 import Split from 'react-split'
@@ -9,24 +9,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Maximize2, RotateCcw, Code2, Minimize2, Loader2, Webcam } from "lucide-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Button } from '@/components/ui/button'
+import toast from 'react-hot-toast'
+
 import DescriptionTab from '@/components/home/code/DescriptionTab'
 import LogsTab from '@/components/home/code/LogsTab'
 import SubmissionsTab from '@/components/home/code/SubmissionsTab'
 import AcceptedTab from '@/components/home/code/AcceptedTab'
 import SolutionHintTab from '@/components/home/code/SolutionHintTab'
-import { generateCodeTemplate } from '@/lib/utils'
 
-// import { questionsData } from '@/constants'
-import { storeCode, triggerSubmission } from '@/API/codeRunner'
-import toast from 'react-hot-toast'
+import { generateCodeTemplate } from '@/lib/utils'
 import { getToken } from '@/config/token'
 import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { fetchChallenges, getCompanyStats, getTopicStats, selectChallengeById } from '@/redux/features/challengeSlice'
-import { triggerRunAgent } from '../../../API/codeRunner'
-import { useRouter } from 'next/navigation'
 
+import { storeCode, triggerSubmission, triggerRunAgent } from '@/API/codeRunner'
 import { verifyChallengeFlags } from '@/API/submission'
-
 
 type ProgrammingLanguage = {
   id: 'c' | 'cpp' | 'csharp';
@@ -47,23 +44,47 @@ const defaultCode: CodeTemplates = {
   c: '#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    // Write your C code here\n    \n    return 0;\n}\n',
   
   cpp: `#include <windows.h>
-  #include "MinHook.h"
+#include <string>
+#include "MinHook.h"
+#include "logger.h"
 
-  // Note: Logger::LogMessage(std::string) is provided by the platform
+// Step 1: Define the original function pointer type
+// typedef <return> (WINAPI* <FuncName>_t)(<params>);
+// <FuncName>_t Original<FuncName> = nullptr;
 
-  // DLL ENTRY POINT
-  BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved) {
-      if (dwReason == DLL_PROCESS_ATTACH) {
-          // TODO: Initialize MinHook
-          // TODO: Create Hook for the target API
-          // TODO: Enable Hook
-      }
-      else if (dwReason == DLL_PROCESS_DETACH) {
-          MH_DisableHook(MH_ALL_HOOKS);
-          MH_Uninitialize();
-      }
-      return TRUE;
-  }`,
+// Step 2: Write your hook function
+// <return> WINAPI Hooked<FuncName>(<params>) {
+//     Logger::Log("HOOK SUCCESS: <FuncName> intercepted!");
+//     return Original<FuncName>(<params>);  // or block by returning early
+// }
+
+// Step 3: Worker thread — runs OUTSIDE DllMain (avoids loader lock)
+DWORD WINAPI InitThread(LPVOID) {
+    Sleep(100); // wait for process to fully initialize
+
+    if (MH_Initialize() != MH_OK) return 1;
+
+    // TODO: MH_CreateHookApi(L"<dll>", "<FuncName>", &Hooked<FuncName>,
+    //                         reinterpret_cast<LPVOID*>(&Original<FuncName>));
+
+    MH_EnableHook(MH_ALL_HOOKS);
+
+    Logger::Log("HOOK SUCCESS: hook installed!");
+    return 0;
+}
+
+// DllMain — only spawns the thread, never does I/O here
+BOOL WINAPI DllMain(HINSTANCE hinst, DWORD dwReason, LPVOID reserved) {
+    if (dwReason == DLL_PROCESS_ATTACH) {
+        DisableThreadLibraryCalls(hinst);
+        CreateThread(NULL, 0, InitThread, NULL, 0, NULL);
+    }
+    else if (dwReason == DLL_PROCESS_DETACH) {
+        MH_DisableHook(MH_ALL_HOOKS);
+        MH_Uninitialize();
+    }
+    return TRUE;
+}`,
 
   csharp: 'using System;\nusing System.Collections.Generic;\n\npublic class Solution {\n    public static void Main(string[] args) {\n        // Write your C# code here\n        \n    }\n}\n'
 };
@@ -73,55 +94,49 @@ type TabValue = "description" | "submissions" | "logs" | "accepted" | "solution-
 const QuestionPage = () => {
   const { q_id } = useParams()
   const router = useRouter()
-  const [selectedLanguage, setSelectedLanguage] = useState<ProgrammingLanguage['id']>('c')
+  const dispatch = useAppDispatch()
   const token = getToken()
+  
+  // Normalize q_id to string
+  const normalizedQId = Array.isArray(q_id) ? q_id[0] : q_id || '';
+  const challenge = useAppSelector(state => selectChallengeById(state, normalizedQId));
+  const { status: challengesStatus } = useAppSelector((state) => state.challenge);
+
+  // States
+  const [selectedLanguage, setSelectedLanguage] = useState<ProgrammingLanguage['id']>('c')
+  const [activeTab, setActiveTab] = useState<TabValue>("description")
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [code, setCode] = useState(() => {
+    if (challenge?.codeTemplate) return challenge.codeTemplate;
+    return generateCodeTemplate()[selectedLanguage];
+  });
+
+  // Action States
   const [isRunningAgent, setIsRunningAgent] = useState(false)
   const [isCompiling, setIsCompiling] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isRunning, setIsRunning] = useState(false)
   const [sessionId, setSessionId] = useState<string | null>(null)
 
+  // CTF States
   const [showFlagModal, setShowFlagModal] = useState(false)
   const [flagAnswers, setFlagAnswers] = useState<{[key: string]: string}>({})
   const [isVerifyingFlags, setIsVerifyingFlags] = useState(false)
 
+  // Clean extracted logic to check if code is empty/default
+  const isCodePristineTemplate = useMemo(() => {
+    const templatesForCheck = generateCodeTemplate();
+    return (code?.trim() || '') === (templatesForCheck[selectedLanguage]?.trim() || '');
+  }, [code, selectedLanguage]);
 
-  const dispatch = useAppDispatch()
-
-  const { status: challengesStatus } = useAppSelector((state) => state.challenge);
-
-  // Normalize q_id to string
-  const normalizedQId = Array.isArray(q_id) ? q_id[0] : q_id || '';
-  const challenge = useAppSelector(state => selectChallengeById(state, normalizedQId));
-
-  console.log({challenge});
-  
-
-  // Generate initial code template - use challenge's codeTemplate if available, else fallback
-  const [code, setCode] = useState(() => {
-    if (challenge?.codeTemplate) {
-      return challenge.codeTemplate;
-    }
-    const templates = generateCodeTemplate();
-    return templates[selectedLanguage];
-  });
-
-  // console.log("code", code)
-
-  const [activeTab, setActiveTab] = useState<TabValue>("description")
-  const [isFullscreen, setIsFullscreen] = useState(false)
-
-
-  // Add fullscreen change event listener
+  // Handle Fullscreen Event Listener
   useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-
+    const handleFullscreenChange = () => setIsFullscreen(!!document.fullscreenElement);
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
+  // Fetch Challenges
   useEffect(() => {
     if (challengesStatus === 'idle') {
       dispatch(fetchChallenges());
@@ -130,85 +145,50 @@ const QuestionPage = () => {
     }
   }, [dispatch, challengesStatus]);
 
-  // Update code when challenge data loads with codeTemplate
+  // Update code when challenge data loads
   useEffect(() => {
     if (challenge?.codeTemplate) {
       setCode(challenge.codeTemplate);
     }
   }, [challenge?.codeTemplate]);
 
-
-  // Updated fullscreen handler
-  const handleFullScreen = async (element: HTMLDivElement | null) => {
+  // Dynamic fullscreen target handling
+  const handleFullScreen = async (containerId: string) => {
+    const element = document.getElementById(containerId) as HTMLDivElement | null;
     if (!element) return;
 
     try {
       if (!document.fullscreenElement) {
         await element.requestFullscreen();
-        setIsFullscreen(true);
       } else {
         await document.exitFullscreen();
-        setIsFullscreen(false);
       }
     } catch (err) {
       console.error("Error attempting to enable fullscreen:", err);
     }
   };
 
-
   const handleSubmitCompile = async () => {
-    console.log("Submitted code:", { code, q_id, selectedLanguage })
-    if (!token) {
-      toast.error("Please login to compile code")
-      return
-    }
+    if (!token) return toast.error("Please login to compile code")
 
-    // 1. Prevent compiling empty/template code
-    const templatesForCheck = generateCodeTemplate();
-    const isTemplateCode = (code?.trim() || '') === (templatesForCheck[selectedLanguage]?.trim() || '');
-    if (isTemplateCode) {
+    if (isCodePristineTemplate) {
       toast.error("Please write some code before compiling");
       return;
     }
-    
-    // 2. [SMART INJECTION] Add headers and the Logger Helper
-    const systemInjection = `// --- PLATFORM WRAPPER START ---
-    #include <iostream>
-    #include <string>
 
-    namespace Logger {
-        void LogMessage(std::string msg) {
-            std::cout << msg << std::endl;
-        }
-    }
-    // --- PLATFORM WRAPPER END ---
-
-    `;
-    
-    // Combine the safe system injection with the user's code
-    const finalCode = systemInjection + code;
-    
-    const codeData = {
-      challengeId: q_id,
-      code: finalCode,
-      language: selectedLanguage
-    }
+    const codeData = { challengeId: q_id, code, language: selectedLanguage }
 
     setIsCompiling(true)
     try {
       const res = await storeCode(codeData)
-      console.log("res", res)
-
       if (res?.success) {
         localStorage.setItem('submissionId', res?.submissionId)
         toast.success("Code compiled successfully")
       } else {
         toast.error(res?.error || "Error compiling code")
       }
-
     } catch (error: any) {
       toast.error(error || "Error compiling code")
-      console.log("error", error)
       if(error === "Invalid Token Please login Again"){
         router.push('/sign-in')
       }
@@ -218,23 +198,13 @@ const QuestionPage = () => {
   }
 
   const handleSubmitCode = async () => {
-    if (!token) {
-      toast.error("Please login to submit challenge")
-      return
-    }
+    if (!token) return toast.error("Please login to submit challenge");
+    
     const submissionId = localStorage.getItem('submissionId')
-    if (!submissionId) {
-      toast.error("No submission found! Please compile the code first")
-      console.log("No submissionId found")
-      return
-    }
-    if (!isRunningAgent) {
-      toast.error("Please Run Agent First")
-      console.log("Agent is already running")
-      return
-    }
+    if (!submissionId) return toast.error("No submission found! Please compile the code first");
+    
+    if (!isRunningAgent) return toast.error("Please Run Agent First");
 
-    // [NEW CTF LOGIC] If the challenge has flags, open the modal instead!
     if (challenge?.flags && challenge.flags.length > 0) {
       setShowFlagModal(true);
       return; 
@@ -242,15 +212,11 @@ const QuestionPage = () => {
 
     setIsSubmitting(true)
     try {
-      const submissionResult = await triggerSubmission(submissionId ?? '')
-      console.log("submissionResult", submissionResult)
-      if (submissionId) {
-        localStorage.removeItem('submissionId')
-      }
+      await triggerSubmission(submissionId ?? '')
+      localStorage.removeItem('submissionId')
       toast.success("Code submitted successfully")
     } catch (error: any) {
       toast.error(error || "Error submitting code")
-      console.log("error", error)
     } finally {
       setIsSubmitting(false)
     }
@@ -260,7 +226,6 @@ const QuestionPage = () => {
     const submissionId = localStorage.getItem('submissionId');
     if (!submissionId) return;
 
-    // Format answers into the array structure the backend expects
     const formattedAnswers = Object.keys(flagAnswers).map(questionId => ({
       questionId,
       answer: flagAnswers[questionId]
@@ -277,10 +242,6 @@ const QuestionPage = () => {
       toast.success(res.message || "Challenge Passed!");
       setShowFlagModal(false);
       localStorage.removeItem('submissionId');
-      
-      // Optional: Automatically switch to accepted tab or clear editor
-      // setActiveTab("accepted");
-      
     } catch (error: any) {
       toast.error(error.message || "Incorrect flags. Check your logs!");
     } finally {
@@ -288,38 +249,29 @@ const QuestionPage = () => {
     }
   };
 
-
   const handleRunAgent = async () => {
     if (isRunning) return;
-    if (!token) {
-      toast.error("Please login to run agent")
-      return
-    }
+    if (!token) return toast.error("Please login to run agent");
+    
     const submissionId = localStorage.getItem('submissionId')
-    if (!submissionId) {
-      toast.error("No submission found! Please compile the code first")
-      console.log("No submissionId found")
-      return
-    }
+    if (!submissionId) return toast.error("No submission found! Please compile the code first");
+
+    setActiveTab("logs")
     setIsRunning(true)
+
     try {
       const submissionResult = await triggerRunAgent(submissionId ?? '')
       if (submissionResult.success) {
         setIsRunningAgent(true)
-        // Capture sessionId for log streaming and start socket immediately
         if (submissionResult.sessionId) {
-          console.log("📱 Session ID received, starting socket connection:", submissionResult.sessionId)
           setSessionId(submissionResult.sessionId)
-          // Switch to logs tab to show real-time logs
-          setActiveTab("logs")
         }
       }
-      console.log("submissionResult", submissionResult)
-      toast.success("Code run agent successfully")
+      toast.success("Agent started")
     } catch (error: any) {
       toast.error(error || "Error running agent")
-      console.log("error", error)
       setIsRunningAgent(false)
+      setActiveTab("description") // revert on failure
     } finally {
       setIsRunning(false)
     }
@@ -330,15 +282,11 @@ const QuestionPage = () => {
     if (challenge?.codeTemplate) {
       setCode(challenge.codeTemplate);
     } else {
-      const templates = generateCodeTemplate();
-      setCode(templates[newLanguage as ProgrammingLanguage['id']]);
+      setCode(generateCodeTemplate()[newLanguage as ProgrammingLanguage['id']]);
     }
   }
 
-
-  const handleReset = () => {
-    setCode(defaultCode[selectedLanguage]);
-  };
+  const handleReset = () => setCode(defaultCode[selectedLanguage]);
 
   const handleFormat = () => {
     const formatCode = (code: string): string => {
@@ -346,28 +294,16 @@ const QuestionPage = () => {
       const lines = code.split('\n');
       const formattedLines = lines.map(line => {
         const trimmedLine = line.trim();
-
-        // Decrease indent for closing braces
-        if (trimmedLine.startsWith('}')) {
-          indentLevel = Math.max(0, indentLevel - 1);
-        }
-
-        // Add proper indentation
+        if (trimmedLine.startsWith('}')) indentLevel = Math.max(0, indentLevel - 1);
         const formattedLine = '    '.repeat(indentLevel) + trimmedLine;
-
-        // Increase indent after opening braces
-        if (trimmedLine.endsWith('{')) {
-          indentLevel++;
-        }
-
+        if (trimmedLine.endsWith('{')) indentLevel++;
         return formattedLine;
       });
-
       return formattedLines.join('\n');
     };
-
     setCode(formatCode(code));
   };
+
   return (
     <div className="h-[calc(100vh-56px)] max-w-8xl mx-auto px-4 md:px-7 py-2">
       {/* Mobile Layout */}
@@ -375,8 +311,9 @@ const QuestionPage = () => {
         <div className="bg-white rounded-lg shadow-sm overflow-y-auto">
           {renderTabContent()}
         </div>
-        <div className="bg-white rounded-lg shadow-sm flex-1">
-          {renderEditor()}
+        <div className="bg-white rounded-lg shadow-sm flex-1" id="mobile-editor-container">
+          {/* Passed targeted ID for mobile fullscreen */}
+          {renderEditor("mobile-editor-container")}
         </div>
       </div>
 
@@ -390,11 +327,9 @@ const QuestionPage = () => {
         <div className="bg-white rounded-lg shadow-sm overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
           {renderTabContent()}
         </div>
-        <div
-          className="bg-white rounded-lg shadow-sm flex flex-col"
-          id="editor-container"
-        >
-          {renderEditor()}
+        <div className="bg-white rounded-lg shadow-sm flex flex-col" id="desktop-editor-container">
+          {/* Passed targeted ID for desktop fullscreen */}
+          {renderEditor("desktop-editor-container")}
         </div>
       </Split>
 
@@ -464,16 +399,7 @@ const QuestionPage = () => {
               >
                 Description
               </TabsTrigger>
-              {/* <TabsTrigger
-                value="submissions"
-                className="tabs-trigger-active"
-              >
-                Submissions
-              </TabsTrigger> */}
-              <TabsTrigger
-                value="logs"
-                className="tabs-trigger-active"
-              >
+              <TabsTrigger value="logs" className="tabs-trigger-active">
                 Logs
               </TabsTrigger>
               {challenge?.answerFileUrl && (
@@ -495,7 +421,7 @@ const QuestionPage = () => {
               </TabsTrigger> */}
             </TabsList>
           </Tabs>
-        </div>          {/* Tab content with scrollable area */}
+        </div>          
         <div className="px-6 pb-6 pt-3 overflow-y-auto">
           {activeTab === "description" && (
             challengesStatus === 'loading' ? (
@@ -525,10 +451,10 @@ const QuestionPage = () => {
     )
   }
 
-  function renderEditor() {
+  function renderEditor(containerId: string) {
     return (
       <div className="flex flex-col h-full">
-        {/* Top toolbar: language dropdown & icon buttons */}
+        {/* Top toolbar */}
         <div className="border-b border-gray-200 p-2">
           <div className="flex items-center justify-between">
             <Select value={selectedLanguage} onValueChange={handleLanguageChange}>
@@ -546,15 +472,10 @@ const QuestionPage = () => {
 
             <TooltipProvider>
               <div className="flex items-center gap-2">
-              <Tooltip>
+                <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
-                      variant={"ghost"}
-                      size={"icon"}
-                      // onClick={handleFormat}
-                      className='h-8 w-8'
-                    >
-                      <Webcam   className= {`size-6 ${isRunningAgent ? "text-green-500" : "text-red-500"}`} />
+                    <Button variant={"ghost"} size={"icon"} className='h-8 w-8'>
+                      <Webcam className={`size-6 ${isRunningAgent ? "text-green-500" : "text-red-500"}`} />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -563,12 +484,7 @@ const QuestionPage = () => {
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button
-                      variant={"ghost"}
-                      size={"icon"}
-                      onClick={handleReset}
-                      className='h-8 w-8'
-                    >
+                    <Button variant={"ghost"} size={"icon"} onClick={handleReset} className='h-8 w-8'>
                       <RotateCcw className="size-4" />
                     </Button>
                   </TooltipTrigger>
@@ -593,25 +509,17 @@ const QuestionPage = () => {
                   </TooltipContent>
                 </Tooltip>
 
-                {/* Fullscreen toggle (desktop) */}
+                {/* Fullscreen toggle (Dynamic targeted ID) */}
                 <div className="hidden lg:block">
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
                         variant={"ghost"}
                         size={"icon"}
-                        onClick={() =>
-                          handleFullScreen(
-                            document.getElementById('editor-container') as HTMLDivElement
-                          )
-                        }
+                        onClick={() => handleFullScreen(containerId)}
                         className='h-8 w-8'
                       >
-                        {isFullscreen ? (
-                          <Minimize2 className="size-4" />
-                        ) : (
-                          <Maximize2 className="size-4" />
-                        )}
+                        {isFullscreen ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -640,10 +548,7 @@ const QuestionPage = () => {
               automaticLayout: true,
               scrollBeyondLastLine: false,
               renderValidationDecorations: 'on',
-              minimap: {
-                enabled: true,
-                showSlider: 'mouseover',
-              },
+              minimap: { enabled: true, showSlider: 'mouseover' },
               formatOnPaste: true,
               formatOnType: true,
               autoClosingBrackets: 'always',
@@ -657,82 +562,45 @@ const QuestionPage = () => {
                 Loading editor...
               </div>
             }
-            beforeMount={(monaco) => {
-              // If you're not using JS/TS in the editor, these defaults won't matter much:
-              try {
-                monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
-                  noSemanticValidation: true,
-                  noSyntaxValidation: false,
-                });
-              } catch (error) {
-                console.error('Error configuring editor:', error);
-              }
-            }}
           />
         </div>
 
-        {/* Bottom toolbar: submission buttons */}
+        {/* Bottom toolbar */}
         <div className="flex justify-between !p-2 border-t">
           <div className="flex gap-x-3">
-            {/* <Button
-                  onClick={handleSubmit}
-                  size="sm"
-                  variant={"outline"}
-                  className='h-8'
-                >
-                  Start Agent
-                </Button> */}
             <Button
               className="bg-purple h-8 text-white rounded-lg hover:bg-purple/90 transition-colors"
               onClick={handleSubmitCompile}
               size="sm"
-              disabled={(() => { const t = generateCodeTemplate(); return isCompiling || (code?.trim() || '') === (t[selectedLanguage]?.trim() || ''); })()}
+              disabled={isCompiling || isCodePristineTemplate}
             >
-              {isCompiling ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                </>
-              ) : (
-                "Compile"
-              )}
+              {isCompiling ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : "Compile"}
             </Button>
           </div>
           <div className="flex justify-end">
             <div className="flex gap-x-1 sm:gap-x-2 lg:gap-x-3">
-            <Button
-              className="bg-purple h-8 text-white rounded-lg hover:bg-purple/90 transition-colors"
-              onClick={handleRunAgent}
-              size="sm"
-              disabled={isRunning}
-            >
-              {isRunning ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                </>
-              ) : (
-                "Run Agent"
-              )}
-            </Button>
-            <Button
-              className="bg-purple h-8 text-white rounded-lg hover:bg-purple/90 transition-colors"
-              onClick={handleSubmitCode}
-              size="sm"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                </>
-              ) : (
-                "Submit Challenge"
-              )}
-            </Button>
+              <Button
+                className="bg-purple h-8 text-white rounded-lg hover:bg-purple/90 transition-colors"
+                onClick={handleRunAgent}
+                size="sm"
+                disabled={isRunning}
+              >
+                {isRunning ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : "Run"}
+              </Button>
+              <Button
+                className="bg-purple h-8 text-white rounded-lg hover:bg-purple/90 transition-colors"
+                onClick={handleSubmitCode}
+                size="sm"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : "Submit Challenge"}
+              </Button>
             </div>
-            
           </div>
         </div>
       </div>
     );
   }
 }
-export default QuestionPage
+
+export default QuestionPage;
