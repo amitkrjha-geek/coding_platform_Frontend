@@ -520,7 +520,7 @@ const Page = () => {
           </div>
 
           {/* Trending Topics Sidebar */}
-          <div className="min-w-[24%]">
+          {/* <div className="min-w-[24%]">
             <TrendingTopics
               companies={getUniqueCompanies().map((company) => ({
                 name: company.label,
@@ -533,7 +533,7 @@ const Page = () => {
               selectedCompany={selectedCompany}
               setSelectedCompany={setSelectedCompany}
             />
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

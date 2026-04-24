@@ -359,7 +359,7 @@ const Challenges = () => {
           </div>
 
           {/* Challenge List */}
-          <div className="px-2 sm:px-0">
+          <div className="px-2 sm:px-10">
             <ChallengeList
               challenges={filteredChallenges}
               loading={loading}
@@ -368,12 +368,12 @@ const Challenges = () => {
         </div>
 
         {/* Sidebar - Hidden on mobile */}
-        <div className="hidden xl:block w-full xl:w-auto">
+        {/* <div className="hidden xl:block w-full xl:w-auto">
           <Sidebar
             selectedCompany={selectedCompany}
             onCompanySelect={setSelectedCompany}
           />
-        </div>
+        </div> */}
       </div>
     </div>
   );
