@@ -24,7 +24,7 @@ const EditChallenge = () => {
     const id = searchParams.get('id');
     const router = useRouter();
 
-    console.log("id", id);
+    // console.log("id", id);
 
     const handleViewChallenge = () => {
         router.push(`/admin/challenges/view?id=${id}`);

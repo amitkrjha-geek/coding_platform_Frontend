@@ -77,7 +77,7 @@ const ProfileStats = ({ organizedData, plan }: { organizedData: any, plan: any }
   const planEndDate = new Date(currentPlan?.endDate);
   const isActive = planEndDate >= today;
 
-  console.log('📊 Current Plan:', currentPlan);
+  // console.log('📊 Current Plan:', currentPlan);
 
   // Calculate stats from organized data
   const stats = organizedData ? {

@@ -135,7 +135,7 @@ const PlanForm = () => {
     dispatch(registerPlan(transformedData))
       .unwrap()
       .then((res) => {
-        console.log("Plan registered successfully:", res);
+        // console.log("Plan registered successfully:", res);
         clearForm()
       })
       .catch((error) => {

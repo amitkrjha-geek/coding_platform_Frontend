@@ -51,7 +51,7 @@ const ChallengeList = ({ challenges, loading }: { challenges: ChallengeData[], l
     const fetchUserSubscriptions = async () => {
         try {
             const userSubscriptions = await getUserPaymentHistory(userId || "");
-            console.log("userSubscriptions", userSubscriptions?.data);
+            // console.log("userSubscriptions", userSubscriptions?.data);
             
             // Filter for successful subscriptions with non-Per Challenge plans
             const subscribedChallenges = userSubscriptions?.data?.filter(
@@ -61,7 +61,7 @@ const ChallengeList = ({ challenges, loading }: { challenges: ChallengeData[], l
                 subscription.planId?.priceMode !== "Per Challenge"
             ) || [];
             
-            console.log("subscribedChallenges", subscribedChallenges);
+            // console.log("subscribedChallenges", subscribedChallenges);
 
             if (subscribedChallenges.length > 0) {
                 // Get the latest subscription based on paymentCompletedAt
@@ -71,15 +71,15 @@ const ChallengeList = ({ challenges, loading }: { challenges: ChallengeData[], l
                     return currentDate > latestDate ? current : latest;
                 });
 
-                console.log("latestSubscription", latestSubscription);
+                // console.log("latestSubscription", latestSubscription);
 
                 // Check if the plan's endDate is after today's date
                 const today = new Date();
                 const planEndDate = new Date(latestSubscription.planId?.endDate);
                 
-                console.log("today:", today);
-                console.log("planEndDate:", planEndDate);
-                console.log("isActive:", planEndDate >= today);
+                // console.log("today:", today);
+                // console.log("planEndDate:", planEndDate);
+                // console.log("isActive:", planEndDate >= today);
 
                 // Set subscription status based on plan end date
                 setHasSubscribed(planEndDate >= today);

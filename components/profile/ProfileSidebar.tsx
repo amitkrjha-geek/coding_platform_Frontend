@@ -23,7 +23,7 @@ const ProfileSidebar = ({ organizedData, UserName, Useravatar }: { organizedData
   const name = UserName || 'User';
   const avatar = Useravatar || 'https://github.com/shadcn.png';
 
-  console.log('📊 User:', name, avatar);
+  // console.log('📊 User:', name, avatar);
 
   const [showAll, setShowAll] = useState({
     easy: false,

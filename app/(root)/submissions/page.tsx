@@ -71,7 +71,7 @@ const SubmissionsPage = () => {
         10,
         filters
       );
-      console.log("📊 Response:", response);
+      // console.log("📊 Response:", response);
 
       if (response.success) {
         const newSubmissions = response.data.submissions;

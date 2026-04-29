@@ -18,7 +18,7 @@ export interface PaymentData {
 export const getPayment = async (paymentData: PaymentData) => {
   try {
     const response = await axiosInstance.post("/get-payment", paymentData);
-    console.log("payment response",response.data);
+    // console.log("payment response",response.data);
     return response.data;
   } catch (error: any) {
     throw {

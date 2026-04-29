@@ -36,7 +36,7 @@ const PlanBillingPage = () => {
   const { plans, status: planStatus } = useAppSelector((state: RootState) => state.plan);
   const { coupons, status: couponsStatus } = useAppSelector((state: RootState) => state.coupon);
 
-  console.log('plans', plans);
+  // console.log('plans', plans);
 
   
   const [activeTab, setActiveTab] = useState<

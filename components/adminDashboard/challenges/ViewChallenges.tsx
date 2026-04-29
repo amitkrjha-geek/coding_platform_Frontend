@@ -59,7 +59,7 @@ const ViewChallenges = () => {
       try {
         setLoading(true);
         const res = await getChallengeById(String(id));
-        console.log({res});
+        // console.log({res});
         
         if (res) {
           setChallenge(res?.data);

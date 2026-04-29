@@ -14,11 +14,12 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAdminAccess } from "@/hooks/useAdminAccess";
 // import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 // import { Button } from "../ui/button";
 
 const navItems = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/admin", restricted: true },
   // { icon: ChartNoAxesCombined, label: "Analytics", href: "/admin/analytics" },
   { icon: CodeXml, label: "Challenges", href: "/admin/challenges" },
   { icon: ShieldPlus, label: "Administrator", href: "/admin/administrator" },
@@ -29,6 +30,10 @@ const navItems = [
 export const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
+  const { isPrivilegedAdmin } = useAdminAccess();
+  const visibleNavItems = navItems.filter(
+    (item) => !item.restricted || isPrivilegedAdmin
+  );
 
   // Function to check if the current path matches or is a subpath of a nav item
   const isActiveRoute = (href: string) => {
@@ -69,7 +74,7 @@ export const Sidebar = () => {
 
         {/* Navigation Items */}
         <nav className="p-2">
-          {navItems.map((item) => (
+          {visibleNavItems.map((item) => (
             <Link
               key={item.label}
               href={item.href}

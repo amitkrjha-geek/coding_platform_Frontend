@@ -66,7 +66,7 @@ export const CheckoutPage = ({ plan, onClose, onSuccess, challengeId }: Checkout
       console.error('Error fetching coupons:', error);
     }
   };
-  console.log("coupons",coupons);
+  // console.log("coupons",coupons);
 
 
   const applyCoupon = async () => {
@@ -116,7 +116,7 @@ export const CheckoutPage = ({ plan, onClose, onSuccess, challengeId }: Checkout
 
   const handleCheckout = async () => {
     setIsProcessing(true);
-    console.log("challengeId", challengeId);
+    // console.log("challengeId", challengeId);
     try {
       const response = await getPayment({
         amount: finalPrice,

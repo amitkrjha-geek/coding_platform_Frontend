@@ -143,7 +143,7 @@ const Page = () => {
     try {
       const res = await getAllChallenges();
 
-      console.log(res?.data);
+      // console.log(res?.data);
       const formattedData = res?.data?.map((item: any) => ({
         id: item?._id,
         title: item?.title,

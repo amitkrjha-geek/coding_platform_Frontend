@@ -65,11 +65,11 @@ const Page = () => {
     }
   }, [dispatch, allUsers, status]);
 
-  console.log({allUsers})
+  // console.log({allUsers})
 
   const regularUsers = allUsers.filter((user) => user.role === "admin");
 
-  console.log({regularUsers})
+  // console.log({regularUsers})
 
 
   // useEffect(() => {
