@@ -46,7 +46,7 @@ const TransactionsTable = () => {
     const fetchTransactions = async () => {
       try {
         const response = await getAllPayments();
-        console.log("response",response);
+        // console.log("response",response);
         const formattedTransactions = response.data.map((transaction: any) => ({
           paymentId: transaction.txnId,
           paidBy: transaction.customerName,
@@ -57,7 +57,7 @@ const TransactionsTable = () => {
           coupon: transaction.couponId?.code,
           plan: transaction.planId?.name,
         }));
-        console.log("formattedTransactions",formattedTransactions);
+        // console.log("formattedTransactions",formattedTransactions);
         setTransactions(formattedTransactions);
         
       } catch (error) {

@@ -71,7 +71,7 @@ const CheckoutModal = ({ isOpen, onClose, plan }: CheckoutModalProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form Data:', { ...formData, promoCode });
+    console.log('Form Data:');
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

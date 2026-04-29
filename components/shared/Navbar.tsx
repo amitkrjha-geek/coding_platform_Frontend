@@ -10,6 +10,7 @@ import NotificationDropdown from "./NotificationDropdown";
 // import { auth } from '@clerk/nextjs/server';
 import { useAuth, UserButton, useUser } from '@clerk/nextjs';
 import { useCheckRole } from '@/hooks/useCheckRole';
+import { useAdminAccess } from '@/hooks/useAdminAccess';
 import { getCurrentUserId } from '@/config/token';
 
 export default function Navbar() {
@@ -25,9 +26,11 @@ export default function Navbar() {
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const { checkUserRole } = useCheckRole();
+    const { isPrivilegedAdmin } = useAdminAccess();
 
-    
+
      const role = checkUserRole();
+     const dashboardHref = isPrivilegedAdmin ? '/admin' : '/admin/challenges';
   
 
     const { userId } = useAuth();
@@ -139,7 +142,7 @@ export default function Navbar() {
                         </Link>
                     </motion.div>
                     {role === 'admin' && !pathname.startsWith('/admin') && (
-                        <Link href="/admin" className=" rounded-lg px-4 py-2 bg-purple-600 text-white hover:bg-purple-700 transition-all duration-200 font-medium shadow-sm hover:shadow-md">
+                        <Link href={dashboardHref} className=" rounded-lg px-4 py-2 bg-purple-600 text-white hover:bg-purple-700 transition-all duration-200 font-medium shadow-sm hover:shadow-md">
                              Dashboard
                         </Link>
                     )}
@@ -267,7 +270,7 @@ export default function Navbar() {
                                         </div>
                                     </Link> */}
                                     {role === 'admin' && !pathname.startsWith('/admin') && (
-                        <Link href="/admin" className=" rounded-lg text-center  px-2 py-2 bg-purple-600 text-white hover:bg-purple-700 transition-all duration-200 font-medium shadow-sm hover:shadow-md">
+                        <Link href={dashboardHref} className=" rounded-lg text-center  px-2 py-2 bg-purple-600 text-white hover:bg-purple-700 transition-all duration-200 font-medium shadow-sm hover:shadow-md">
                              Dashboard
                         </Link>
                     )}

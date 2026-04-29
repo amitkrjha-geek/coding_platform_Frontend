@@ -81,9 +81,9 @@ const ChallengeCard = memo(({ title, difficulty, submissions, id, paymentMode, p
     };
 
     const handleCheckoutSuccess = (form: string) => {
-        console.log("handleCheckoutSuccess");
+        // console.log("handleCheckoutSuccess");
 
-        console.log("handleCheckoutSuccess");
+        // console.log("handleCheckoutSuccess");
         // console.log("form", form);
         setForm(form);
         setIsCheckoutOpen(false);

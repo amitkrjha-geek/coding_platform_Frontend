@@ -53,7 +53,7 @@ const AdminForm = () => {
   const onSubmit = async (data: FormData) => {
     try {
       await registerAdmin(data)
-      console.log("Form submitted:", data);
+      // console.log("Form submitted:", data);
      toast.success("Form submitted successfully!");
      router.push("/admin/administrator")
       reset();

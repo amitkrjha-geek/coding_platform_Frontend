@@ -98,7 +98,7 @@ const UpdateCouponForm = ({ initialData }: UpdateCouponFormProps) => {
     dispatch(modifyCoupon({ id: _id!, data: transformedData }))
       .unwrap()
       .then((res) => {
-        console.log("Coupon updated successfully:", res);
+        // console.log("Coupon updated successfully:", res);
         router.back();
       })
       .catch((error) => {

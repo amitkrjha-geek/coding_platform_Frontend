@@ -61,7 +61,7 @@ const Page = () => {
         id: plan._id,
         name: plan.name,
       }));
-      console.log({formattedData});
+      // console.log({formattedData});
       setPlans(formattedData);
     }
     getPlans();
@@ -71,7 +71,7 @@ const Page = () => {
 
   //  console.log(allUsers);
 
-  console.log(allUsers);
+  // console.log(allUsers);
 
   // Filter and sort users
   const filteredUsers = formatUserData(allUsers)
@@ -127,7 +127,7 @@ const Page = () => {
 
     const planOptions = plans.map((plan ) => plan.name);
   const subscriptionOptions = ["All", ...planOptions];
-  console.log({subscriptionOptions});
+  // console.log({subscriptionOptions});
 
   if (loading) {
     return <Loading />;

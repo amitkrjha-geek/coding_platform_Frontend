@@ -57,13 +57,13 @@ const LogsTab = ({ sessionId, isConnected = false }: LogsTabProps) => {
         socketRef.current = socket;
 
         socket.on('connect', () => {
-          console.log('🔌 Connected to Socket.IO server');
+          // console.log('🔌 Connected to Socket.IO server');
           setIsSocketConnected(true);
           socket.emit('join-session', sessionId);
         });
 
         socket.on('disconnect', () => {
-          console.log('🔌 Disconnected from Socket.IO server');
+          // console.log('🔌 Disconnected from Socket.IO server');
           setIsSocketConnected(false);
         });
 

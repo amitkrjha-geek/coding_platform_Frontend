@@ -138,7 +138,7 @@ const AdminDetails = ({ id }: { id: string }) => {
     try {
       const result = await dispatch(modifyUser({ userId: user._id, userData: formData }));
       if (modifyUser.fulfilled.match(result)) {
-        console.log("User updated successfully!"); 
+        // console.log("User updated successfully!"); 
         router.back();
       } else {
         throw result.payload;

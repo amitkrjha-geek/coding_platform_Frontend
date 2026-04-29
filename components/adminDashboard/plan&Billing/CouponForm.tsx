@@ -101,7 +101,7 @@ const CouponFormContent = () => {
     dispatch(registerCoupon(formData))
       .unwrap()
       .then(() => {
-        console.log("Coupon added successfully!");
+        // console.log("Coupon added successfully!");
         handleCancel()
       })
       .catch((err: any) => {

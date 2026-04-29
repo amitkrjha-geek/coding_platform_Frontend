@@ -17,6 +17,7 @@ import { getAllPlans } from "@/API/plan";
 import { getAllUsers } from "@/API/user";
 import Loading from "@/components/Loading";
 import { useRouter } from "next/navigation";
+import { useAdminAccess } from "@/hooks/useAdminAccess";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -95,6 +96,8 @@ interface DashboardData {
 }
 
 export default function Page() {
+  const router = useRouter();
+  const { isPrivilegedAdmin, isLoaded } = useAdminAccess();
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [paymentData, setPaymentData] = useState<any>(null);
   const [allPayments, setAllPayments] = useState<any[]>([]);
@@ -104,6 +107,11 @@ export default function Page() {
   const [allUsers, setAllUsers] = useState<any[]>([]);
 
   useEffect(() => {
+    if (!isLoaded) return;
+    if (!isPrivilegedAdmin) {
+      router.replace("/admin/challenges");
+      return;
+    }
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
@@ -117,7 +125,6 @@ export default function Page() {
           name: user?.name,
           createdAt: user?.createdAt,
         }));
-        // console.log({response4});
         setDashboardData(response.data);
         setPaymentData(response2.data);
         setAllPayments(response3.data);
@@ -131,7 +138,11 @@ export default function Page() {
     };
 
     fetchDashboardData();
-  }, []);
+  }, [isLoaded, isPrivilegedAdmin, router]);
+
+  if (!isLoaded || !isPrivilegedAdmin) {
+    return <Loading />;
+  }
 
   // Process payment data to get subscription statistics
   const getSubscriptionStats = () => {

@@ -260,7 +260,7 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
       try {
         setLoading(true);
         const res = await getChallengeById(challengeId);
-        console.log({res});
+        // console.log({res});
         
         if (res?.data) {
           const challenge = res?.data;
@@ -336,14 +336,14 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
       setLoading(true);
       
       // Log form values for debugging
-      console.log('Form values:', {
-        ...values,
-        files: values.files?.map(f => ({
-          name: f.name,
-          contentLength: f.content.length,
-          size: f.size
-        }))
-      });
+      // console.log('Form values:', {
+      //   ...values,
+      //   files: values.files?.map(f => ({
+      //     name: f.name,
+      //     contentLength: f.content.length,
+      //     size: f.size
+      //   }))
+      // });
 
       // Clean up the data before sending to backend
       const cleanedValues = { ...values };
@@ -354,7 +354,7 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
       }
 
       const res = await updateChallenge(challengeId, cleanedValues)
-      console.log({res})
+      // console.log({res})
       
       if (res) {
         toast.success("Challenge updated successfully")
@@ -718,10 +718,10 @@ const EditChallengeForm = ({ challengeId }: EditChallengeFormProps) => {
                           const currentFiles = field.value || [];
                           field.onChange([...currentFiles, ...processedFiles]);
 
-                          console.log(
-                            'Processed files:',
-                            processedFiles.map(f => ({ name: f.name, size: f.size, contentLength: f.content.length }))
-                          );
+                          // console.log(
+                          //   'Processed files:',
+                          //   processedFiles.map(f => ({ name: f.name, size: f.size, contentLength: f.content.length }))
+                          // );
                         } catch (error) {
                           console.error('Error processing files:', error);
                           toast.error('Error processing files');

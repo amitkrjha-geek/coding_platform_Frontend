@@ -182,13 +182,13 @@ const Challenges = () => {
 
         createUser(userData)
           .then((response) => {
-            console.log("Response:", response);
+            // console.log("Response:", response);
             if (response?.token) {
               setToken(response?.token);
               setCurrentUserId(response?.user?._id);
             }
             router.push("/");
-            console.log("User created successfully");
+            // console.log("User created successfully");
             toast.success("User created successfully");
             dispatch(fetchUsers());
           })
@@ -200,7 +200,7 @@ const Challenges = () => {
 
         loginUser(userEmail || '')
           .then((response) => {
-            console.log("Response:", response);
+            // console.log("Response:", response);
             if (response?.token) {
               setToken(response?.token);
               setCurrentUserId(response?.user?._id);
@@ -210,11 +210,11 @@ const Challenges = () => {
             console.error('Error creating user:', error);
             toast.error('Failed to create user');
           });
-        console.log("User already exists");
+        // console.log("User already exists");
       } else if (userExists) {
         loginUser(userEmail || '')
           .then((response) => {
-            console.log("Response:", response);
+            // console.log("Response:", response);
             if (response?.token) {
               setToken(response?.token);
               setCurrentUserId(response?.user?._id);
@@ -224,7 +224,7 @@ const Challenges = () => {
             console.error('Error creating user:', error);
             toast.error('Failed to create user');
           });
-        console.log("User already exists");
+        // console.log("User already exists");
       }
     }
   }, [isSignedIn, user, allUsers, dispatch, router, token]);

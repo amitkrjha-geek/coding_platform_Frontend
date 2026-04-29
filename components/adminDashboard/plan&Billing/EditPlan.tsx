@@ -122,7 +122,7 @@ const EditPlanForm = ({ initialData }: EditPlanFormProps) => {
     dispatch(modifyPlan({ id: _id!, data: transformedData }))
       .unwrap()
       .then((res) => {
-        console.log("Plan updated successfully:", res);
+        // console.log("Plan updated successfully:", res);
         router.back();
       })
       .catch((error) => {
