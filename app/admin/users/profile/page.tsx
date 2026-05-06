@@ -14,29 +14,28 @@ import Loading from '@/components/Loading';
 const PageContent = () => {
   
   return (
-    <section className="bg-[#f9f9f9] h-50 p-3">
+    <section className="bg-htb-bg min-h-screen p-7">
       <div>
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href="/admin" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-htb-text-dim" />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin/users">Users</BreadcrumbLink>
+              <BreadcrumbLink href="/admin/users" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Users</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-htb-text-dim" />
             <BreadcrumbItem>
-              <BreadcrumbPage>User Profile</BreadcrumbPage>
+              <BreadcrumbPage className="text-neon font-mono text-xs uppercase tracking-widest">User Profile</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </div>
 
-      <div>
-      <ProfilePage  />
+      <div className="mt-3">
+        <ProfilePage />
       </div>
-
     </section>
   )
 }

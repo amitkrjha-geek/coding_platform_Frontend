@@ -15,6 +15,9 @@ import ChallengeList from "./ChallengeList";
 import Sidebar from "./Sidebar";
 import { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import GridBackground from "@/components/shared/GridBackground";
+import TerminalEyebrow from "@/components/shared/TerminalEyebrow";
+import StatCounter from "@/components/shared/StatCounter";
 import { useUser } from "@clerk/nextjs";
 import { createUser, loginUser } from "@/API/user";
 import { useRouter } from "next/navigation";
@@ -229,64 +232,129 @@ const Challenges = () => {
     }
   }, [isSignedIn, user, allUsers, dispatch, router, token]);
 
-  return (
-    <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 pb-4 sm:pb-8 mt-16 sm:mt-20 pt-4 bg-white rounded-xl">
-      <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
-        {/* Main Content */}
-        <div className="flex-1 space-y-4 sm:space-y-6">
-          {/* Header */}
-          <h1 className="text-xl sm:text-2xl font-bold px-2 sm:px-0">Challenges</h1>
+  // Aggregate stats for hero counters (visual only — sourced from existing Redux state)
+  const totalChallenges = challenges?.length || 0;
+  const totalTopics = Object.keys(topicStats || {}).length;
+  const totalSubmissions = useMemo(
+    () =>
+      (challenges || []).reduce(
+        (acc, c) => acc + (Number(c.submissions) || 0),
+        0
+      ),
+    [challenges]
+  );
 
-          {/* Topics */}
-          <div className="flex justify-between items-center gap-2 sm:gap-4 w-full">
-            <div className="flex-1 overflow-x-auto max-w-[calc(100vw-100px)] sm:max-w-4xl scrollbar-hide">
+  return (
+    <div className="relative w-full pt-16">
+      {/* Hero band */}
+      <section className="relative overflow-hidden border-b border-htb-border">
+        <GridBackground variant="neon" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-8 sm:pb-10">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="flex flex-col gap-3"
+          >
+            <TerminalEyebrow cursor>challenges.index</TerminalEyebrow>
+            <h1 className="heading-display text-3xl sm:text-4xl lg:text-5xl text-htb-text">
+              Hack your way through{" "}
+              <span className="text-neon">real-world</span> challenges
+            </h1>
+            <p className="text-htb-muted max-w-2xl text-sm sm:text-base">
+              Sharpen your offensive engineering skills on a curated arsenal of
+              hands-on labs. Compile, exploit, and capture the flag.
+            </p>
+          </motion.div>
+
+          {/* Stat strip */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+            className="mt-8 grid grid-cols-3 gap-3 sm:gap-6 max-w-2xl"
+          >
+            <div className="panel p-4 sm:p-5">
+              <StatCounter value={totalChallenges} label="Challenges" />
+            </div>
+            <div className="panel p-4 sm:p-5">
+              <StatCounter value={totalTopics} label="Topics" />
+            </div>
+            <div className="panel p-4 sm:p-5">
+              <StatCounter value={totalSubmissions} label="Submissions" />
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Main content */}
+      <section className="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+          {/* Main Content */}
+          <div className="flex-1 space-y-6">
+            <div className="flex items-center justify-between">
+              <TerminalEyebrow>filter.topics</TerminalEyebrow>
+              {!loading && Object.keys(topicStats || {}).length > 7 && (
+                <motion.button
+                  onClick={() => setShowMore(!showMore)}
+                  className="flex items-center gap-2 px-3 py-1.5 text-[11px] font-mono uppercase tracking-widest text-htb-muted hover:text-neon whitespace-nowrap shrink-0 border border-htb-border rounded hover:border-neon/40 transition-colors"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  {showMore ? "Less" : "More"}
+                  <FaAngleDoubleRight
+                    className={`transition-transform duration-200 ${showMore ? "rotate-180" : ""}`}
+                  />
+                </motion.button>
+              )}
+            </div>
+
+            {/* Topics */}
+            <div className="overflow-x-auto scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
               <Tabs
                 defaultValue="all"
                 className="w-full"
                 onValueChange={(value) => {
-                  setSelectedFilters(prev => ({
+                  setSelectedFilters((prev) => ({
                     ...prev,
-                    topics: value === "all" ? "" : value
+                    topics: value === "all" ? "" : value,
                   }));
                 }}
                 value={selectedFilters.topics || "all"}
               >
-                <TabsList className="bg-transparent inline-flex gap-2 justify-start px-2 sm:px-0">
+                <TabsList className="bg-transparent border-0 inline-flex gap-2 justify-start p-0">
                   <AnimatePresence mode="wait">
                     {loading ? (
-                      // Loading skeleton for topics
                       <>
                         {[...Array(6)].map((_, index) => (
                           <motion.div
                             key={`skeleton-${index}`}
-                            className="h-10 w-24 bg-gray-200 animate-pulse rounded-full"
+                            className="h-9 w-24 bg-htb-panel border border-htb-border animate-pulse rounded-md"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                           />
                         ))}
                       </>
                     ) : topics.length === 0 ? (
-                      // No topics found state
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="text-gray-500 px-4 py-2"
+                        className="text-htb-text-dim font-mono text-xs px-4 py-2"
                       >
                         No topics available
                       </motion.div>
                     ) : (
-                      // Render actual topics
                       topics.map((topic) => (
                         <motion.div
                           key={topic.id}
-                          initial={{ opacity: 0, x: 20 }}
+                          initial={{ opacity: 0, x: 12 }}
                           animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -20 }}
+                          exit={{ opacity: 0, x: -12 }}
                           transition={{ duration: 0.2 }}
                         >
                           <TabsTrigger
                             value={topic.id}
-                            className="px-4 py-2 rounded-full data-[state=active]:bg-black bg-gray-100 data-[state=active]:text-white min-w-fit"
+                            className="px-3.5 py-1.5 rounded-md font-mono text-[11px] uppercase tracking-widest border border-htb-border bg-htb-panel text-htb-muted hover:text-htb-text hover:border-htb-border-hover data-[state=active]:bg-neon/10 data-[state=active]:text-neon data-[state=active]:border-neon/40 data-[state=active]:shadow-neon-sm min-w-fit transition-all"
                           >
                             <span>{topic.label}</span>
                           </TabsTrigger>
@@ -297,84 +365,93 @@ const Challenges = () => {
                 </TabsList>
               </Tabs>
             </div>
-            {!loading && Object.keys(topicStats || {}).length > 7 && (
-              <motion.button
-                onClick={() => setShowMore(!showMore)}
-                className="flex items-center gap-1 px-2 sm:px-3 py-2 text-sm text-gray-600 hover:text-purple whitespace-nowrap shrink-0 font-medium"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <FaAngleDoubleRight
-                  className={`transition-transform duration-200 ${showMore ? 'rotate-180' : ''}`}
+
+            {/* Filters */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="w-full sm:flex-1 relative">
+                <Search
+                  className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${
+                    loading ? "text-htb-text-dim animate-pulse" : "text-htb-text-dim"
+                  }`}
                 />
-              </motion.button>
-            )}
-          </div>
-
-          {/* Filters */}
-          <div className="flex flex-col sm:flex-row gap-4 px-2 sm:px-0">
-            <div className="w-full sm:flex-1 relative">
-              <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 ${loading ? 'text-gray-300 animate-pulse' : 'text-gray-400'}`} />
-              <Input
-                placeholder={loading ? "Loading..." : "Search questions"}
-                className="pl-9 bg-[#F8F9FA] border-0 w-full"
-                disabled={loading}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              {error && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500 text-sm">
-                  Error loading challenges
-                </div>
-              )}
-            </div>
-            <div className="grid grid-cols-3 sm:flex flex-wrap sm:flex-nowrap gap-2 w-full sm:w-auto">
-              {Object.entries(filterOptions).map(([key, options]) => (
-                <Select
-                  key={key}
-                  value={selectedFilters[key as keyof typeof selectedFilters]}
-                  onValueChange={(value) => handleFilterChange(key as keyof typeof selectedFilters, value)}
-                >
-                  <SelectTrigger
-                    className="w-full sm:w-[120px] bg-[#F8F9FA] border-0"
-                    onClick={() => {
-                      // If there's already a value selected, clear it
-                      if (selectedFilters[key as keyof typeof selectedFilters]) {
-                        handleFilterChange(key as keyof typeof selectedFilters, null);
-                      }
-                    }}
+                <Input
+                  placeholder={loading ? "LOADING..." : "Search challenges, topics, companies..."}
+                  className="pl-9 w-full font-mono text-sm"
+                  disabled={loading}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                {error && (
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-danger text-xs font-mono uppercase tracking-wider">
+                    Error
+                  </div>
+                )}
+              </div>
+              <div className="grid grid-cols-3 sm:flex flex-wrap sm:flex-nowrap gap-2 w-full sm:w-auto">
+                {Object.entries(filterOptions).map(([key, options]) => (
+                  <Select
+                    key={key}
+                    value={selectedFilters[key as keyof typeof selectedFilters]}
+                    onValueChange={(value) =>
+                      handleFilterChange(key as keyof typeof selectedFilters, value)
+                    }
                   >
-                    <SelectValue placeholder={key.charAt(0).toUpperCase() + key.slice(1)} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {options.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ))}
+                    <SelectTrigger
+                      className="w-full sm:w-[140px] font-mono text-xs uppercase tracking-wider"
+                      onClick={() => {
+                        if (selectedFilters[key as keyof typeof selectedFilters]) {
+                          handleFilterChange(
+                            key as keyof typeof selectedFilters,
+                            null
+                          );
+                        }
+                      }}
+                    >
+                      <SelectValue
+                        placeholder={key.charAt(0).toUpperCase() + key.slice(1)}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {options.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {option.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ))}
+              </div>
+            </div>
+
+            {/* Result count */}
+            {!loading && (
+              <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-htb-text-dim">
+                <span className="inline-block w-1.5 h-1.5 rounded-full bg-neon shadow-neon-sm" />
+                <span>
+                  <span className="text-htb-text">{filteredChallenges.length}</span>{" "}
+                  result{filteredChallenges.length === 1 ? "" : "s"}
+                </span>
+              </div>
+            )}
+
+            {/* Challenge List */}
+            <div>
+              <ChallengeList
+                challenges={filteredChallenges}
+                loading={loading}
+              />
             </div>
           </div>
 
-          {/* Challenge List */}
-          <div className="px-2 sm:px-10">
-            <ChallengeList
-              challenges={filteredChallenges}
-              loading={loading}
+          {/* Sidebar - reserved (kept commented as before) */}
+          {/* <div className="hidden xl:block w-full xl:w-auto">
+            <Sidebar
+              selectedCompany={selectedCompany}
+              onCompanySelect={setSelectedCompany}
             />
-          </div>
+          </div> */}
         </div>
-
-        {/* Sidebar - Hidden on mobile */}
-        {/* <div className="hidden xl:block w-full xl:w-auto">
-          <Sidebar
-            selectedCompany={selectedCompany}
-            onCompanySelect={setSelectedCompany}
-          />
-        </div> */}
-      </div>
+      </section>
     </div>
   );
 };

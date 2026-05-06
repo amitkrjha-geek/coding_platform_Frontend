@@ -82,23 +82,23 @@ const SubmissionsTab = () => {
     const getStatusColor = (status: string) => {
         switch (status) {
             case "Accepted":
-                return "text-green-500";
+                return "text-neon";
             case "Wrong Answer":
-                return "text-red-500";
+                return "text-danger";
             case "Time Limit Exceeded":
-                return "text-yellow-500";
+                return "text-warn";
             default:
-                return "text-orange-500";
+                return "text-orange-400";
         }
     };
 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="w-full">
             <div className="rounded-md">
-                <div className="grid grid-cols-4 gap-4 text-sm font-medium text-gray-500 border-b">
+                <div className="grid grid-cols-4 gap-4 items-center text-[11px] font-mono uppercase tracking-widest text-htb-muted border-b border-htb-border pb-2">
                     <div className="flex items-center gap-1">
                         <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-                            <SelectTrigger className="w-[121px] bg-white border-none">
+                            <SelectTrigger className="w-[140px] h-8 font-mono text-xs">
                                 <SelectValue placeholder="Status" />
                             </SelectTrigger>
                             <SelectContent>
@@ -112,7 +112,7 @@ const SubmissionsTab = () => {
                     </div>
                     <div className="flex items-center gap-1">
                         <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-                            <SelectTrigger className="w-[121px] bg-white border-none" >
+                            <SelectTrigger className="w-[140px] h-8 font-mono text-xs">
                                 <SelectValue placeholder="Language" />
                             </SelectTrigger>
                             <SelectContent>
@@ -124,36 +124,39 @@ const SubmissionsTab = () => {
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="flex items-center gap-1 cursor-pointer">
+                    <div className="flex items-center gap-1">
                         Runtime
                     </div>
-                    <div className="flex items-center gap-1 cursor-pointer">
+                    <div className="flex items-center gap-1">
                         Memory
                     </div>
                 </div>
-                <div className="">
+                <div>
                     {filteredSubmissions.map((submission) => (
-                        <div key={submission.id} className="grid grid-cols-4 gap-4 p-2 text-sm items-center">
+                        <div
+                            key={submission.id}
+                            className="grid grid-cols-4 gap-4 p-3 text-sm items-center border-b border-htb-border last:border-0 hover:bg-neon/5 transition-colors"
+                        >
                             <div>
-                                <div
-                                    className={` ${getStatusColor(submission.status)}`}
-                                >
+                                <div className={`font-medium ${getStatusColor(submission.status)}`}>
                                     {submission.status}
-                                    <div className="text-gray-500 text-xs font-normal">{submission.timestamp}</div>
+                                </div>
+                                <div className="text-htb-text-dim text-[10px] font-mono uppercase tracking-wider mt-0.5">
+                                    {submission.timestamp}
                                 </div>
                             </div>
                             <div>
-                                <Badge variant="secondary" className="font-normal">
+                                <Badge variant="info" className="font-mono">
                                     {submission.language}
                                 </Badge>
                             </div>
-                            <div className="flex gap-x-1.5 items-center gap-2">
-                                <Clock4 className="size-4" />
-                                <span>{submission.runtime}</span>
+                            <div className="flex items-center gap-2 text-htb-muted font-mono text-xs">
+                                <Clock4 className="size-3.5 text-htb-text-dim" />
+                                <span className="tabular-nums">{submission.runtime}</span>
                             </div>
-                            <div className="flex gap-x-1.5 items-center gap-2">
-                                <Cpu className="size-4" />
-                                <span>{submission.memory}</span>
+                            <div className="flex items-center gap-2 text-htb-muted font-mono text-xs">
+                                <Cpu className="size-3.5 text-htb-text-dim" />
+                                <span className="tabular-nums">{submission.memory}</span>
                             </div>
                         </div>
                     ))}

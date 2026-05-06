@@ -32,41 +32,61 @@ const notifications: Notification[] = [
         message: "Biweekly Contest 143 and Weekly Contest 423 are approaching.",
         timeAgo: "3 months ago"
     },
-    // Add more notifications...
 ];
 
 const NotificationsPage = () => {
     return (
-        <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             >
-                <h1 className="text-2xl font-semibold mb-6">Notifications</h1>
-                <div className="bg-white rounded-xl shadow-sm">
-                    {notifications.map((notification) => (
-                        <div
-                            key={notification.id}
-                            className="flex items-start gap-3 p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0"
-                        >
-                            <div className={`shrink-0 mt-1 ${notification.icon === 'trophy' ? 'text-amber-400' : 'text-purple'}`}>
-                                {notification.icon === 'trophy' ? <Trophy size={20} /> : <Info size={20} />}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <p className="text-sm text-gray-900">{notification.message}</p>
-                                <p className="text-xs text-gray-500 mt-1">{notification.timeAgo}</p>
-                            </div>
-                            {notification.points && (
-                                <div className="shrink-0 flex items-center gap-1">
-                                    <span className="text-amber-400 text-sm">+</span>
-                                    <span className="bg-amber-400 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                                        {notification.points.replace('+', '')}
-                                    </span>
+                <div className="mb-6">
+                    <span className="terminal-eyebrow">notifications.feed</span>
+                    <h1 className="heading-display text-3xl text-htb-text mt-1">
+                        Notifications
+                    </h1>
+                </div>
+                <div className="panel overflow-hidden">
+                    <div className="flex items-center justify-between px-5 py-3 border-b border-htb-border bg-htb-bg/40">
+                        <span className="terminal-eyebrow">inbox</span>
+                        <span className="text-[10px] font-mono uppercase tracking-widest text-htb-text-dim">
+                            {notifications.length} items
+                        </span>
+                    </div>
+                    {notifications.map((notification) => {
+                        const isTrophy = notification.icon === 'trophy';
+                        return (
+                            <div
+                                key={notification.id}
+                                className="group flex items-start gap-3 px-5 py-4 hover:bg-neon/5 cursor-pointer border-b border-htb-border last:border-0 transition-colors"
+                            >
+                                <div
+                                    className={`shrink-0 mt-0.5 flex items-center justify-center w-9 h-9 rounded-md border ${
+                                        isTrophy
+                                            ? 'border-warn/30 bg-warn/10 text-warn'
+                                            : 'border-neon/30 bg-neon/10 text-neon'
+                                    }`}
+                                >
+                                    {isTrophy ? <Trophy size={16} /> : <Info size={16} />}
                                 </div>
-                            )}
-                        </div>
-                    ))}
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-htb-text leading-snug">
+                                        {notification.message}
+                                    </p>
+                                    <p className="text-[11px] font-mono uppercase tracking-widest text-htb-text-dim mt-1">
+                                        {notification.timeAgo}
+                                    </p>
+                                </div>
+                                {notification.points && (
+                                    <div className="shrink-0 inline-flex items-center px-2 py-1 rounded-full border border-neon/30 bg-neon/10 font-mono text-[11px] font-semibold text-neon">
+                                        +{notification.points.replace('+', '')}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
             </motion.div>
         </div>

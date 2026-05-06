@@ -18,25 +18,45 @@ const data = [
   { country: 'India', count: 50 },
 ];
 
-const barColor = "#742193";  // Purple color for the bars
+const barColor = "#9FEF00";
 
 const TopCountriesChart = () => {
   return (
-    <div className=" ">
-      <h2 className="text-xl font-bold mb-4">Top Countries</h2>
+    <div>
+      <span className="terminal-eyebrow">top.countries</span>
+      <h2 className="text-lg font-bold text-htb-text mt-0.5 mb-4">Top Countries</h2>
 
-      <ResponsiveContainer width="100%" height={350} className="mt-10 ">
+      <ResponsiveContainer width="100%" height={350} className="mt-6">
         <BarChart
           layout="vertical"
           data={data}
-          margin={{ top: 5, right: 20, left: 0, bottom: 0}}
+          margin={{ top: 5, right: 20, left: 0, bottom: 0 }}
           barCategoryGap="30%"
         >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis type="number" />
-          <YAxis type="category" dataKey="country" />
-          <Tooltip />
-          <Bar dataKey="count" fill={barColor} radius={[0, 10, 10, 0]}>
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+          <XAxis
+            type="number"
+            tick={{ fontSize: 11, fill: '#A4B1CD' }}
+            axisLine={{ stroke: 'rgba(255,255,255,0.06)' }}
+          />
+          <YAxis
+            type="category"
+            dataKey="country"
+            tick={{ fontSize: 11, fill: '#A4B1CD' }}
+            axisLine={{ stroke: 'rgba(255,255,255,0.06)' }}
+          />
+          <Tooltip
+            contentStyle={{
+              background: '#111927',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: '0.375rem',
+              color: '#E6EDF7',
+              fontFamily: '"JetBrains Mono", ui-monospace, monospace',
+              fontSize: 12,
+            }}
+            cursor={{ fill: 'rgba(159, 239, 0, 0.05)' }}
+          />
+          <Bar dataKey="count" fill={barColor} radius={[0, 6, 6, 0]}>
             {data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={barColor} />
             ))}

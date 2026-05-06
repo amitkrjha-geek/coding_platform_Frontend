@@ -47,41 +47,41 @@ interface ChallengeDetailsProps {
 const ChallengeDetails = ({ title, difficulty, stats, challenge }: ChallengeDetailsProps) => {
   // console.log("challenge", challenge);
   return (
-    <div className="prose max-w-none">
+    <div className="max-w-none">
       {/* Challenge Title and Difficulty */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold">{title}</h2>
-        <span className={`px-3 py-1 rounded-full text-sm ${
-          difficulty === 'easy' ? 'bg-green-100 text-green-600' :
-          difficulty === 'medium' ? 'bg-yellow-100 text-yellow-600' :
-          'bg-red-100 text-red-600'
+      <div className="flex justify-between items-center mb-5 gap-3 flex-wrap">
+        <h2 className="heading-display text-2xl text-htb-text">{title}</h2>
+        <span className={`inline-flex items-center px-2.5 py-1 rounded font-mono text-[11px] font-semibold uppercase tracking-widest border ${
+          difficulty === 'easy' ? 'border-neon/30 bg-neon/10 text-neon' :
+          difficulty === 'medium' ? 'border-warn/30 bg-warn/10 text-warn' :
+          'border-danger/30 bg-danger/10 text-danger'
         }`}>
-          {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
+          {difficulty}
         </span>
       </div>
 
       {/* Payment Information */}
-      <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
-        <h3 className="font-medium mb-3 text-gray-800">Payment Information</h3>
-        <div className="flex items-center gap-4">
+      <div className="mb-6 p-4 rounded-md border border-htb-border bg-htb-bg/40">
+        <span className="terminal-eyebrow">payment.info</span>
+        <div className="flex items-center gap-3 mt-3 flex-wrap">
           <div className="flex items-center gap-2">
-            <span className="text-gray-600">Payment Mode:</span>
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-              challenge.paymentMode === "free" 
-                ? "bg-green-100 text-green-700" 
-                : "bg-blue-100 text-blue-700"
+            <span className="text-[11px] font-mono uppercase tracking-widest text-htb-muted">Mode:</span>
+            <span className={`inline-flex items-center px-2.5 py-1 rounded font-mono text-[10px] font-semibold uppercase tracking-widest border ${
+              challenge.paymentMode === "free"
+                ? "border-neon/30 bg-neon/10 text-neon"
+                : "border-purple-500/30 bg-purple-500/10 text-purple-300"
             }`}>
               {challenge.paymentMode?.toUpperCase() || "FREE"}
             </span>
           </div>
           {challenge.paymentMode === "paid" && challenge.planId && (
-            <div className="flex items-center gap-2">
-              <span className="text-gray-600">Plan:</span>
-              <span className="px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-700">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[11px] font-mono uppercase tracking-widest text-htb-muted">Plan:</span>
+              <span className="inline-flex items-center px-2.5 py-1 rounded font-mono text-[10px] font-semibold uppercase tracking-widest border border-purple-500/30 bg-purple-500/10 text-purple-300">
                 {challenge.planId.name}
               </span>
-              <span className="px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-700">
-              ₹{challenge.planId.price}/{challenge.planId.priceMode}
+              <span className="inline-flex items-center px-2.5 py-1 rounded font-mono text-[10px] font-semibold uppercase tracking-widest border border-warn/30 bg-warn/10 text-warn">
+                ₹{challenge.planId.price}/{challenge.planId.priceMode}
               </span>
             </div>
           )}
@@ -107,10 +107,10 @@ const ChallengeDetails = ({ title, difficulty, stats, challenge }: ChallengeDeta
       {/* Topics */}
       {challenge.topic && challenge.topic.length > 0 && (
         <div className="mb-4">
-          <h3 className="font-medium mb-2">Topics:</h3>
+          <h3 className="text-[11px] font-mono uppercase tracking-widest font-semibold text-htb-muted mb-2">Topics</h3>
           <div className="flex flex-wrap gap-2">
             {challenge.topic.map((topic, index) => (
-              <span key={index} className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-sm">
+              <span key={index} className="inline-flex items-center px-2 py-0.5 rounded border border-sky-400/30 bg-sky-400/10 text-sky-300 font-mono text-[11px] uppercase tracking-wider">
                 {topic}
               </span>
             ))}
@@ -121,10 +121,10 @@ const ChallengeDetails = ({ title, difficulty, stats, challenge }: ChallengeDeta
       {/* Keywords */}
       {challenge.keywords && challenge.keywords.length > 0 && (
         <div className="mb-4">
-          <h3 className="font-medium mb-2">Keywords:</h3>
+          <h3 className="text-[11px] font-mono uppercase tracking-widest font-semibold text-htb-muted mb-2">Keywords</h3>
           <div className="flex flex-wrap gap-2">
             {challenge.keywords.map((keyword, index) => (
-              <span key={index} className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-sm">
+              <span key={index} className="inline-flex items-center px-2 py-0.5 rounded border border-htb-border bg-htb-panel-2 text-htb-muted font-mono text-[11px] uppercase tracking-wider">
                 {keyword}
               </span>
             ))}
@@ -135,10 +135,10 @@ const ChallengeDetails = ({ title, difficulty, stats, challenge }: ChallengeDeta
       {/* Companies */}
       {challenge.companies && challenge.companies.length > 0 && (
         <div className="mb-4">
-          <h3 className="font-medium mb-2">Companies:</h3>
+          <h3 className="text-[11px] font-mono uppercase tracking-widest font-semibold text-htb-muted mb-2">Companies</h3>
           <div className="flex flex-wrap gap-2">
             {challenge.companies.map((company, index) => (
-              <span key={index} className="bg-purple-100 text-purple-600 px-2 py-1 rounded text-sm">
+              <span key={index} className="inline-flex items-center px-2 py-0.5 rounded border border-purple-500/30 bg-purple-500/10 text-purple-300 font-mono text-[11px] uppercase tracking-wider">
                 {company}
               </span>
             ))}
@@ -147,59 +147,53 @@ const ChallengeDetails = ({ title, difficulty, stats, challenge }: ChallengeDeta
       )}
 
       {/* Problem Statement */}
-      <div className="mb-4 mt-4">
-        <h3 className="font-medium mb-2">Problem Statement:</h3>
-        <div 
-          className="text-gray-700 prose max-w-none [&>h2]:text-xl [&>h2]:font-semibold [&>h2]:mt-4 [&>h2]:mb-2 [&>p]:mb-2 [&>pre]:bg-gray-100 [&>pre]:p-3 [&>pre]:rounded [&>pre]:overflow-x-auto [&>ul]:list-disc [&>ul]:pl-6 [&>ul]:space-y-1 [&>code]:bg-gray-100 [&>code]:px-1 [&>code]:py-0.5 [&>code]:rounded [&>code]:text-sm"
+      <div className="mb-4 mt-6">
+        <h3 className="text-[11px] font-mono uppercase tracking-widest font-semibold text-htb-muted mb-2">Problem Statement</h3>
+        <div
+          className="text-htb-muted max-w-none [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-htb-text [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:font-mono [&_h2]:uppercase [&_h2]:tracking-wider [&_p]:mb-2 [&_p]:leading-relaxed [&_pre]:bg-htb-bg-deep [&_pre]:border [&_pre]:border-htb-border [&_pre]:p-3 [&_pre]:rounded-md [&_pre]:text-neon [&_pre]:overflow-x-auto [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:space-y-1 [&_ul]:marker:text-neon [&_code]:bg-neon/10 [&_code]:text-neon [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-sm [&_code]:font-mono [&_strong]:text-htb-text"
           dangerouslySetInnerHTML={{ __html: challenge.problemStatement }}
         />
       </div>
 
-
       {/* Files Section */}
       {challenge.files && challenge.files.length > 0 && (
         <div className="mt-6">
-          <h3 className="font-medium mb-3 text-gray-800">Required Files & Resources</h3>
-          <div className="grid gap-3">
+          <h3 className="text-[11px] font-mono uppercase tracking-widest font-semibold text-htb-muted mb-3">Required Files & Resources</h3>
+          <div className="grid gap-2">
             {challenge.files.map((file, index) => (
-              <div key={file._id || index} className="flex items-center justify-between bg-white border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
-                <div className="flex items-center gap-3">
-                  <div className="flex-shrink-0">
-                    <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-                      <File className="w-5 h-5 text-blue-600" />
-                    </div>
+              <div key={file._id || index} className="flex items-center justify-between rounded-md border border-htb-border bg-htb-bg/40 p-3 hover:border-neon/30 transition-colors gap-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="shrink-0 w-9 h-9 rounded-md border border-neon/30 bg-neon/10 flex items-center justify-center">
+                    <File className="w-4 h-4 text-neon" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                    <p className="text-sm font-medium text-htb-text truncate">
                       {file.name}
                     </p>
-                    <div className="flex items-center gap-4 mt-1">
-                      <span className="text-xs text-gray-500">
+                    <div className="flex items-center gap-3 mt-0.5">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-htb-text-dim">
                         {file.type || 'Unknown type'}
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-htb-text-dim tabular-nums">
                         {(file.size / 1024).toFixed(1)} KB
                       </span>
                     </div>
                   </div>
                 </div>
-                <div className="flex-shrink-0">
-                  <button 
-                    className="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
-                    onClick={() => {
-                      // Create download link
-                      const link = document.createElement('a');
-                      link.href = `data:${file.type};base64,${file.content}`;
-                      link.download = file.name;
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                    }}
-                  >
-                    <Download className="w-3 h-3" />
-                    Download
-                  </button>
-                </div>
+                <button
+                  className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-neon/30 bg-neon/10 text-neon hover:bg-neon/15 hover:border-neon/40 font-mono text-[11px] uppercase tracking-widest font-semibold transition-colors"
+                  onClick={() => {
+                    const link = document.createElement('a');
+                    link.href = `data:${file.type};base64,${file.content}`;
+                    link.download = file.name;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                >
+                  <Download className="w-3 h-3" />
+                  Download
+                </button>
               </div>
             ))}
           </div>

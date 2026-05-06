@@ -18,54 +18,57 @@ const CouponCard = ({
 }: PricingCardProps) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="w-full min-w-xl mx-auto bg-white/80 backdrop-blur-sm rounded-2xl overflow-hidden border hover:shadow-md transition-shadow duration-500"
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      className="w-full panel panel-hover overflow-hidden transition-all duration-300"
     >
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold darkText">{title}</h2>
-          <div className="flex gap-2">
+      <div className="p-5">
+        <div className="flex justify-between items-center mb-4 gap-3 flex-wrap">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="terminal-eyebrow">coupon.code</span>
+            <h2 className="font-mono text-xl font-bold text-neon tabular-nums uppercase tracking-widest">
+              {title}
+            </h2>
+          </div>
+          <div className="flex gap-1.5 shrink-0">
             {onEdit && (
               <button
                 onClick={onEdit}
-                className="p-2  hover:bg-gray-100 rounded-full transition-colors duration-200 flex gap-2"
+                className="px-3 py-1.5 rounded-md border border-htb-border bg-htb-panel text-htb-muted hover:text-neon hover:border-neon/40 transition-colors flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest font-semibold"
               >
-                <Edit2 className="w-5 h-5 text-gray-600" />
+                <Edit2 className="w-3 h-3" />
                 Edit
               </button>
             )}
             {onDelete && (
               <button
                 onClick={onDelete}
-                className="p-2 hover:bg-red-50 rounded-full transition-colors duration-200 flex gap-2"
+                className="px-3 py-1.5 rounded-md border border-danger/30 bg-danger/10 text-danger hover:bg-danger/15 transition-colors flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-widest font-semibold"
               >
-                <Trash2 className="w-5 h-5 text-red-500" />
+                <Trash2 className="w-3 h-3" />
                 Delete
               </button>
             )}
           </div>
         </div>
-         <hr className="-mt-3 border border-[#919090]"/>
-        <div className=" mt-3">
-          <div className="flex items-center">
-            <span className="darkText">Discount </span> <span className="font-bold ml-2">:</span>
-            <span className="mx-2 text-xl font-bold text-gray-900">
-            ₹{discount}
+
+        <div className="border-t border-htb-border pt-4 space-y-3">
+          <div className="flex items-baseline gap-2">
+            <span className="text-[11px] font-mono uppercase tracking-widest font-semibold text-htb-muted">
+              Discount
+            </span>
+            <span className="font-mono text-2xl font-bold text-htb-text tabular-nums">
+              ₹{discount}
             </span>
           </div>
-          {/* <div className="flex items-center">
-            <span className="darkText">Yearly</span>
-            <span className="mx-2 text-xl font-bold text-gray-900">
-              ${yearlyPrice}
-            </span>
-          </div> */}
-        </div>
 
-        <div className="space-y-2">
-          <h3 className="text-lg font-bold mt-2 darkText">Details</h3>
-          <span>{details}</span>
+          <div>
+            <h3 className="text-[11px] font-mono uppercase tracking-widest font-semibold text-htb-muted mb-1">
+              Details
+            </h3>
+            <span className="text-sm text-htb-muted">{details}</span>
+          </div>
         </div>
       </div>
     </motion.div>

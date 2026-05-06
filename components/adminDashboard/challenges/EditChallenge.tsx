@@ -31,20 +31,20 @@ const EditChallenge = () => {
     };
 
     return (
-        <section className="bg-[#f9f9f9] h-50 p-7">
+        <section className="bg-htb-bg min-h-screen p-7">
             <div>
                 <Breadcrumb>
                     <BreadcrumbList>
                         <BreadcrumbItem>
-                            <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+                            <BreadcrumbLink href="/admin" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Dashboard</BreadcrumbLink>
                         </BreadcrumbItem>
-                        <BreadcrumbSeparator />
+                        <BreadcrumbSeparator className="text-htb-text-dim" />
                         <BreadcrumbItem>
-                            <BreadcrumbLink href="/admin/challenges">Challenges</BreadcrumbLink>
+                            <BreadcrumbLink href="/admin/challenges" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Challenges</BreadcrumbLink>
                         </BreadcrumbItem>
-                        <BreadcrumbSeparator />
+                        <BreadcrumbSeparator className="text-htb-text-dim" />
                         <BreadcrumbItem>
-                            <BreadcrumbPage>Edit Challenge</BreadcrumbPage>
+                            <BreadcrumbPage className="text-neon font-mono text-xs uppercase tracking-widest">Edit Challenge</BreadcrumbPage>
                         </BreadcrumbItem>
                     </BreadcrumbList>
                 </Breadcrumb>
@@ -54,8 +54,8 @@ const EditChallenge = () => {
                 title="Edit Challenge"
                 buttonText="View Challenge"
                 onButtonClick={handleViewChallenge}
-                icon={<Eye />}
-                className=""
+                icon={<Eye className="w-3.5 h-3.5" />}
+                className="mt-3"
             />
 
             <div className="mt-5">

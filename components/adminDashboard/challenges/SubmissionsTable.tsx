@@ -1,88 +1,88 @@
 interface Submission {
-    status: string;
-    statusColor: string;
-    runtime: string;
-    memory: string;
-    language: string;
-    submitted: string;
-  }
-  
-  const DUMMY_SUBMISSIONS: Submission[] = [
-    {
-      status: 'Accepted',
-      statusColor: 'text-green-600',
-      runtime: '56 ms',
-      memory: '42.1 MB',
-      language: 'Python3',
-      submitted: '2 minutes ago'
-    },
-    {
-      status: 'Wrong Answer',
-      statusColor: 'text-red-600',
-      runtime: '62 ms',
-      memory: '41.8 MB',
-      language: 'JavaScript',
-      submitted: '5 minutes ago'
-    },
-    {
-      status: 'Time Limit Exceeded',
-      statusColor: 'text-yellow-600',
-      runtime: '---',
-      memory: '43.2 MB',
-      language: 'Java',
-      submitted: '10 minutes ago'
-    },
-    {
-      status: 'Accepted',
-      statusColor: 'text-green-600',
-      runtime: '48 ms',
-      memory: '40.9 MB',
-      language: 'C++',
-      submitted: '15 minutes ago'
-    },
-  ];
-  
-  const SubmissionsTable = () => {
-    return (
-      <div className="prose max-w-none">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Runtime</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Memory</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Language</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted</th>
+  status: string;
+  statusColor: string;
+  runtime: string;
+  memory: string;
+  language: string;
+  submitted: string;
+}
+
+const DUMMY_SUBMISSIONS: Submission[] = [
+  {
+    status: 'Accepted',
+    statusColor: 'text-neon',
+    runtime: '56 ms',
+    memory: '42.1 MB',
+    language: 'Python3',
+    submitted: '2 minutes ago'
+  },
+  {
+    status: 'Wrong Answer',
+    statusColor: 'text-danger',
+    runtime: '62 ms',
+    memory: '41.8 MB',
+    language: 'JavaScript',
+    submitted: '5 minutes ago'
+  },
+  {
+    status: 'Time Limit Exceeded',
+    statusColor: 'text-warn',
+    runtime: '---',
+    memory: '43.2 MB',
+    language: 'Java',
+    submitted: '10 minutes ago'
+  },
+  {
+    status: 'Accepted',
+    statusColor: 'text-neon',
+    runtime: '48 ms',
+    memory: '40.9 MB',
+    language: 'C++',
+    submitted: '15 minutes ago'
+  },
+];
+
+const SubmissionsTable = () => {
+  return (
+    <div className="max-w-none">
+      <div className="overflow-x-auto rounded-md border border-htb-border">
+        <table className="min-w-full">
+          <thead className="bg-htb-bg/40 border-b border-htb-border">
+            <tr>
+              <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-htb-muted uppercase tracking-widest">Status</th>
+              <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-htb-muted uppercase tracking-widest">Runtime</th>
+              <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-htb-muted uppercase tracking-widest">Memory</th>
+              <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-htb-muted uppercase tracking-widest">Language</th>
+              <th className="px-4 py-3 text-left text-[10px] font-mono font-semibold text-htb-muted uppercase tracking-widest">Submitted</th>
+            </tr>
+          </thead>
+          <tbody>
+            {DUMMY_SUBMISSIONS.map((submission, index) => (
+              <tr key={index} className="border-t border-htb-border hover:bg-neon/5 cursor-pointer transition-colors">
+                <td className="px-4 py-3 whitespace-nowrap">
+                  <span className={`${submission.statusColor} font-mono text-xs uppercase tracking-wider font-semibold`}>
+                    {submission.status}
+                  </span>
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap text-xs text-htb-muted font-mono tabular-nums">
+                  {submission.runtime}
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap text-xs text-htb-muted font-mono tabular-nums">
+                  {submission.memory}
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap text-xs text-htb-muted font-mono">
+                  {submission.language}
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap text-xs text-htb-text-dim font-mono">
+                  {submission.submitted}
+                </td>
               </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {DUMMY_SUBMISSIONS.map((submission, index) => (
-                <tr key={index} className="hover:bg-gray-50 cursor-pointer">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`${submission.statusColor} font-medium`}>
-                      {submission.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {submission.runtime}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {submission.memory}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {submission.language}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {submission.submitted}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       </div>
-    );
-  };
-  
-  export default SubmissionsTable; 
+    </div>
+  );
+};
+
+export default SubmissionsTable;

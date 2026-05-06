@@ -96,17 +96,17 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
-      <div className="flex flex-col lg:flex-row gap-4">
+    <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-6 sm:py-10">
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
         {/* Left Sidebar */}
-        <div className="w-full lg:w-[19rem] min-w-[19rem] bg-white p-3 sm:p-4 rounded-lg">
+        <div className="w-full lg:w-[20rem] lg:min-w-[20rem]">
           <ProfileSidebar organizedData={organizedData} />
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 w-full space-y-4 sm:space-y-6 overflow-hidden">
-          <ProfileStats organizedData={organizedData} plan={plan}/> 
-          <Suspense fallback={<div className="bg-white rounded-xl p-6"><div className="h-[300px] bg-gray-100 rounded-lg animate-pulse" /></div>}>
+        <div className="flex-1 w-full space-y-5 sm:space-y-6 overflow-hidden">
+          <ProfileStats organizedData={organizedData} plan={plan}/>
+          <Suspense fallback={<div className="panel p-6"><div className="h-[300px] bg-htb-panel-2 rounded animate-pulse" /></div>}>
             <SubmissionHistory />
           </Suspense>
           <RecentSubmissions currentData={currentData} />

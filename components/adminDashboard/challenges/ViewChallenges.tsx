@@ -77,20 +77,20 @@ const ViewChallenges = () => {
   }, [id]);
 
   return (
-    <section className="bg-[#f9f9f9] h-50 p-7">
+    <section className="bg-htb-bg min-h-screen p-7">
       <div>
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href="/admin" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-htb-text-dim" />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin/challenges">Challenges</BreadcrumbLink>
+              <BreadcrumbLink href="/admin/challenges" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Challenges</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-htb-text-dim" />
             <BreadcrumbItem>
-              <BreadcrumbPage>View Challenge</BreadcrumbPage>
+              <BreadcrumbPage className="text-neon font-mono text-xs uppercase tracking-widest">View Challenge</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -100,38 +100,29 @@ const ViewChallenges = () => {
         title="View Challenge"
         buttonText="Edit Challenge"
         onButtonClick={handleEditChallenge}
-        icon={<Pencil />}
-        className=""
+        icon={<Pencil className="w-3.5 h-3.5" />}
+        className="mt-3"
       />
 
       <div className="mt-5">
-        <div className="min-w-xl mx-auto bg-white rounded-lg shadow p-6">
+        <div className="panel p-6">
           {/* Tabs */}
-          <div className="flex gap-4 border-b mb-4">
+          <div className="flex gap-2 border-b border-htb-border mb-4">
             <button
               onClick={() => setActiveTab('description')}
-              className={`px-4 py-2 border-b-2 ${activeTab === 'description'
-                  ? 'border-blue-500 font-medium'
-                  : 'border-transparent text-gray-500'
+              className={`px-4 py-2.5 border-b-2 -mb-px font-mono text-xs uppercase tracking-widest font-semibold transition-colors ${activeTab === 'description'
+                  ? 'border-neon text-neon'
+                  : 'border-transparent text-htb-muted hover:text-htb-text'
                 }`}
             >
               Description
             </button>
-            {/* <button
-              onClick={() => setActiveTab('submissions')}
-              className={`px-4 py-2 border-b-2 ${activeTab === 'submissions'
-                  ? 'border-blue-500 font-medium'
-                  : 'border-transparent text-gray-500'
-                }`}
-            >
-              Submissions
-            </button> */}
           </div>
 
           {/* Content based on active tab */}
           {loading ? (
-            <div className="flex justify-center items-center py-8">
-              <div className="text-gray-500">Loading challenge details...</div>
+            <div className="flex justify-center items-center py-12">
+              <div className="text-htb-text-dim font-mono uppercase tracking-widest text-sm">Loading challenge details...</div>
             </div>
           ) : challenge ? (
             activeTab === 'description' ? (
@@ -149,8 +140,8 @@ const ViewChallenges = () => {
               <SubmissionsTable />
             )
           ) : (
-            <div className="flex justify-center items-center py-8">
-              <div className="text-gray-500">Challenge not found</div>
+            <div className="flex justify-center items-center py-12">
+              <div className="text-htb-text-dim font-mono uppercase tracking-widest text-sm">Challenge not found</div>
             </div>
           )}
         </div>

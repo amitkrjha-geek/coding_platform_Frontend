@@ -263,16 +263,16 @@ const Page = () => {
   }
 
   return (
-    <div className="p-7 bg-gray-50">
-      <div className="container mx-auto ">
+    <div className="p-7 bg-htb-bg min-h-screen">
+      <div className="container mx-auto">
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href="/admin" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-htb-text-dim" />
             <BreadcrumbItem>
-              <BreadcrumbPage>Challenges</BreadcrumbPage>
+              <BreadcrumbPage className="text-neon font-mono text-xs uppercase tracking-widest">Challenges</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -281,8 +281,8 @@ const Page = () => {
           title="Challenges"
           buttonText="Add Challenge"
           onButtonClick={handleAddChallenge}
-          icon={<Plus />}
-          className="mb-4"
+          icon={<Plus className="w-3.5 h-3.5" />}
+          className="mb-4 mt-3"
         />
 
         <div className="flex flex-col lg:flex-row gap-3 2xl:gap-6">
@@ -299,36 +299,20 @@ const Page = () => {
                 >
                   {topics_filter.map((topic) => {
                     const IconComponent = topic.icon;
+                    const active = selectedTopic === topic.id;
                     return (
-                      <Button
+                      <button
                         key={topic.id}
-                        variant={
-                          selectedTopic === topic.id ? "default" : "ghost"
-                        }
-                        className={
-                          selectedTopic === topic.id
-                            ? "bg-black text-white"
-                            : ""
-                        }
                         onClick={() => setSelectedTopic(topic.id)}
+                        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md font-mono text-[11px] uppercase tracking-widest font-semibold border transition-all whitespace-nowrap ${
+                          active
+                            ? "bg-neon/10 border-neon/40 text-neon shadow-neon-sm"
+                            : "bg-htb-panel border-htb-border text-htb-muted hover:border-htb-border-hover hover:text-htb-text"
+                        }`}
                       >
-                        <IconComponent
-                          className={`h-4 w-4  ${
-                            selectedTopic === topic.id
-                              ? "text-white"
-                              : topic.color
-                          }`}
-                        />
-                        <span
-                          className={
-                            selectedTopic === topic.id
-                              ? "text-white"
-                              : "text-gray-700"
-                          }
-                        >
-                          {topic.label}
-                        </span>
-                      </Button>
+                        <IconComponent className="h-3.5 w-3.5" />
+                        <span>{topic.label}</span>
+                      </button>
                     );
                   })}
                 </div>
@@ -353,7 +337,7 @@ const Page = () => {
                 </div> */}
                 <Button
                   variant="ghost"
-                  className="absolute right-0 top-1/2 -translate-y-1/2 bg-gradient-to-l from-gray-50 via-gray-50 to-transparent"
+                  className="absolute right-0 top-1/2 -translate-y-1/2 bg-gradient-to-l from-htb-bg via-htb-bg to-transparent text-htb-muted hover:text-neon hover:bg-transparent"
                   onClick={() => {
                     const container =
                       document.querySelector(".overflow-x-auto");
@@ -369,10 +353,10 @@ const Page = () => {
               <div className="flex flex-row gap-3 2xl:gap-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                   <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-htb-text-dim h-4 w-4 pointer-events-none" />
                     <Input
                       placeholder="Search challenges"
-                      className="pl-10"
+                      className="pl-10 font-mono text-sm"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                     />
@@ -381,7 +365,7 @@ const Page = () => {
                     value={selectedDifficulty}
                     onValueChange={setSelectedDifficulty}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="font-mono text-xs uppercase tracking-wider">
                       <SelectValue placeholder="Difficulty" />
                     </SelectTrigger>
                     <SelectContent>
@@ -395,7 +379,7 @@ const Page = () => {
                     value={selectedStatus}
                     onValueChange={setSelectedStatus}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="font-mono text-xs uppercase tracking-wider">
                       <SelectValue placeholder="Status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -418,9 +402,9 @@ const Page = () => {
                     </SelectContent>
                   </Select> */}
                   <Button
-                    variant="outline"
+                    variant="outline-dim"
                     onClick={handleResetFilters}
-                    className="px-3"
+                    className="px-4 font-mono text-xs uppercase tracking-widest"
                   >
                     Reset
                   </Button>
@@ -428,24 +412,18 @@ const Page = () => {
               </div>
 
               <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div className="text-sm text-gray-600">
-                    Showing {filteredChallenges.length} of {challenges.length}{" "}
-                    challenges
+                <div className="flex flex-wrap justify-between items-center gap-2">
+                  <div className="text-[11px] font-mono uppercase tracking-widest text-htb-text-dim">
+                    Showing <span className="text-neon font-semibold">{filteredChallenges.length}</span> of <span className="text-htb-text font-semibold">{challenges.length}</span> challenges
                   </div>
                   {selectedTopic !== "all" && (
-                    <div className="text-sm text-blue-600">
-                      Filtered by:{" "}
-                      {topics_filter.find((t) => t.id === selectedTopic)?.label}
+                    <div className="text-[11px] font-mono uppercase tracking-widest text-sky-300">
+                      Topic: {topics_filter.find((t) => t.id === selectedTopic)?.label}
                     </div>
                   )}
                   {selectedCompany !== "all" && (
-                    <div className="text-sm text-purple-600">
-                      Filtered by company:{" "}
-                      {
-                        companies_filter.find((c) => c.id === selectedCompany)
-                          ?.label
-                      }
+                    <div className="text-[11px] font-mono uppercase tracking-widest text-purple-300">
+                      Company: {companies_filter.find((c) => c.id === selectedCompany)?.label}
                     </div>
                   )}
                 </div>
@@ -467,51 +445,50 @@ const Page = () => {
 
                 {/* Pagination UI */}
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-2 mt-6">
+                  <div className="flex items-center justify-center gap-1.5 mt-6 flex-wrap">
                     <Button
-                      variant="outline"
+                      variant="outline-dim"
                       size="sm"
                       onClick={() =>
                         setCurrentPage((prev) => Math.max(prev - 1, 1))
                       }
                       disabled={currentPage === 1}
+                      className="font-mono text-[11px] uppercase tracking-widest"
                     >
-                      <ChevronLeft className="h-4 w-4" />
-                      <span className="ml-2">Previous</span>
+                      <ChevronLeft className="h-3.5 w-3.5" />
+                      <span className="ml-1">Prev</span>
                     </Button>
 
                     {getPageNumbers().map((pageNum, idx) => (
-                      <Button
+                      <button
                         key={idx}
-                        variant={
-                          currentPage === pageNum ? "outline" : "outline"
-                        }
-                        className={`min-w-[40px] ${
-                          pageNum === "..."
-                            ? "cursor-default hover:bg-transparent"
-                            : currentPage === pageNum
-                            ? "bg-[#7E22CE] text-white hover:bg-[#7E22CE] border-[#7E22CE]"
-                            : ""
-                        }`}
                         onClick={() =>
                           pageNum !== "..." && setCurrentPage(Number(pageNum))
                         }
                         disabled={pageNum === "..."}
+                        className={`min-w-[36px] h-9 rounded-md font-mono text-xs font-semibold transition-colors ${
+                          pageNum === "..."
+                            ? "cursor-default text-htb-text-dim"
+                            : currentPage === pageNum
+                            ? "bg-neon text-htb-bg shadow-neon-sm"
+                            : "border border-htb-border bg-htb-panel text-htb-muted hover:border-neon/40 hover:text-neon"
+                        }`}
                       >
                         {pageNum}
-                      </Button>
+                      </button>
                     ))}
 
                     <Button
-                      variant="outline"
+                      variant="outline-dim"
                       size="sm"
                       onClick={() =>
                         setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                       }
                       disabled={currentPage === totalPages}
+                      className="font-mono text-[11px] uppercase tracking-widest"
                     >
-                      <span className="mr-2">Next</span>
-                      <ChevronRight className="h-4 w-4" />
+                      <span className="mr-1">Next</span>
+                      <ChevronRight className="h-3.5 w-3.5" />
                     </Button>
                   </div>
                 )}

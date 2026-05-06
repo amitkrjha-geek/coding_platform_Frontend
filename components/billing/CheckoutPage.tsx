@@ -146,85 +146,101 @@ export const CheckoutPage = ({ plan, onClose, onSuccess, challengeId }: Checkout
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-htb-bg-deep/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
     >
       <motion.div
-        initial={{ scale: 0.9, opacity: 0 }}
+        initial={{ scale: 0.96, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-white rounded-2xl max-w-4xl w-full max-h-[80vh] p-2 overflow-y-auto"
+        exit={{ scale: 0.96, opacity: 0 }}
+        transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+        className="relative panel max-w-2xl w-full max-h-[85vh] overflow-y-auto shadow-panel-lg"
       >
+        {/* Top neon accent */}
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neon/60 to-transparent" />
+
         {/* Header */}
-        <div className="flex items-center justify-between p-3 border-b">
+        <div className="flex items-center justify-between p-4 border-b border-htb-border">
           <div className="flex items-center gap-3">
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              aria-label="Back"
+              className="flex items-center justify-center w-9 h-9 rounded-md border border-htb-border text-htb-muted hover:text-neon hover:border-neon/40 transition-colors"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-4 h-4" />
             </button>
-            <h2 className="text-2xl font-bold text-gray-900">Checkout</h2>
+            <div>
+              <span className="terminal-eyebrow">checkout</span>
+              <h2 className="text-xl font-bold text-htb-text">Confirm Order</h2>
+            </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            aria-label="Close"
+            className="flex items-center justify-center w-9 h-9 rounded-md border border-htb-border text-htb-muted hover:text-neon hover:border-neon/40 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        <div className="p-2 space-y-3">
+        <div className="p-4 sm:p-5 space-y-4">
           {/* Plan Summary */}
-          <Card className="p-4">
-            <h3 className="text-lg font-semibold mb-4">Plan Summary</h3>
-            <div className="flex items-center justify-between">
+          <Card className="p-5">
+            <span className="terminal-eyebrow">plan.summary</span>
+            <div className="flex items-center justify-between mt-3">
               <div>
-                <h4 className="font-medium text-gray-900">{plan.name}</h4>
-                <p className="text-sm text-gray-500">{plan.priceMode} Plan</p>
+                <h4 className="font-semibold text-htb-text text-base">
+                  {plan.name}
+                </h4>
+                <p className="text-xs font-mono uppercase tracking-wider text-htb-text-dim mt-0.5">
+                  {plan.priceMode} Plan
+                </p>
               </div>
               <div className="text-right">
-                <p className="text-lg font-semibold">₹{originalPrice}</p>
+                <p className="font-mono text-2xl font-bold text-htb-text tabular-nums">
+                  ₹{originalPrice}
+                </p>
               </div>
             </div>
           </Card>
 
           {/* Coupon Section */}
-          <Card className="p-4">
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <Tag className="w-5 h-5" />
-              Coupon Code
-            </h3>
-            
+          <Card className="p-5">
+            <span className="terminal-eyebrow flex items-center gap-2">
+              <Tag className="w-3.5 h-3.5" />
+              coupon.code
+            </span>
+
             {!appliedCoupon ? (
-              <div className="flex gap-3">
+              <div className="flex gap-3 mt-3">
                 <Input
                   placeholder="Enter coupon code"
                   value={couponCode}
                   onChange={(e) => setCouponCode(e.target.value)}
-                  className="flex-1"
+                  className="flex-1 font-mono uppercase tracking-wider"
                 />
                 <Button
+                  variant="ghost-neon"
                   onClick={applyCoupon}
                   disabled={isApplyingCoupon}
-                  className="bg-purple-600 hover:bg-purple-700"
+                  className="font-mono text-xs uppercase tracking-widest"
                 >
                   {isApplyingCoupon ? 'Applying...' : 'Apply'}
                 </Button>
               </div>
             ) : (
-              <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
-                <div className="flex items-center gap-2">
-                  <Check className="w-5 h-5 text-green-600" />
-                  <span className="font-medium text-green-800">
-                    {appliedCoupon.code} applied
+              <div className="flex items-center justify-between p-3 mt-3 bg-neon/10 border border-neon/30 rounded-md">
+                <div className="flex items-center gap-2 min-w-0">
+                  <Check className="w-4 h-4 text-neon shrink-0" />
+                  <span className="font-mono text-xs uppercase tracking-widest font-semibold text-neon truncate">
+                    {appliedCoupon.code}
                   </span>
-                  <span className="text-sm text-green-600">
+                  <span className="text-xs text-neon-green-dim">
                     (₹{appliedCoupon.discountAmount} off)
                   </span>
                 </div>
                 <button
                   onClick={removeCoupon}
-                  className="text-red-600 hover:text-red-700 text-sm font-medium"
+                  className="shrink-0 ml-2 text-danger hover:text-danger/80 text-[11px] font-mono uppercase tracking-widest font-semibold"
                 >
                   Remove
                 </button>
@@ -233,25 +249,27 @@ export const CheckoutPage = ({ plan, onClose, onSuccess, challengeId }: Checkout
           </Card>
 
           {/* Price Breakdown */}
-          <Card className="p-4">
-            <h3 className="text-lg font-semibold mb-4">Price Breakdown</h3>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Plan Price</span>
-                <span className="font-medium">₹{originalPrice}</span>
+          <Card className="p-5">
+            <span className="terminal-eyebrow">price.breakdown</span>
+            <div className="space-y-3 mt-3">
+              <div className="flex justify-between text-sm">
+                <span className="text-htb-muted">Plan Price</span>
+                <span className="font-mono text-htb-text tabular-nums">₹{originalPrice}</span>
               </div>
-              
+
               {appliedCoupon && (
-                <div className="flex justify-between text-green-600">
+                <div className="flex justify-between text-sm text-neon">
                   <span>Discount ({appliedCoupon.code})</span>
-                  <span>-₹{discountAmount}</span>
+                  <span className="font-mono tabular-nums">-₹{discountAmount}</span>
                 </div>
               )}
-              
-              <div className="border-t pt-3">
-                <div className="flex justify-between text-lg font-bold">
-                  <span>Total</span>
-                  <span>₹{finalPrice}</span>
+
+              <div className="border-t border-htb-border pt-3">
+                <div className="flex justify-between items-baseline">
+                  <span className="text-htb-text font-semibold">Total</span>
+                  <span className="font-mono text-2xl font-bold text-neon tabular-nums">
+                    ₹{finalPrice}
+                  </span>
                 </div>
               </div>
             </div>
@@ -259,18 +277,19 @@ export const CheckoutPage = ({ plan, onClose, onSuccess, challengeId }: Checkout
 
           {/* Payment Button */}
           <Button
+            variant="neon"
             onClick={handleCheckout}
             disabled={isProcessing}
-            className="w-full py-4 text-lg font-semibold bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
+            className="w-full py-3 font-mono text-xs uppercase tracking-widest"
           >
             {isProcessing ? (
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-htb-bg border-t-transparent rounded-full animate-spin" />
                 Processing...
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <CreditCard className="w-5 h-5" />
+                <CreditCard className="w-4 h-4" />
                 Pay ₹{finalPrice}
               </div>
             )}

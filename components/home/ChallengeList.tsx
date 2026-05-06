@@ -10,18 +10,22 @@ import { getCurrentUserId, getToken } from "@/config/token";
 const LoadingSkeleton = () => (
   <>
     {[...Array(6)].map((_, index) => (
-      <div key={`skeleton-${index}`} className="p-4 border border-gray-200 rounded-lg bg-white">
-        <div className="flex justify-between items-start mb-4">
-          <div className="w-full">
-            <div className="h-6 bg-gray-200 rounded w-3/4 animate-pulse mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/4 animate-pulse"></div>
+      <div
+        key={`skeleton-${index}`}
+        className="relative panel p-5 overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-htb-panel-hover/40 to-transparent -translate-x-full animate-shine" />
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <div className="h-5 bg-htb-panel-2 rounded w-3/4 animate-pulse" />
+            <div className="flex gap-2">
+              <div className="h-5 w-16 bg-htb-panel-2 rounded-full animate-pulse" />
+              <div className="h-5 w-12 bg-htb-panel-2 rounded-full animate-pulse" />
+            </div>
           </div>
+          <div className="h-12 bg-htb-panel-2 rounded animate-pulse" />
+          <div className="h-10 bg-htb-panel-2 rounded animate-pulse" />
         </div>
-        <div className="flex items-center justify-between mt-4">
-          <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse"></div>
-          <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse"></div>
-        </div>
-        <div className="h-10 bg-gray-200 rounded w-full animate-pulse mt-4"></div>
       </div>
     ))}
   </>
@@ -29,12 +33,18 @@ const LoadingSkeleton = () => (
 
 const NoResults = () => (
   <motion.div
-    initial={{ opacity: 0, y: 20 }}
+    initial={{ opacity: 0, y: 12 }}
     animate={{ opacity: 1, y: 0 }}
-    className="col-span-2 text-center py-8"
+    className="col-span-1 md:col-span-2 panel py-16 px-6 flex flex-col items-center text-center"
   >
-    <div className="text-gray-500 text-lg">No challenges found</div>
-    <p className="text-gray-400 mt-2">Try adjusting your filters or search criteria</p>
+    <div className="w-12 h-12 rounded-md border border-htb-border bg-htb-bg flex items-center justify-center mb-4">
+      <span className="text-neon font-mono text-xl">~</span>
+    </div>
+    <div className="terminal-eyebrow mb-2">no_results</div>
+    <p className="text-htb-text font-medium">No challenges match your query</p>
+    <p className="text-htb-text-dim text-sm mt-1">
+      Try adjusting your filters or search criteria
+    </p>
   </motion.div>
 );
 

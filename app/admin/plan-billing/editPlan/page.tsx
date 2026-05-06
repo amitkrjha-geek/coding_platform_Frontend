@@ -29,7 +29,7 @@ const PageContent = () => {
     }
   }, [dispatch, id]);
 
-  if(!data) return <div>Loading...</div>
+  if(!data) return <div className="p-7 text-htb-text-dim font-mono uppercase tracking-widest">Loading...</div>
 
   const transformedPlan = {
     _id: data?._id,
@@ -48,26 +48,29 @@ const PageContent = () => {
   };
 
   return (
-    <section className="bg-[#f9f9f9] h-50 p-7">
+    <section className="bg-htb-bg min-h-screen p-7">
       <div>
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href="/admin" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-htb-text-dim" />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin/plan-billing">Subscription</BreadcrumbLink>
+              <BreadcrumbLink href="/admin/plan-billing" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Subscription</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-htb-text-dim" />
             <BreadcrumbItem>
-              <BreadcrumbPage>Edit Plan</BreadcrumbPage>
+              <BreadcrumbPage className="text-neon font-mono text-xs uppercase tracking-widest">Edit Plan</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </div>
 
-      <h1 className="heading1 mt-2">Edit Plan</h1>
+      <div className="mt-3 mb-5">
+        <span className="terminal-eyebrow">edit.plan</span>
+        <h1 className="heading-display text-2xl text-htb-text mt-1">Edit Plan</h1>
+      </div>
       <div>
         <EditPlanForm initialData={transformedPlan} />
       </div>
@@ -77,7 +80,7 @@ const PageContent = () => {
 
 const Page = () => {
   return (
-    <Suspense fallback={<div className="p-7">Loading...</div>}>
+    <Suspense fallback={<div className="p-7 text-htb-text-dim font-mono uppercase tracking-widest">Loading...</div>}>
       <PageContent />
     </Suspense>
   );

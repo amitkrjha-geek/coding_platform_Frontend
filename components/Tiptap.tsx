@@ -15,7 +15,7 @@ const Tiptap = ({problemStatement, onChange}: {problemStatement: string, onChang
     extensions: [StarterKit.configure({}),
       Heading.configure({
        HTMLAttributes: {
-        class: 'text-2xl font-bold',
+        class: 'text-2xl font-bold text-htb-text',
         level: 2,
        },
       }),
@@ -33,12 +33,11 @@ const Tiptap = ({problemStatement, onChange}: {problemStatement: string, onChang
     content: problemStatement,
     editorProps:{
       attributes:{
-        class: 'min-h-[500px] focus:outline-none border p-8',
+        class: 'min-h-[500px] focus:outline-none border border-htb-border bg-htb-bg/40 rounded-md p-6 text-htb-text',
       },
     },
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
-      // console.log(editor.getHTML());
     },
   });
 

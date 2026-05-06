@@ -12,26 +12,29 @@ import PlanForm from "@/components/adminDashboard/plan&Billing/PlanForm";
 
 const Page = () => {
   return (
-    <section className="bg-[#f9f9f9] h-50 p-7">
+    <section className="bg-htb-bg min-h-screen p-7">
       <div>
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href="/admin" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-htb-text-dim" />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin/plan-billing">Subscription</BreadcrumbLink>
+              <BreadcrumbLink href="/admin/plan-billing" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Subscription</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-htb-text-dim" />
             <BreadcrumbItem>
-              <BreadcrumbPage>Add Plan</BreadcrumbPage>
+              <BreadcrumbPage className="text-neon font-mono text-xs uppercase tracking-widest">Add Plan</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </div>
 
-      <h1 className="heading1 mt-2">Add Plan</h1>
+      <div className="mt-3 mb-5">
+        <span className="terminal-eyebrow">add.plan</span>
+        <h1 className="heading-display text-2xl text-htb-text mt-1">Add Plan</h1>
+      </div>
       <div>
         <PlanForm />
       </div>

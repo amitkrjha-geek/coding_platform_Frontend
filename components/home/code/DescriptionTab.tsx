@@ -11,13 +11,26 @@ const DescriptionTab = ({ challenge }: { challenge: ChallengeData | undefined })
     const getDifficultyClass = (difficulty: string) => {
         switch (difficulty.toLowerCase()) {
             case 'easy':
-                return 'bg-green-100 text-green-700';
+                return 'bg-neon/10 text-neon border-neon/30';
             case 'medium':
-                return 'bg-yellow-100 text-yellow-700';
+                return 'bg-warn/10 text-warn border-warn/30';
             case 'hard':
-                return 'bg-red-100 text-red-700';
+                return 'bg-danger/10 text-danger border-danger/30';
             default:
-                return 'bg-gray-100 text-gray-700';
+                return 'bg-htb-panel-2 text-htb-muted border-htb-border';
+        }
+    };
+
+    const getDifficultyDot = (difficulty: string) => {
+        switch (difficulty.toLowerCase()) {
+            case 'easy':
+                return 'bg-neon';
+            case 'medium':
+                return 'bg-warn';
+            case 'hard':
+                return 'bg-danger';
+            default:
+                return 'bg-htb-text-dim';
         }
     };
 
@@ -25,32 +38,45 @@ const DescriptionTab = ({ challenge }: { challenge: ChallengeData | undefined })
         <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="space-y-4"
+            className="space-y-5"
         >
             {/* Title and Difficulty */}
-            <div className='flex items-center justify-between'>
-                <h1 className="text-2xl font-semibold">{challenge.title}</h1>
-                <div className="flex items-center gap-3">
-                    <span className={`text-sm px-3 py-1 rounded-full capitalize ${getDifficultyClass(challenge.difficulty)}`}>
+            <div className="space-y-3">
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                    <h1 className="heading-display text-2xl text-htb-text">
+                        {challenge.title}
+                    </h1>
+                    <span
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded font-mono text-[11px] font-semibold uppercase tracking-widest border ${getDifficultyClass(challenge.difficulty)}`}
+                    >
+                        <span className={`block w-1.5 h-1.5 rounded-full ${getDifficultyDot(challenge.difficulty)}`} />
                         {challenge.difficulty}
                     </span>
                 </div>
             </div>
 
-            {/* Topics and Companies */}
-            <div className="flex flex-wrap gap-2">
-                {challenge?.topic?.map((topic, index) => (
-                    <span key={index} className="bg-blue-100 text-blue-700 text-sm px-3 py-1 rounded-full">
-                        {topic.trim()}
-                    </span>
-                ))}
-            </div>
+            {/* Topics */}
+            {challenge?.topic?.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                    {challenge?.topic?.map((topic, index) => (
+                        <span
+                            key={index}
+                            className="inline-flex items-center px-2 py-0.5 rounded border border-sky-400/30 bg-sky-400/10 text-sky-300 font-mono text-[11px] uppercase tracking-wider"
+                        >
+                            {topic.trim()}
+                        </span>
+                    ))}
+                </div>
+            )}
 
             {/* Companies */}
             {challenge?.companies?.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                     {challenge?.companies.map((company, index) => (
-                        <span key={index} className="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full capitalize">
+                        <span
+                            key={index}
+                            className="inline-flex items-center px-2 py-0.5 rounded border border-htb-border bg-htb-panel-2 text-htb-muted font-mono text-[11px] uppercase tracking-wider"
+                        >
                             {company}
                         </span>
                     ))}
@@ -59,25 +85,9 @@ const DescriptionTab = ({ challenge }: { challenge: ChallengeData | undefined })
 
             {/* Problem Statement */}
             <div
-                className="problem-statement prose max-w-none space-y-3
-                    prose-h2:text-lg prose-h2:font-normal prose-h2:text-gray-800 prose-h2:mt-4 prose-h2:mb-2
-                    prose-pre:bg-gray-50 prose-pre:p-4 prose-pre:rounded-lg prose-pre:text-sm 
-                    prose-code:font-mono prose-code:text-sm
-                    prose-ul:pl-4 prose-ul:space-y-1 prose-ul:my-2
-                    prose-li:text-gray-600
-                    prose-p:text-gray-600 prose-p:my-2 prose-p:leading-relaxed"
+                className="problem-statement max-w-none"
                 dangerouslySetInnerHTML={{ __html: challenge?.problemStatement }}
-                style={{
-                    ["--tw-prose-headings" as string]: "rgb(31 41 55)",
-                    ["--tw-prose-pre" as string]: "rgb(75 85 99)"
-                } as React.CSSProperties}
             />
-
-            {/* Stats */}
-            {/* <div className="flex gap-4 text-sm text-gray-600">
-                <span>Acceptance Rate: {challenge?.acceptanceRate}%</span>
-                <span>Submissions: {challenge?.submissions}</span>
-            </div> */}
         </motion.div>
     )
 }

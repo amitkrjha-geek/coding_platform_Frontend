@@ -54,7 +54,7 @@ export default function DailyUsersChart({ data }: DailyUsersChartProps) {
   // If no data, show empty state
   if (!data || data.length === 0) {
     return (
-      <div className="w-full h-64 flex justify-center items-center text-gray-500">
+      <div className="w-full h-64 flex justify-center items-center text-htb-text-dim font-mono uppercase tracking-widest text-sm">
         No user registration data available
       </div>
     );
@@ -66,31 +66,31 @@ export default function DailyUsersChart({ data }: DailyUsersChartProps) {
         <AreaChart data={processedData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <defs>
             <linearGradient id="userGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#742193" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#742193" stopOpacity={0.05}/>
+              <stop offset="5%" stopColor="#9FEF00" stopOpacity={0.4}/>
+              <stop offset="95%" stopColor="#9FEF00" stopOpacity={0}/>
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-          <XAxis 
-            dataKey="displayDate" 
-            tick={{ fontSize: 11, fill: '#666' }}
-            axisLine={{ stroke: '#e0e0e0' }}
-            tickLine={{ stroke: '#e0e0e0' }}
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
+          <XAxis
+            dataKey="displayDate"
+            tick={{ fontSize: 11, fill: '#A4B1CD' }}
+            axisLine={{ stroke: 'rgba(255,255,255,0.06)' }}
+            tickLine={{ stroke: 'rgba(255,255,255,0.06)' }}
           />
-          <YAxis 
-            tick={{ fontSize: 11, fill: '#666' }}
-            axisLine={{ stroke: '#e0e0e0' }}
-            tickLine={{ stroke: '#e0e0e0' }}
+          <YAxis
+            tick={{ fontSize: 11, fill: '#A4B1CD' }}
+            axisLine={{ stroke: 'rgba(255,255,255,0.06)' }}
+            tickLine={{ stroke: 'rgba(255,255,255,0.06)' }}
             allowDecimals={false}
           />
-          <Tooltip 
+          <Tooltip
             content={({ active, payload, label }) => {
               if (active && payload && payload.length) {
                 return (
-                  <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
-                    <p className="font-medium text-gray-900">{label}</p>
-                    <p className="text-purple-600">
-                      <span className="font-medium">{payload[0].value}</span> new users
+                  <div className="bg-htb-panel p-3 border border-htb-border rounded-md shadow-panel-lg">
+                    <p className="font-mono text-xs uppercase tracking-widest text-htb-text-dim">{label}</p>
+                    <p className="text-neon font-mono text-sm mt-1">
+                      <span className="font-bold tabular-nums">{payload[0].value}</span> new users
                     </p>
                   </div>
                 );
@@ -101,11 +101,11 @@ export default function DailyUsersChart({ data }: DailyUsersChartProps) {
           <Area
             type="monotone"
             dataKey="users"
-            stroke="#742193"
+            stroke="#9FEF00"
             fill="url(#userGradient)"
             strokeWidth={2}
-            dot={{ r: 4, fill: "#742193", stroke: "#fff", strokeWidth: 2 }}
-            activeDot={{ r: 6, fill: "#742193", stroke: "#fff", strokeWidth: 2 }}
+            dot={{ r: 4, fill: "#9FEF00", stroke: "#0B0F17", strokeWidth: 2 }}
+            activeDot={{ r: 6, fill: "#9FEF00", stroke: "#0B0F17", strokeWidth: 2 }}
           />
         </AreaChart>
       </ResponsiveContainer>

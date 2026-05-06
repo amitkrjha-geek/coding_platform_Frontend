@@ -1,14 +1,12 @@
 "use client";
 
-// import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { 
-  Trophy, 
-  Code, 
-  Star, 
-
+import {
+  Trophy,
+  Code,
+  Star,
   Target,
   CheckCircle,
   ChevronDown,
@@ -17,13 +15,17 @@ import {
 
 const languages = ["C", "C++", "C#"];
 
+type Difficulty = "easy" | "medium" | "hard";
+
+const difficultyMeta: Record<Difficulty, { label: string; dot: string; text: string; border: string; bg: string }> = {
+  easy:   { label: "Easy",   dot: "bg-neon",   text: "text-neon",   border: "border-neon/30",   bg: "bg-neon/5" },
+  medium: { label: "Medium", dot: "bg-warn",   text: "text-warn",   border: "border-warn/30",   bg: "bg-warn/5" },
+  hard:   { label: "Hard",   dot: "bg-danger", text: "text-danger", border: "border-danger/30", bg: "bg-danger/5" },
+};
+
 const ProfileSidebar = ({ organizedData, UserName, Useravatar }: { organizedData: any, UserName?: any, Useravatar?: any }) => {
-  // console.log({ organizedData });
-  // const { user } = useUser();
   const name = UserName || 'User';
   const avatar = Useravatar || 'https://github.com/shadcn.png';
-
-  // console.log('📊 User:', name, avatar);
 
   const [showAll, setShowAll] = useState({
     easy: false,
@@ -31,7 +33,7 @@ const ProfileSidebar = ({ organizedData, UserName, Useravatar }: { organizedData
     hard: false,
   });
 
-  const toggleShowAll = (difficulty: "easy" | "medium" | "hard") => {
+  const toggleShowAll = (difficulty: Difficulty) => {
     setShowAll((prev) => ({
       ...prev,
       [difficulty]: !prev[difficulty],
@@ -40,7 +42,7 @@ const ProfileSidebar = ({ organizedData, UserName, Useravatar }: { organizedData
 
   const getChallengesToShow = (
     challenges: any[],
-    difficulty: "easy" | "medium" | "hard"
+    difficulty: Difficulty
   ) => {
     if (!challenges) return [];
     return showAll[difficulty] ? challenges : challenges.slice(0, 5);
@@ -50,14 +52,67 @@ const ProfileSidebar = ({ organizedData, UserName, Useravatar }: { organizedData
     return challenges && challenges.length > 5;
   };
 
+  const renderDifficultyGroup = (difficulty: Difficulty, list: any[]) => {
+    if (!list || list.length === 0) return null;
+    const meta = difficultyMeta[difficulty];
+    return (
+      <div className={`rounded-md border ${meta.border} ${meta.bg} p-4`}>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <span className={`block w-2 h-2 rounded-full ${meta.dot}`} />
+            <h4 className={`text-[11px] font-mono font-semibold uppercase tracking-widest ${meta.text}`}>
+              {meta.label}
+            </h4>
+          </div>
+          <span className={`px-2 py-0.5 rounded font-mono text-[10px] font-semibold uppercase tracking-widest border ${meta.border} ${meta.text} bg-htb-bg/40`}>
+            {list.length}
+          </span>
+        </div>
+        <div className="space-y-1.5">
+          {getChallengesToShow(list, difficulty).map((submission: any) => (
+            <div
+              key={submission._id}
+              className="flex items-center justify-between text-sm bg-htb-panel border border-htb-border rounded p-2 hover:border-neon/30 transition-colors"
+            >
+              <span className="truncate text-htb-text text-xs">
+                {submission.challenge?.title}
+              </span>
+              <span className="ml-2 shrink-0 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-htb-panel-2 text-htb-muted">
+                {submission.language}
+              </span>
+            </div>
+          ))}
+        </div>
+        {hasMoreChallenges(list) && (
+          <button
+            onClick={() => toggleShowAll(difficulty)}
+            className={`flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest font-semibold mt-2 ${meta.text} hover:opacity-80`}
+          >
+            {showAll[difficulty] ? (
+              <>
+                <ChevronUp className="w-3 h-3" />
+                Show less
+              </>
+            ) : (
+              <>
+                <ChevronDown className="w-3 h-3" />
+                Show more ({list.length - 5} more)
+              </>
+            )}
+          </button>
+        )}
+      </div>
+    );
+  };
+
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-8">
+    <div className="panel p-5 sm:p-6 space-y-7">
       {/* Profile Header */}
       <div className="text-center">
         <Link href="/profile">
           <div className="relative w-20 h-20 mx-auto mb-4 group cursor-pointer">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full p-0.5 group-hover:p-1 transition-all duration-300">
-              <div className="w-full h-full bg-white rounded-full p-0.5">
+            <div className="absolute inset-0 rounded-full p-0.5 bg-gradient-to-r from-neon to-purple-500 group-hover:p-1 transition-all duration-300">
+              <div className="w-full h-full rounded-full p-0.5 bg-htb-bg">
                 <Image
                   src={avatar}
                   alt="Profile"
@@ -67,65 +122,62 @@ const ProfileSidebar = ({ organizedData, UserName, Useravatar }: { organizedData
                 />
               </div>
             </div>
-            <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-2 border-white rounded-full flex items-center justify-center">
-              <div className="w-2 h-2 bg-white rounded-full"></div>
+            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-neon border-2 border-htb-panel rounded-full flex items-center justify-center shadow-neon-sm">
+              <div className="w-1.5 h-1.5 bg-htb-bg rounded-full"></div>
             </div>
           </div>
         </Link>
         <Link href="/profile">
-          <h2 className="text-xl font-bold text-gray-900 hover:text-purple-600 transition-colors mb-1">
+          <h2 className="text-xl font-bold text-htb-text hover:text-neon transition-colors">
             {name}
           </h2>
         </Link>
+        <span className="terminal-eyebrow inline-flex mt-1">operator.online</span>
       </div>
 
-      {/* DPS */}
-      {/* <div className="md:col-span-2 lg:col-auto">
-        <span className="text-sm text-gray-500">DPS</span>
-      </div> */}
-
       {/* Community Stats */}
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-4">
-        <div className="flex items-center gap-2 mb-4">
-          <Trophy className="w-5 h-5 text-purple-600" />
-          <h3 className="font-semibold text-gray-900">Community Stats</h3>
+      <div className="rounded-md border border-htb-border bg-htb-bg/40 p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Trophy className="w-4 h-4 text-neon" />
+          <h3 className="text-[11px] font-mono uppercase tracking-widest font-semibold text-htb-text">
+            Community Stats
+          </h3>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-green-500" />
-              <span className="text-sm font-medium text-gray-700">Solutions</span>
+              <CheckCircle className="w-3.5 h-3.5 text-neon" />
+              <span className="text-sm text-htb-muted">Solutions</span>
             </div>
-            <span className="text-sm font-bold text-gray-900">{organizedData?.total || 0}</span>
+            <span className="font-mono text-sm font-semibold text-htb-text tabular-nums">
+              {organizedData?.total || 0}
+            </span>
           </div>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Star className="w-4 h-4 text-yellow-500" />
-              <span className="text-sm font-medium text-gray-700">Reputation</span>
+              <Star className="w-3.5 h-3.5 text-warn" />
+              <span className="text-sm text-htb-muted">Reputation</span>
             </div>
-            <span className="text-sm font-bold text-gray-900">{organizedData?.total || 0}</span>
+            <span className="font-mono text-sm font-semibold text-htb-text tabular-nums">
+              {organizedData?.total || 0}
+            </span>
           </div>
-          {/* <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-blue-500" />
-              <span className="text-sm font-medium text-gray-700">Rank</span>
-            </div>
-            <span className="text-sm font-bold text-gray-900">#1,234</span>
-          </div> */}
         </div>
       </div>
 
       {/* Languages */}
       <div>
-        <div className="flex items-center gap-2 mb-4">
-          <Code className="w-5 h-5 text-purple-600" />
-          <h3 className="font-semibold text-gray-900">Programming Languages</h3>
+        <div className="flex items-center gap-2 mb-3">
+          <Code className="w-4 h-4 text-neon" />
+          <h3 className="text-[11px] font-mono uppercase tracking-widest font-semibold text-htb-text">
+            Programming Languages
+          </h3>
         </div>
         <div className="flex flex-wrap gap-2">
           {languages.map((lang) => (
             <span
               key={lang}
-              className="px-3 py-1.5 rounded-lg bg-purple-100 text-sm font-medium text-purple-700 hover:bg-purple-200 transition-colors cursor-pointer"
+              className="px-2.5 py-1 rounded border border-neon/30 bg-neon/10 font-mono text-[11px] uppercase tracking-wider text-neon hover:bg-neon/15 transition-colors cursor-pointer"
             >
               {lang}
             </span>
@@ -135,170 +187,31 @@ const ProfileSidebar = ({ organizedData, UserName, Useravatar }: { organizedData
 
       {/* Challenges Solved */}
       <div>
-        <div className="flex items-center gap-2 mb-4">
-          <Target className="w-5 h-5 text-purple-600" />
-          <h3 className="font-semibold text-gray-900">Challenges Solved</h3>
+        <div className="flex items-center gap-2 mb-3">
+          <Target className="w-4 h-4 text-neon" />
+          <h3 className="text-[11px] font-mono uppercase tracking-widest font-semibold text-htb-text">
+            Challenges Solved
+          </h3>
         </div>
 
-        <div className="space-y-4">
-          {organizedData && (
+        <div className="space-y-3">
+          {organizedData ? (
             <>
-              {/* Easy Challenges */}
-              {organizedData.easy && organizedData.easy.length > 0 && (
-                <div className="bg-green-50 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <h4 className="text-sm font-semibold text-green-700">
-                        Easy Challenges
-                      </h4>
-                    </div>
-                    <span className="text-xs bg-green-200 text-green-800 px-2 py-1 rounded-full font-medium">
-                      {organizedData.easy.length}
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    {getChallengesToShow(organizedData.easy, "easy").map(
-                      (submission: any) => (
-                        <div
-                          key={submission._id}
-                          className="flex items-center justify-between text-sm bg-white rounded-lg p-2 hover:shadow-sm transition-shadow"
-                        >
-                          <span className="truncate font-medium text-gray-700">
-                            {submission.challenge?.title}
-                          </span>
-                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                            {submission.language}
-                          </span>
-                        </div>
-                      )
-                    )}
-                  </div>
-                  {hasMoreChallenges(organizedData.easy) && (
-                    <button
-                      onClick={() => toggleShowAll("easy")}
-                      className="flex items-center gap-1 text-green-600 text-xs font-medium hover:text-green-700 mt-2"
-                    >
-                      {showAll.easy ? (
-                        <>
-                          <ChevronUp className="w-3 h-3" />
-                          Show less
-                        </>
-                      ) : (
-                        <>
-                          <ChevronDown className="w-3 h-3" />
-                          Show more ({organizedData.easy.length - 5} more)
-                        </>
-                      )}
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {/* Medium Challenges */}
-              {organizedData.medium && organizedData.medium.length > 0 && (
-                <div className="bg-yellow-50 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                      <h4 className="text-sm font-semibold text-yellow-700">
-                        Medium Challenges
-                      </h4>
-                    </div>
-                    <span className="text-xs bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full font-medium">
-                      {organizedData.medium.length}
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    {getChallengesToShow(organizedData.medium, "medium").map(
-                      (submission: any) => (
-                        <div
-                          key={submission._id}
-                          className="flex items-center justify-between text-sm bg-white rounded-lg p-2 hover:shadow-sm transition-shadow"
-                        >
-                          <span className="truncate font-medium text-gray-700">
-                            {submission.challenge?.title}
-                          </span>
-                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                            {submission.language}
-                          </span>
-                        </div>
-                      )
-                    )}
-                  </div>
-                  {hasMoreChallenges(organizedData.medium) && (
-                    <button
-                      onClick={() => toggleShowAll("medium")}
-                      className="flex items-center gap-1 text-yellow-600 text-xs font-medium hover:text-yellow-700 mt-2"
-                    >
-                      {showAll.medium ? (
-                        <>
-                          <ChevronUp className="w-3 h-3" />
-                          Show less
-                        </>
-                      ) : (
-                        <>
-                          <ChevronDown className="w-3 h-3" />
-                          Show more ({organizedData.medium.length - 5} more)
-                        </>
-                      )}
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {/* Hard Challenges */}
-              {organizedData.hard && organizedData.hard.length > 0 && (
-                <div className="bg-red-50 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                      <h4 className="text-sm font-semibold text-red-700">
-                        Hard Challenges
-                      </h4>
-                    </div>
-                    <span className="text-xs bg-red-200 text-red-800 px-2 py-1 rounded-full font-medium">
-                      {organizedData.hard.length}
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    {getChallengesToShow(organizedData.hard, "hard").map(
-                      (submission: any) => (
-                        <div
-                          key={submission._id}
-                          className="flex items-center justify-between text-sm bg-white rounded-lg p-2 hover:shadow-sm transition-shadow"
-                        >
-                          <span className="truncate font-medium text-gray-700">
-                            {submission.challenge?.title}
-                          </span>
-                          <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
-                            {submission.language}
-                          </span>
-                        </div>
-                      )
-                    )}
-                  </div>
-                  {hasMoreChallenges(organizedData.hard) && (
-                    <button
-                      onClick={() => toggleShowAll("hard")}
-                      className="flex items-center gap-1 text-red-600 text-xs font-medium hover:text-red-700 mt-2"
-                    >
-                      {showAll.hard ? (
-                        <>
-                          <ChevronUp className="w-3 h-3" />
-                          Show less
-                        </>
-                      ) : (
-                        <>
-                          <ChevronDown className="w-3 h-3" />
-                          Show more ({organizedData.hard.length - 5} more)
-                        </>
-                      )}
-                    </button>
-                  )}
-                </div>
+              {renderDifficultyGroup("easy", organizedData.easy)}
+              {renderDifficultyGroup("medium", organizedData.medium)}
+              {renderDifficultyGroup("hard", organizedData.hard)}
+              {(!organizedData.easy?.length && !organizedData.medium?.length && !organizedData.hard?.length) && (
+                <p className="text-sm text-htb-text-dim text-center py-4 font-mono">
+                  No challenges solved yet
+                </p>
               )}
             </>
+          ) : (
+            <div className="space-y-2">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="h-16 bg-htb-panel-2 rounded animate-pulse" />
+              ))}
+            </div>
           )}
         </div>
       </div>

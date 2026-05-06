@@ -136,15 +136,15 @@ const SubmissionsPage = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'evaluated':
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
+        return <CheckCircle className="w-4 h-4 text-neon" />;
       case 'error':
-        return <XCircle className="w-4 h-4 text-red-500" />;
+        return <XCircle className="w-4 h-4 text-danger" />;
       case 'submitted':
-        return <Clock className="w-4 h-4 text-yellow-500" />;
+        return <Clock className="w-4 h-4 text-warn" />;
       case 'compiled':
-        return <CheckCircle className="w-4 h-4 text-blue-500" />;
+        return <CheckCircle className="w-4 h-4 text-sky-300" />;
       default:
-        return <AlertCircle className="w-4 h-4 text-gray-500" />;
+        return <AlertCircle className="w-4 h-4 text-htb-text-dim" />;
     }
   };
 
@@ -166,39 +166,40 @@ const SubmissionsPage = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'evaluated':
-        return 'text-green-600';
+        return 'text-neon';
       case 'error':
-        return 'text-red-600';
+        return 'text-danger';
       case 'submitted':
-        return 'text-yellow-600';
+        return 'text-warn';
       case 'compiled':
-        return 'text-blue-600';
+        return 'text-sky-300';
       default:
-        return 'text-gray-600';
+        return 'text-htb-muted';
     }
   };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty?.toLowerCase()) {
       case 'easy':
-        return 'bg-green-100 text-green-800';
+        return 'border-neon/30 bg-neon/10 text-neon';
       case 'medium':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'border-warn/30 bg-warn/10 text-warn';
       case 'hard':
-        return 'bg-red-100 text-red-800';
+        return 'border-danger/30 bg-danger/10 text-danger';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'border-htb-border bg-htb-panel-2 text-htb-muted';
     }
   };
 
   if (!userId) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Please log in to view submissions</h2>
+      <div className="min-h-screen flex items-center justify-center bg-htb-bg">
+        <div className="panel p-8 text-center max-w-sm">
+          <span className="terminal-eyebrow inline-flex justify-center mb-3">access.required</span>
+          <h2 className="text-xl font-bold text-htb-text mb-4">Please log in to view submissions</h2>
           <button
             onClick={() => router.push('/sign-in')}
-            className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700"
+            className="bg-neon text-htb-bg font-mono text-xs uppercase tracking-widest font-semibold px-6 py-2.5 rounded-md hover:shadow-neon-sm hover:-translate-y-0.5 transition-all"
           >
             Sign In
           </button>
@@ -208,28 +209,34 @@ const SubmissionsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-htb-bg">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-6 gap-3">
+            <div className="flex items-center gap-3 min-w-0">
               <button
                 onClick={() => router.back()}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                aria-label="Back"
+                className="flex items-center justify-center w-9 h-9 rounded-md border border-htb-border text-htb-muted hover:text-neon hover:border-neon/40 transition-colors shrink-0"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="w-4 h-4" />
               </button>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">My Submissions ({pagination?.totalSubmissions || 0})</h1>
-                <p className="text-gray-600 mt-1">Track your coding progress and submission history</p>
+              <div className="min-w-0">
+                <span className="terminal-eyebrow">submissions.log</span>
+                <h1 className="heading-display text-2xl sm:text-3xl text-htb-text truncate">
+                  My Submissions{" "}
+                  <span className="font-mono text-neon">
+                    ({pagination?.totalSubmissions || 0})
+                  </span>
+                </h1>
               </div>
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
+              className="flex items-center gap-2 px-4 h-10 rounded-md border border-htb-border bg-htb-panel text-htb-muted hover:text-neon hover:border-neon/40 transition-colors font-mono text-xs uppercase tracking-widest font-semibold shrink-0"
             >
-              <Filter className="w-4 h-4" />
+              <Filter className="w-3.5 h-3.5" />
               Filters
             </button>
           </div>
@@ -265,15 +272,16 @@ const SubmissionsPage = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-white rounded-lg p-6 mb-6 shadow-sm"
+            className="panel p-5 mb-6"
           >
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <span className="terminal-eyebrow mb-4 inline-block">filter.config</span>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                <label className="block text-[10px] font-mono uppercase tracking-widest font-semibold text-htb-muted mb-1.5">Status</label>
                 <select
                   value={filters.status}
                   onChange={(e) => handleFilterChange('status', e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-3 py-2 rounded-md bg-htb-bg border border-htb-border text-htb-text font-mono text-xs uppercase tracking-wider hover:border-htb-border-hover focus:border-neon/60 focus:ring-1 focus:ring-neon/40 outline-none transition-colors"
                 >
                   <option value="">All Status</option>
                   <option value="evaluated">Evaluated</option>
@@ -283,11 +291,11 @@ const SubmissionsPage = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
+                <label className="block text-[10px] font-mono uppercase tracking-widest font-semibold text-htb-muted mb-1.5">Language</label>
                 <select
                   value={filters.language}
                   onChange={(e) => handleFilterChange('language', e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-3 py-2 rounded-md bg-htb-bg border border-htb-border text-htb-text font-mono text-xs uppercase tracking-wider hover:border-htb-border-hover focus:border-neon/60 focus:ring-1 focus:ring-neon/40 outline-none transition-colors"
                 >
                   <option value="">All Languages</option>
                   <option value="c">C</option>
@@ -296,11 +304,11 @@ const SubmissionsPage = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+                <label className="block text-[10px] font-mono uppercase tracking-widest font-semibold text-htb-muted mb-1.5">Sort By</label>
                 <select
                   value={filters.sortBy}
                   onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full px-3 py-2 rounded-md bg-htb-bg border border-htb-border text-htb-text font-mono text-xs uppercase tracking-wider hover:border-htb-border-hover focus:border-neon/60 focus:ring-1 focus:ring-neon/40 outline-none transition-colors"
                 >
                   <option value="lastUpdated">Last Updated</option>
                   <option value="createdAt">Created Date</option>
@@ -309,43 +317,43 @@ const SubmissionsPage = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Order</label>
-                <div className="flex gap-2">
+                <label className="block text-[10px] font-mono uppercase tracking-widest font-semibold text-htb-muted mb-1.5">Order</label>
+                <div className="flex gap-1.5">
                   <button
                     onClick={() => handleFilterChange('sortOrder', 'desc')}
-                    className={`flex items-center gap-1 px-3 py-2 rounded-lg border ${
+                    className={`flex items-center gap-1 px-3 py-2 rounded-md border font-mono text-[11px] uppercase tracking-widest font-semibold transition-colors ${
                       filters.sortOrder === 'desc'
-                        ? 'bg-purple-100 border-purple-300 text-purple-700'
-                        : 'bg-white border-gray-300 text-gray-700'
+                        ? 'bg-neon/10 border-neon/40 text-neon'
+                        : 'bg-htb-bg border-htb-border text-htb-muted hover:border-htb-border-hover hover:text-htb-text'
                     }`}
                   >
-                    <SortDesc className="w-4 h-4" />
+                    <SortDesc className="w-3.5 h-3.5" />
                     Desc
                   </button>
                   <button
                     onClick={() => handleFilterChange('sortOrder', 'asc')}
-                    className={`flex items-center gap-1 px-3 py-2 rounded-lg border ${
+                    className={`flex items-center gap-1 px-3 py-2 rounded-md border font-mono text-[11px] uppercase tracking-widest font-semibold transition-colors ${
                       filters.sortOrder === 'asc'
-                        ? 'bg-purple-100 border-purple-300 text-purple-700'
-                        : 'bg-white border-gray-300 text-gray-700'
+                        ? 'bg-neon/10 border-neon/40 text-neon'
+                        : 'bg-htb-bg border-htb-border text-htb-muted hover:border-htb-border-hover hover:text-htb-text'
                     }`}
                   >
-                    <SortAsc className="w-4 h-4" />
+                    <SortAsc className="w-3.5 h-3.5" />
                     Asc
                   </button>
                 </div>
               </div>
             </div>
-            <div className="flex gap-2 mt-4">
+            <div className="flex gap-2 mt-5">
               <button
                 onClick={applyFilters}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                className="px-4 py-2 bg-neon text-htb-bg font-mono text-xs uppercase tracking-widest font-semibold rounded-md hover:shadow-neon-sm hover:-translate-y-0.5 transition-all"
               >
                 Apply Filters
               </button>
               <button
                 onClick={clearFilters}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                className="px-4 py-2 border border-htb-border bg-htb-panel text-htb-muted hover:text-neon hover:border-neon/40 font-mono text-xs uppercase tracking-widest font-semibold rounded-md transition-colors"
               >
                 Clear
               </button>
@@ -357,98 +365,123 @@ const SubmissionsPage = () => {
         <div>
           {loading ? (
             <div className="flex justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neon"></div>
             </div>
           ) : error ? (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-              <p className="text-red-600">{error}</p>
+            <div className="panel p-6 text-center border-danger/30">
+              <p className="text-danger font-medium">{error}</p>
               <button
                 onClick={() => fetchSubmissions(1, true)}
-                className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                className="mt-4 px-4 py-2 bg-danger text-white rounded-md hover:bg-danger/80 transition-colors font-mono text-xs uppercase tracking-widest font-semibold"
               >
                 Try Again
               </button>
             </div>
           ) : submissions.length === 0 ? (
-            <div className="bg-white rounded-xl p-12 text-center shadow-sm border border-gray-100">
-              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Code className="w-10 h-10 text-gray-400" />
+            <div className="panel p-12 text-center">
+              <div className="w-16 h-16 rounded-md border border-htb-border bg-htb-bg/40 flex items-center justify-center mx-auto mb-4">
+                <Code className="w-7 h-7 text-htb-text-dim" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No submissions found</h3>
-              <p className="text-gray-500 mb-6 max-w-md mx-auto">Start solving challenges to see your submissions and track your progress here.</p>
+              <span className="terminal-eyebrow inline-flex justify-center mb-2">no_submissions</span>
+              <h3 className="text-xl font-semibold text-htb-text mb-2">No submissions found</h3>
+              <p className="text-htb-muted mb-6 max-w-md mx-auto text-sm">
+                Start solving challenges to see your submissions and track your progress here.
+              </p>
               <button
                 onClick={() => router.push('/Challenges')}
-                className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+                className="px-6 py-3 bg-neon text-htb-bg rounded-md hover:shadow-neon-sm hover:-translate-y-0.5 transition-all font-mono text-xs uppercase tracking-widest font-semibold"
               >
                 Browse Challenges
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-5">
               {submissions?.map((submission, index) => (
                 <motion.div
                   key={submission?._id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer border border-gray-100 h-full"
+                  transition={{ delay: index * 0.04, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  className="group panel panel-hover p-5 cursor-pointer h-full transition-all"
                   onClick={() => router.push(`/${submission?.challenge?._id}`)}
                 >
                   <div className="flex flex-col h-full">
                     {/* Header with title and difficulty */}
                     <div className="mb-4">
-                      <h3 className="text-lg font-semibold text-gray-900 hover:text-purple-600 transition-colors mb-2 line-clamp-2">
+                      <h3 className="text-base sm:text-lg font-semibold text-htb-text group-hover:text-neon transition-colors mb-2 line-clamp-2">
                         {submission?.challenge?.title}
                       </h3>
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getDifficultyColor(submission?.challenge?.difficulty)}`}>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded font-mono text-[10px] font-semibold uppercase tracking-widest border ${getDifficultyColor(submission?.challenge?.difficulty)}`}>
                           {submission?.challenge?.difficulty}
                         </span>
-                        <span className="text-sm text-gray-500">
-                          {submission?.challenge?.category}
-                        </span>
+                        {submission?.challenge?.category && (
+                          <span className="text-xs font-mono uppercase tracking-wider text-htb-text-dim">
+                            {submission?.challenge?.category}
+                          </span>
+                        )}
                       </div>
                     </div>
-                    
+
                     {/* Status and metadata row */}
-                    <div className="flex flex-col gap-3 text-sm mb-4 flex-grow">
+                    <div className="flex flex-col gap-2 text-sm mb-4 flex-grow">
                       <div className="flex items-center gap-4 flex-wrap">
-                        <div className="flex items-center gap-2">
-                          <Code className="w-4 h-4 text-gray-400" />
-                          <span className="font-medium text-gray-700">{submission?.language?.toUpperCase()}</span>
+                        <div className="flex items-center gap-1.5">
+                          <Code className="w-3.5 h-3.5 text-htb-text-dim" />
+                          <span className="font-mono text-xs uppercase tracking-wider text-htb-muted">
+                            {submission?.language?.toUpperCase()}
+                          </span>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5">
                           {getStatusIcon(submission?.status)}
-                          <span className={`font-medium ${getStatusColor(submission?.status)}`}>
+                          <span className={`font-mono text-xs uppercase tracking-wider font-semibold ${getStatusColor(submission?.status)}`}>
                             {getStatusText(submission?.status)}
                           </span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4 text-gray-400" />
-                        <span className="text-gray-600 text-xs">{formatDateTime(submission?.lastUpdated)}</span>
+                      <div className="flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-htb-text-dim" />
+                        <span className="text-htb-text-dim text-xs font-mono">
+                          {formatDateTime(submission?.lastUpdated)}
+                        </span>
                       </div>
                     </div>
 
                     {/* Performance metrics for evaluated submissions */}
                     {submission?.status === 'evaluated' && (
-                      <div className="bg-gray-50 rounded-lg p-3 mt-auto">
-                        <div className="grid grid-cols-2 gap-3 text-sm">
-                          <div className="text-center">
-                            <div className="text-lg font-bold text-gray-900">{submission?.score}</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-wide">Score</div>
+                      <div className="rounded-md border border-htb-border bg-htb-bg/40 p-3 mt-auto">
+                        <div className="grid grid-cols-4 gap-2 text-center">
+                          <div>
+                            <div className="font-mono text-base font-bold text-neon tabular-nums">
+                              {submission?.score}
+                            </div>
+                            <div className="text-[10px] font-mono uppercase tracking-widest text-htb-text-dim mt-0.5">
+                              Score
+                            </div>
                           </div>
-                          <div className="text-center">
-                            <div className="text-lg font-bold text-gray-900">{submission?.testsPassed}/{submission?.totalTests}</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-wide">Tests</div>
+                          <div>
+                            <div className="font-mono text-base font-bold text-htb-text tabular-nums">
+                              {submission?.testsPassed}/{submission?.totalTests}
+                            </div>
+                            <div className="text-[10px] font-mono uppercase tracking-widest text-htb-text-dim mt-0.5">
+                              Tests
+                            </div>
                           </div>
-                          <div className="text-center">
-                            <div className="text-lg font-bold text-gray-900">{submission?.executionTime}ms</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-wide">Time</div>
+                          <div>
+                            <div className="font-mono text-base font-bold text-htb-text tabular-nums">
+                              {submission?.executionTime}<span className="text-xs text-htb-text-dim">ms</span>
+                            </div>
+                            <div className="text-[10px] font-mono uppercase tracking-widest text-htb-text-dim mt-0.5">
+                              Time
+                            </div>
                           </div>
-                          <div className="text-center">
-                            <div className="text-lg font-bold text-gray-900">{submission?.memoryUsed}KB</div>
-                            <div className="text-xs text-gray-500 uppercase tracking-wide">Memory</div>
+                          <div>
+                            <div className="font-mono text-base font-bold text-htb-text tabular-nums">
+                              {submission?.memoryUsed}<span className="text-xs text-htb-text-dim">KB</span>
+                            </div>
+                            <div className="text-[10px] font-mono uppercase tracking-widest text-htb-text-dim mt-0.5">
+                              Memory
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -462,7 +495,7 @@ const SubmissionsPage = () => {
           {/* Loading more indicator */}
           {loadingMore && (
             <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-neon"></div>
             </div>
           )}
 
