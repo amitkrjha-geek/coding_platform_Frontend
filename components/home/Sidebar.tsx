@@ -6,16 +6,18 @@ import { useAppSelector } from "@/redux/hooks";
 import { useState, useMemo } from "react";
 import TerminalEyebrow from "@/components/shared/TerminalEyebrow";
 
-
 const difficultyStats = [
   { level: "Easy", count: 8, total: 834, color: "text-neon" },
   { level: "Medium", count: 22, total: 1794, color: "text-warn" },
-  { level: "Hard", count: 4, total: 793, color: "text-danger" }
+  { level: "Hard", count: 4, total: 793, color: "text-danger" },
 ];
 
-const Sidebar = ({ selectedCompany, onCompanySelect }: {
-  selectedCompany?: string | null,
-  onCompanySelect?: (company: string | null) => void
+const Sidebar = ({
+  selectedCompany,
+  onCompanySelect,
+}: {
+  selectedCompany?: string | null;
+  onCompanySelect?: (company: string | null) => void;
 }) => {
   const { companyStats, loading } = useAppSelector((state) => state.challenge);
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,7 +26,7 @@ const Sidebar = ({ selectedCompany, onCompanySelect }: {
   const filteredCompanies = useMemo(() => {
     return Object.entries(companyStats)
       .filter(([name]) =>
-        name.toLowerCase().includes(searchQuery.toLowerCase())
+        name.toLowerCase().includes(searchQuery.toLowerCase()),
       )
       .sort((a, b) => b[1] - a[1]); // Sort by count in descending order
   }, [companyStats, searchQuery]);
@@ -118,16 +120,16 @@ const Sidebar = ({ selectedCompany, onCompanySelect }: {
                   }}
                   className={`group flex items-center gap-2 px-2 py-1 rounded-md border font-mono text-[11px] uppercase tracking-wider transition-all ${
                     isSelected
-                      ? 'bg-neon/10 border-neon/50 text-neon shadow-neon-sm'
-                      : 'bg-htb-bg border-htb-border text-htb-muted hover:border-htb-border-hover hover:text-htb-text'
+                      ? "bg-neon/10 border-neon/50 text-neon shadow-neon-sm"
+                      : "bg-htb-bg border-htb-border text-htb-muted hover:border-htb-border-hover hover:text-htb-text"
                   }`}
                 >
                   <span className="capitalize">{name}</span>
                   <span
                     className={`px-1.5 py-0.5 rounded text-[10px] font-semibold tabular-nums ${
                       isSelected
-                        ? 'bg-neon text-htb-bg'
-                        : 'bg-htb-panel-2 text-htb-muted group-hover:bg-htb-panel-hover'
+                        ? "bg-neon text-htb-bg"
+                        : "bg-htb-panel-2 text-htb-muted group-hover:bg-htb-panel-hover"
                     }`}
                   >
                     {count}
@@ -142,4 +144,4 @@ const Sidebar = ({ selectedCompany, onCompanySelect }: {
   );
 };
 
-export default Sidebar; 
+export default Sidebar;

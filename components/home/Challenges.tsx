@@ -26,37 +26,46 @@ import { useAppSelector, useAppDispatch } from "@/redux/hooks";
 import { RootState } from "@/redux/store";
 import { fetchUsers } from "@/redux/features/userSlice";
 import { getToken, setCurrentUserId, setToken } from "@/config/token";
-import { fetchChallenges, getCompanyStats, getTopicStats } from "@/redux/features/challengeSlice";
+import {
+  fetchChallenges,
+  getCompanyStats,
+  getTopicStats,
+} from "@/redux/features/challengeSlice";
 
-const useDynamicTopics = (topicStats: { [key: string]: number }, showMore: boolean) => {
+const useDynamicTopics = (
+  topicStats: { [key: string]: number },
+  showMore: boolean,
+) => {
   // Convert topic stats to array and sort by count
   const sortedTopics = Object.entries(topicStats)
     .map(([name, count]) => ({
       id: name.trim().toLowerCase(),
       label: `${name.trim()} (${count})`,
-      count: count
+      count: count,
     }))
     .sort((a, b) => b.count - a.count);
 
   // Always include "All Topics" at the start
-  const allTopics = [{
-    id: "all",
-    label: "All Topics",
-    count: sortedTopics.reduce((acc, topic) => acc + topic.count, 0)
-  }, ...sortedTopics];
+  const allTopics = [
+    {
+      id: "all",
+      label: "All Topics",
+      count: sortedTopics.reduce((acc, topic) => acc + topic.count, 0),
+    },
+    ...sortedTopics,
+  ];
 
   // Show first 6 topics or all topics based on showMore
   return showMore ? allTopics : allTopics.slice(0, 8);
 };
 
 const Challenges = () => {
-
   const [showMore, setShowMore] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
   const [selectedFilters, setSelectedFilters] = useState({
     difficulty: "",
     status: "",
-    topics: ""
+    topics: "",
   });
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -66,10 +75,16 @@ const Challenges = () => {
   const token = getToken();
 
   const { users: allUsers, status } = useAppSelector(
-    (state: RootState) => state.user
+    (state: RootState) => state.user,
   );
 
-  const { status: challengesStatus, challenges, topicStats, loading, error } = useAppSelector((state) => state.challenge);
+  const {
+    status: challengesStatus,
+    challenges,
+    topicStats,
+    loading,
+    error,
+  } = useAppSelector((state) => state.challenge);
   // console.log({challenges});
 
   const topics = useDynamicTopics(topicStats || {}, showMore);
@@ -78,68 +93,92 @@ const Challenges = () => {
   const filteredChallenges = useMemo(() => {
     if (!challenges) return [];
 
-    return challenges.filter(challenge => {
+    return challenges.filter((challenge) => {
       // Search filter
-      const searchMatch = !searchQuery ||
+      const searchMatch =
+        !searchQuery ||
         challenge.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        challenge.topic.some(t => t.trim().toLowerCase().includes(searchQuery.toLowerCase())) ||
-        challenge.companies.some(c => c.toLowerCase().includes(searchQuery.toLowerCase()));
+        challenge.topic.some((t) =>
+          t.trim().toLowerCase().includes(searchQuery.toLowerCase()),
+        ) ||
+        challenge.companies.some((c) =>
+          c.toLowerCase().includes(searchQuery.toLowerCase()),
+        );
 
       // Difficulty filter
-      const difficultyMatch = !selectedFilters.difficulty ||
-        challenge.difficulty.toLowerCase() === selectedFilters.difficulty.toLowerCase();
+      const difficultyMatch =
+        !selectedFilters.difficulty ||
+        challenge.difficulty.toLowerCase() ===
+          selectedFilters.difficulty.toLowerCase();
 
       // Status filter
-      const statusMatch = !selectedFilters.status ||
+      const statusMatch =
+        !selectedFilters.status ||
         challenge.status.toLowerCase() === selectedFilters.status.toLowerCase();
 
       // Topic filter
-      const topicMatch = !selectedFilters.topics ||
-        challenge.topic.some(t => t.trim().toLowerCase() === selectedFilters.topics);
+      const topicMatch =
+        !selectedFilters.topics ||
+        challenge.topic.some(
+          (t) => t.trim().toLowerCase() === selectedFilters.topics,
+        );
 
       // Company filter
-      const companyMatch = !selectedCompany ||
-        challenge.companies.some(c => c.toLowerCase() === selectedCompany);
+      const companyMatch =
+        !selectedCompany ||
+        challenge.companies.some((c) => c.toLowerCase() === selectedCompany);
 
-      return searchMatch && difficultyMatch && statusMatch && topicMatch && companyMatch;
+      return (
+        searchMatch &&
+        difficultyMatch &&
+        statusMatch &&
+        topicMatch &&
+        companyMatch
+      );
     });
   }, [challenges, searchQuery, selectedFilters, selectedCompany]);
 
-  const filterOptions = useMemo(() => ({
-    difficulty: [
-      { value: "all", label: "All Difficulties" },
-      { value: "easy", label: "Easy" },
-      { value: "medium", label: "Medium" },
-      { value: "hard", label: "Hard" }
-    ],
-    status: [
-      { value: "all", label: "All Status" },
-      { value: "solved", label: "Solved" },
-      { value: "unsolved", label: "Unsolved" },
-      { value: "attempted", label: "Attempted" }
-    ],
-    topics: [
-      { value: "all", label: "All Topics" },
-      ...Object.entries(topicStats || {}).map(([name, count]) => ({
-        value: name.trim().toLowerCase(),
-        label: `${name.trim()} (${count})`
-      }))
-    ].sort((a, b) => {
-      if (a.value === "all") return -1;
-      if (b.value === "all") return 1;
-      return a.label.localeCompare(b.label);
-    })
-  }), [topicStats]);
+  const filterOptions = useMemo(
+    () => ({
+      difficulty: [
+        { value: "all", label: "All Difficulties" },
+        { value: "easy", label: "Easy" },
+        { value: "medium", label: "Medium" },
+        { value: "hard", label: "Hard" },
+      ],
+      status: [
+        { value: "all", label: "All Status" },
+        { value: "solved", label: "Solved" },
+        { value: "unsolved", label: "Unsolved" },
+        { value: "attempted", label: "Attempted" },
+      ],
+      topics: [
+        { value: "all", label: "All Topics" },
+        ...Object.entries(topicStats || {}).map(([name, count]) => ({
+          value: name.trim().toLowerCase(),
+          label: `${name.trim()} (${count})`,
+        })),
+      ].sort((a, b) => {
+        if (a.value === "all") return -1;
+        if (b.value === "all") return 1;
+        return a.label.localeCompare(b.label);
+      }),
+    }),
+    [topicStats],
+  );
 
-  const handleFilterChange = (type: keyof typeof selectedFilters, value: string | null) => {
-    setSelectedFilters(prev => ({
+  const handleFilterChange = (
+    type: keyof typeof selectedFilters,
+    value: string | null,
+  ) => {
+    setSelectedFilters((prev) => ({
       ...prev,
-      [type]: value === "all" ? "" : value || ""
+      [type]: value === "all" ? "" : value || "",
     }));
   };
 
   useEffect(() => {
-    if (challengesStatus === 'idle') {
+    if (challengesStatus === "idle") {
       dispatch(fetchChallenges());
       dispatch(getCompanyStats());
       dispatch(getTopicStats());
@@ -147,7 +186,7 @@ const Challenges = () => {
   }, [dispatch, challengesStatus]);
 
   useEffect(() => {
-    if (challengesStatus === 'idle') {
+    if (challengesStatus === "idle") {
       dispatch(fetchChallenges());
       dispatch(getCompanyStats());
       dispatch(getTopicStats());
@@ -155,11 +194,10 @@ const Challenges = () => {
   }, [dispatch, challengesStatus]);
 
   useEffect(() => {
-    if (status === 'idle') {
+    if (status === "idle") {
       dispatch(fetchUsers());
     }
   }, [dispatch, status]);
-
 
   useEffect(() => {
     if (isSignedIn && user) {
@@ -167,8 +205,9 @@ const Challenges = () => {
       // console.log("userEmail",userEmail);
       // console.log("allUsers",allUsers);
 
-      
-      const userExists = allUsers.some(existingUser => existingUser.email === userEmail);
+      const userExists = allUsers.some(
+        (existingUser) => existingUser.email === userEmail,
+      );
 
       if (!userExists) {
         const userData = {
@@ -176,10 +215,10 @@ const Challenges = () => {
           email: userEmail || undefined,
           firstName: user.firstName || "First",
           lastName: user.lastName || "last",
-          role: (user.publicMetadata?.role as string) || 'user',
-          name: user.fullName || userEmail || 'User',
+          role: (user.publicMetadata?.role as string) || "user",
+          name: user.fullName || userEmail || "User",
           username: user.username || "User",
-          avatar: user.imageUrl
+          avatar: user.imageUrl,
         };
         // console.log("Creating new user:", userData);
 
@@ -196,12 +235,11 @@ const Challenges = () => {
             dispatch(fetchUsers());
           })
           .catch((error) => {
-            console.error('Error creating user:', error);
+            console.error("Error creating user:", error);
             // toast.error('Failed to create user');
           });
       } else if (userExists && !token) {
-
-        loginUser(userEmail || '')
+        loginUser(userEmail || "")
           .then((response) => {
             // console.log("Response:", response);
             if (response?.token) {
@@ -210,12 +248,12 @@ const Challenges = () => {
             }
           })
           .catch((error) => {
-            console.error('Error creating user:', error);
-            toast.error('Failed to create user');
+            console.error("Error creating user:", error);
+            toast.error("Failed to create user");
           });
         // console.log("User already exists");
       } else if (userExists) {
-        loginUser(userEmail || '')
+        loginUser(userEmail || "")
           .then((response) => {
             // console.log("Response:", response);
             if (response?.token) {
@@ -224,8 +262,8 @@ const Challenges = () => {
             }
           })
           .catch((error) => {
-            console.error('Error creating user:', error);
-            toast.error('Failed to create user');
+            console.error("Error creating user:", error);
+            toast.error("Failed to create user");
           });
         // console.log("User already exists");
       }
@@ -239,9 +277,9 @@ const Challenges = () => {
     () =>
       (challenges || []).reduce(
         (acc, c) => acc + (Number(c.submissions) || 0),
-        0
+        0,
       ),
-    [challenges]
+    [challenges],
   );
 
   return (
@@ -271,7 +309,11 @@ const Challenges = () => {
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
+            transition={{
+              duration: 0.5,
+              delay: 0.15,
+              ease: [0.22, 1, 0.36, 1],
+            }}
             className="mt-8 grid grid-cols-3 gap-3 sm:gap-6 max-w-2xl"
           >
             <div className="panel p-4 sm:p-5">
@@ -371,11 +413,17 @@ const Challenges = () => {
               <div className="w-full sm:flex-1 relative">
                 <Search
                   className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none ${
-                    loading ? "text-htb-text-dim animate-pulse" : "text-htb-text-dim"
+                    loading
+                      ? "text-htb-text-dim animate-pulse"
+                      : "text-htb-text-dim"
                   }`}
                 />
                 <Input
-                  placeholder={loading ? "LOADING..." : "Search challenges, topics, companies..."}
+                  placeholder={
+                    loading
+                      ? "LOADING..."
+                      : "Search challenges, topics, companies..."
+                  }
                   className="pl-9 w-full font-mono text-sm"
                   disabled={loading}
                   value={searchQuery}
@@ -393,16 +441,21 @@ const Challenges = () => {
                     key={key}
                     value={selectedFilters[key as keyof typeof selectedFilters]}
                     onValueChange={(value) =>
-                      handleFilterChange(key as keyof typeof selectedFilters, value)
+                      handleFilterChange(
+                        key as keyof typeof selectedFilters,
+                        value,
+                      )
                     }
                   >
                     <SelectTrigger
                       className="w-full sm:w-[140px] font-mono text-xs uppercase tracking-wider"
                       onClick={() => {
-                        if (selectedFilters[key as keyof typeof selectedFilters]) {
+                        if (
+                          selectedFilters[key as keyof typeof selectedFilters]
+                        ) {
                           handleFilterChange(
                             key as keyof typeof selectedFilters,
-                            null
+                            null,
                           );
                         }
                       }}
@@ -428,7 +481,9 @@ const Challenges = () => {
               <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-htb-text-dim">
                 <span className="inline-block w-1.5 h-1.5 rounded-full bg-neon shadow-neon-sm" />
                 <span>
-                  <span className="text-htb-text">{filteredChallenges.length}</span>{" "}
+                  <span className="text-htb-text">
+                    {filteredChallenges.length}
+                  </span>{" "}
                   result{filteredChallenges.length === 1 ? "" : "s"}
                 </span>
               </div>

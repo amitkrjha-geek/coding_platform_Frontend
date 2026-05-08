@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
-import { X, Check, ChevronDown, CreditCard } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaCcVisa, FaCcMastercard, FaPaypal } from 'react-icons/fa';
+import React, { useState } from "react";
+import { X, Check, ChevronDown, CreditCard } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaCcVisa, FaCcMastercard, FaPaypal } from "react-icons/fa";
 
 interface FormData {
   firstName: string;
@@ -34,49 +34,51 @@ interface PaymentMethod {
 
 const paymentMethods: PaymentMethod[] = [
   {
-    id: 'new',
-    name: 'New Payment Method',
-    icon: <CreditCard className="w-4 h-4 inline-block mr-2" />
+    id: "new",
+    name: "New Payment Method",
+    icon: <CreditCard className="w-4 h-4 inline-block mr-2" />,
   },
   {
-    id: 'visa-1234',
-    name: 'Visa',
+    id: "visa-1234",
+    name: "Visa",
     icon: <FaCcVisa className="w-5 h-5 inline-block mr-2 text-[#1434CB]" />,
-    last4: '1234'
+    last4: "1234",
   },
   {
-    id: 'mastercard-5678',
-    name: 'Mastercard',
-    icon: <FaCcMastercard className="w-5 h-5 inline-block mr-2 text-[#EB001B]" />,
-    last4: '5678'
+    id: "mastercard-5678",
+    name: "Mastercard",
+    icon: (
+      <FaCcMastercard className="w-5 h-5 inline-block mr-2 text-[#EB001B]" />
+    ),
+    last4: "5678",
   },
   {
-    id: 'paypal',
-    name: 'PayPal',
-    icon: <FaPaypal className="w-4 h-4 inline-block mr-2 text-[#003087]" />
-  }
+    id: "paypal",
+    name: "PayPal",
+    icon: <FaPaypal className="w-4 h-4 inline-block mr-2 text-[#003087]" />,
+  },
 ];
 
 const CheckoutModal = ({ isOpen, onClose, plan }: CheckoutModalProps) => {
   const [formData, setFormData] = useState<FormData>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    cardNumber: '',
-    expiry: '',
-    cvv: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    cardNumber: "",
+    expiry: "",
+    cvv: "",
   });
-  const [promoCode, setPromoCode] = useState('');
+  const [promoCode, setPromoCode] = useState("");
   const [selectedPayment, setSelectedPayment] = useState(paymentMethods[0].id);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Form Data:');
+    console.log("Form Data:");
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const inputClass =
@@ -106,7 +108,9 @@ const CheckoutModal = ({ isOpen, onClose, plan }: CheckoutModalProps) => {
             <div className="flex items-center justify-between px-6 py-4 border-b border-htb-border">
               <div>
                 <span className="terminal-eyebrow">checkout</span>
-                <h2 className="text-lg font-semibold text-htb-text">Complete your order</h2>
+                <h2 className="text-lg font-semibold text-htb-text">
+                  Complete your order
+                </h2>
               </div>
               <button
                 onClick={onClose}
@@ -117,7 +121,10 @@ const CheckoutModal = ({ isOpen, onClose, plan }: CheckoutModalProps) => {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 max-h-[calc(85vh-72px)] overflow-y-auto">
+            <form
+              onSubmit={handleSubmit}
+              className="p-6 max-h-[calc(85vh-72px)] overflow-y-auto"
+            >
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* Left Column */}
                 <div className="lg:col-span-5 flex flex-col gap-y-4">
@@ -130,7 +137,9 @@ const CheckoutModal = ({ isOpen, onClose, plan }: CheckoutModalProps) => {
                         </span>
                       </div>
                       <div>
-                        <div className="text-sm text-htb-text">{plan.name} Subscription</div>
+                        <div className="text-sm text-htb-text">
+                          {plan.name} Subscription
+                        </div>
                         <div className="font-mono font-bold text-lg text-htb-text tabular-nums">
                           ${plan.price.toFixed(2)}
                         </div>
@@ -144,11 +153,15 @@ const CheckoutModal = ({ isOpen, onClose, plan }: CheckoutModalProps) => {
                     <div className="space-y-3 mt-3 text-sm">
                       <div className="flex justify-between">
                         <span className="text-htb-muted">Original Price</span>
-                        <span className="font-mono text-htb-text tabular-nums">${plan.price.toFixed(2)}</span>
+                        <span className="font-mono text-htb-text tabular-nums">
+                          ${plan.price.toFixed(2)}
+                        </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-htb-muted">Est. Tax</span>
-                        <span className="font-mono text-htb-text tabular-nums">$0.00</span>
+                        <span className="font-mono text-htb-text tabular-nums">
+                          $0.00
+                        </span>
                       </div>
                     </div>
 
@@ -207,7 +220,8 @@ const CheckoutModal = ({ isOpen, onClose, plan }: CheckoutModalProps) => {
                             value={method.id}
                             className="flex items-center pl-8"
                           >
-                            {method.name} {method.last4 ? `(**** ${method.last4})` : ''}
+                            {method.name}{" "}
+                            {method.last4 ? `(**** ${method.last4})` : ""}
                           </option>
                         ))}
                       </select>
@@ -219,12 +233,15 @@ const CheckoutModal = ({ isOpen, onClose, plan }: CheckoutModalProps) => {
                       </div>
 
                       <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        {paymentMethods.find(m => m.id === selectedPayment)?.icon}
+                        {
+                          paymentMethods.find((m) => m.id === selectedPayment)
+                            ?.icon
+                        }
                       </div>
                     </div>
                   </div>
 
-                  {selectedPayment === 'new' ? (
+                  {selectedPayment === "new" ? (
                     <>
                       {/* Billing Information */}
                       <div>
@@ -302,7 +319,8 @@ const CheckoutModal = ({ isOpen, onClose, plan }: CheckoutModalProps) => {
                   ) : (
                     <div className="panel p-4">
                       <p className="text-sm text-htb-muted">
-                        You&apos;ll be charged using your selected payment method
+                        You&apos;ll be charged using your selected payment
+                        method
                       </p>
                     </div>
                   )}
@@ -326,4 +344,4 @@ const CheckoutModal = ({ isOpen, onClose, plan }: CheckoutModalProps) => {
   );
 };
 
-export default CheckoutModal; 
+export default CheckoutModal;
