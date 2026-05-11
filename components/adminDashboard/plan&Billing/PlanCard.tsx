@@ -30,34 +30,32 @@ const PlanCard = ({
 }: PricingCardProps) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className={`w-full  max-w-sm mx-auto bg-white rounded-xl overflow-hidden border shadow-md hover:shadow-lg transition-all duration-300 ${
-        popular ? 'border-purple-200 ring-1 ring-purple-100' : 'border-gray-200'
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      className={`w-full max-w-sm mx-auto panel panel-hover overflow-hidden transition-all duration-300 ${
+        popular ? "border-neon/40 shadow-neon-sm" : ""
       }`}
     >
-      {/* Header with gradient background */}
-      <div className={`relative px-4 py-3 ${popular ? 'bg-gradient-to-r from-purple-500 to-purple-600' : 'bg-gradient-to-r from-gray-50 to-gray-100'}`}>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${isActive ? 'bg-green-500' : 'bg-red-500'}`}></div>
-            <h2 className={`text-lg font-bold ${popular ? 'text-white' : 'text-gray-800'}`}>{title}</h2>
+      {/* Header */}
+      <div className={`relative px-4 py-3 border-b border-htb-border ${popular ? "bg-neon/10" : "bg-htb-bg/40"}`}>
+        <div className="flex justify-between items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className={`w-1.5 h-1.5 rounded-full ${isActive ? "bg-neon shadow-neon-sm" : "bg-danger"}`}></div>
+            <h2 className={`text-base font-bold truncate ${popular ? "text-neon" : "text-htb-text"}`}>
+              {title}
+            </h2>
             {popular && (
-              <span className="bg-white text-purple-600 text-xs font-semibold px-2 py-0.5 rounded-full">
-                ⭐
+              <span className="bg-neon text-htb-bg text-[10px] font-mono font-semibold uppercase tracking-widest px-2 py-0.5 rounded">
+                Popular
               </span>
             )}
           </div>
-          <div className="flex gap-1">
+          <div className="flex gap-1.5 shrink-0">
             {onEdit && (
               <button
                 onClick={onEdit}
-                className={`p-1.5 rounded-md transition-all duration-200 flex items-center gap-1 text-xs font-medium ${
-                  popular 
-                    ? 'bg-white/20 text-white hover:bg-white/30' 
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
+                className="px-2 py-1 rounded border border-htb-border bg-htb-panel text-htb-muted hover:text-neon hover:border-neon/40 transition-colors flex items-center gap-1 font-mono text-[10px] uppercase tracking-widest font-semibold"
               >
                 <Edit2 className="w-3 h-3" />
                 Edit
@@ -66,7 +64,7 @@ const PlanCard = ({
             {onDelete && (
               <button
                 onClick={onDelete}
-                className="p-1.5 rounded-md bg-red-100 text-red-600 hover:bg-red-200 transition-all duration-200 flex items-center gap-1 text-xs font-medium"
+                className="px-2 py-1 rounded border border-danger/30 bg-danger/10 text-danger hover:bg-danger/15 hover:border-danger/40 transition-colors flex items-center gap-1 font-mono text-[10px] uppercase tracking-widest font-semibold"
               >
                 <Trash2 className="w-3 h-3" />
                 Delete
@@ -79,11 +77,11 @@ const PlanCard = ({
       {/* Content */}
       <div className="p-4 space-y-4">
         {/* Price Section */}
-        <div className="flex items-center gap-1 text-start">
-          <div className="text-2xl font-bold text-gray-900">
+        <div className="flex items-baseline gap-1">
+          <div className="font-mono text-3xl font-bold text-htb-text tabular-nums">
             ₹{price.toLocaleString()}
           </div>
-          <div className="text-sm text-gray-500 font-medium">
+          <div className="text-xs text-htb-text-dim font-mono uppercase tracking-wider">
             /{priceMode}
           </div>
         </div>
@@ -91,54 +89,43 @@ const PlanCard = ({
         {/* Plan Details Grid */}
         <div className="grid grid-cols-2 gap-2">
           {durationDays !== 0 && (
-            <div className="bg-blue-50 rounded-md p-2">
-              <div className="flex items-center gap-1">
-                <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                <span className="text-xs font-medium text-gray-600">Duration</span>
+            <div className="rounded-md border border-sky-400/30 bg-sky-400/5 p-2.5">
+              <div className="text-[10px] font-mono uppercase tracking-widest font-semibold text-sky-300">
+                Duration
               </div>
-              <div className="text-sm font-semibold text-gray-900">
+              <div className="font-mono text-sm font-bold text-htb-text tabular-nums mt-0.5">
                 {durationDays} days
               </div>
             </div>
           )}
-          
-          <div className="bg-green-50 rounded-md p-2">
-            <div className="flex items-center gap-1">
-              <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-              <span className="text-xs font-medium text-gray-600">Status</span>
+
+          <div className={`rounded-md border p-2.5 ${isActive ? "border-neon/30 bg-neon/5" : "border-danger/30 bg-danger/5"}`}>
+            <div className={`text-[10px] font-mono uppercase tracking-widest font-semibold ${isActive ? "text-neon" : "text-danger"}`}>
+              Status
             </div>
-            <div className={`text-sm font-semibold ${
-              isActive ? 'text-green-700' : 'text-red-700'
-            }`}>
-              {isActive ? '✓ Active' : '✗ Inactive'}
+            <div className={`text-sm font-semibold mt-0.5 ${isActive ? "text-neon" : "text-danger"}`}>
+              {isActive ? "Active" : "Inactive"}
             </div>
           </div>
         </div>
 
         {/* Date Range */}
         {startDate && endDate && (
-          <div className="bg-gray-50 rounded-md p-2">
-            <h4 className="text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
-              <span className="w-1.5 h-1.5 bg-gray-400 rounded-full"></span>
+          <div className="rounded-md border border-htb-border bg-htb-bg/40 p-2.5">
+            <h4 className="text-[10px] font-mono uppercase tracking-widest font-semibold text-htb-muted mb-2">
               Validity
             </h4>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <div className="text-xs text-gray-500">Start</div>
-                <div className="text-xs font-semibold text-gray-900">
-                  {new Date(startDate).toLocaleDateString('en-US', { 
-                    month: 'short', 
-                    day: 'numeric' 
-                  })}
+                <div className="text-[10px] font-mono uppercase tracking-wider text-htb-text-dim">Start</div>
+                <div className="font-mono text-xs text-htb-text">
+                  {new Date(startDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-gray-500">End</div>
-                <div className="text-xs font-semibold text-gray-900">
-                  {new Date(endDate).toLocaleDateString('en-US', { 
-                    month: 'short', 
-                    day: 'numeric' 
-                  })}
+                <div className="text-[10px] font-mono uppercase tracking-wider text-htb-text-dim">End</div>
+                <div className="font-mono text-xs text-htb-text">
+                  {new Date(endDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                 </div>
               </div>
             </div>
@@ -147,22 +134,18 @@ const PlanCard = ({
 
         {/* Features Section */}
         <div>
-          <h3 className="text-sm font-bold text-gray-800 mb-2 flex items-center gap-1">
-            <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+          <h3 className="text-[10px] font-mono uppercase tracking-widest font-semibold text-htb-muted mb-2">
             Features
           </h3>
-          <div className="space-y-1">
+          <div className="space-y-1.5">
             {details.slice(0, 3).map((detail, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-2 text-xs text-gray-700"
-              >
-                <div className="w-1 h-1 bg-purple-500 rounded-full flex-shrink-0"></div>
+              <div key={index} className="flex items-center gap-2 text-xs text-htb-muted">
+                <div className="w-1 h-1 bg-neon rounded-full flex-shrink-0"></div>
                 <span className="truncate">{detail}</span>
               </div>
             ))}
             {details.length > 3 && (
-              <div className="text-xs text-gray-500 ml-3">
+              <div className="text-[11px] text-htb-text-dim font-mono uppercase tracking-wider ml-3">
                 +{details.length - 3} more
               </div>
             )}

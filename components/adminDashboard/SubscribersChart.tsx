@@ -24,15 +24,16 @@ const SubscribersChart = ({ data }: SubscribersChartProps) => {
     revenue: item.totalRevenue,
   }));
 
-  // Colors for the charts
-  const colors = ['#742193', '#22C55E', '#EF4444', '#3B82F6', '#F59E0B'];
+  // Colors for the charts (HTB palette)
+  const colors = ['#9FEF00', '#A855F7', '#FF3E3E', '#38BDF8', '#FFAF00'];
 
   // If no data, show empty state
   if (!data || data.length === 0) {
     return (
       <div className="p-4">
-        <h2 className="text-xl font-bold">Plan Subscriptions</h2>
-        <div className="flex justify-center items-center h-64 text-gray-500">
+        <span className="terminal-eyebrow">plan.subscriptions</span>
+        <h2 className="text-lg font-bold text-htb-text mt-0.5">Plan Subscriptions</h2>
+        <div className="flex justify-center items-center h-64 text-htb-text-dim font-mono uppercase tracking-widest text-sm">
           No subscription data available
         </div>
       </div>
@@ -40,13 +41,15 @@ const SubscribersChart = ({ data }: SubscribersChartProps) => {
   }
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Plan Subscriptions</h2>
-      
+    <div>
+      <span className="terminal-eyebrow">plan.subscriptions</span>
+      <h2 className="text-lg font-bold text-htb-text mt-0.5 mb-4">Plan Subscriptions</h2>
 
       {/* Pie Chart for Revenue Distribution */}
       <div>
-        <h3 className="text-lg font-semibold mb-3 text-gray-700">Revenue Distribution</h3>
+        <h3 className="text-[10px] font-mono uppercase tracking-widest font-semibold text-htb-muted mb-3">
+          Revenue Distribution
+        </h3>
         <ResponsiveContainer width="100%" height={250}>
           <PieChart>
             <Pie
@@ -55,35 +58,45 @@ const SubscribersChart = ({ data }: SubscribersChartProps) => {
               cy="50%"
               innerRadius={60}
               outerRadius={100}
-              paddingAngle={5}
+              paddingAngle={4}
               dataKey="revenue"
               nameKey="plan"
+              stroke="#0B0F17"
+              strokeWidth={2}
             >
               {processedData.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
               ))}
             </Pie>
-            <Tooltip 
+            <Tooltip
+              contentStyle={{
+                background: '#111927',
+                border: '1px solid rgba(255,255,255,0.06)',
+                borderRadius: '0.375rem',
+                color: '#E6EDF7',
+                fontFamily: '"JetBrains Mono", ui-monospace, monospace',
+                fontSize: 12,
+              }}
               formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']}
               labelFormatter={(label) => `Plan: ${label}`}
             />
-            <Legend />
+            <Legend wrapperStyle={{ color: '#A4B1CD', fontSize: 12, fontFamily: '"JetBrains Mono", ui-monospace, monospace', textTransform: 'uppercase', letterSpacing: '0.1em' }} />
           </PieChart>
         </ResponsiveContainer>
       </div>
 
       {/* Summary Stats */}
-      <div className="mt-4 grid grid-cols-2 gap-4">
-        <div className="bg-purple-50 p-3 rounded-lg">
-          <h4 className="text-sm font-medium text-purple-800">Total Subscribers</h4>
-          <p className="text-2xl font-bold text-purple-600">
+      <div className="mt-4 grid grid-cols-2 gap-3">
+        <div className="rounded-md border border-neon/30 bg-neon/5 p-3">
+          <h4 className="text-[10px] font-mono uppercase tracking-widest font-semibold text-neon">Total Subscribers</h4>
+          <p className="font-mono text-2xl font-bold text-htb-text tabular-nums mt-1">
             {processedData.reduce((sum, item) => sum + item.subscribers, 0)}
           </p>
         </div>
-        <div className="bg-green-50 p-3 rounded-lg">
-          <h4 className="text-sm font-medium text-green-800">Total Revenue</h4>
-          <p className="text-2xl font-bold text-green-600">
-          ₹{processedData.reduce((sum, item) => sum + item.revenue, 0).toLocaleString()}
+        <div className="rounded-md border border-purple-500/30 bg-purple-500/5 p-3">
+          <h4 className="text-[10px] font-mono uppercase tracking-widest font-semibold text-purple-300">Total Revenue</h4>
+          <p className="font-mono text-2xl font-bold text-htb-text tabular-nums mt-1">
+            ₹{processedData.reduce((sum, item) => sum + item.revenue, 0).toLocaleString()}
           </p>
         </div>
       </div>

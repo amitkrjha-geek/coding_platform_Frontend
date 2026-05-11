@@ -22,7 +22,7 @@ export function Toolbar({ editor }: Props) {
     return null
   }
   return (
-    <div className="border border-input bg-transparent rounded-lg p-2">
+    <div className="border border-htb-border bg-htb-panel/60 rounded-md p-1.5 flex flex-wrap gap-1">
       <Toggle
         size="sm"
         pressed={editor.isActive("paragraph")}

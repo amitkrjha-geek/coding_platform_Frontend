@@ -14,12 +14,12 @@ const getTooltipText = (count: number, date: Date) => {
 };
 
 const getBackgroundColor = (count: number) => {
-  if (count === 0) return 'bg-[#ebedf0] dark:bg-[#161b22]';
-  if (count >= 1 && count <= 2) return 'bg-[#2dc653] dark:bg-[#0e4429]';
-  if (count >= 3 && count <= 4) return 'bg-[#25a244] dark:bg-[#0e4429]';
-  if (count >= 5 && count <= 7) return 'bg-[#155d27] dark:bg-[#006d32]';
-  if (count >= 8 && count <= 12) return 'bg-[#10451d] dark:bg-[#26a641]';
-  return 'bg-[#216e39] dark:bg-[#39d353]';
+  if (count === 0) return 'bg-htb-panel-2 border border-htb-border/50';
+  if (count >= 1 && count <= 2) return 'bg-neon/20 border border-neon/30';
+  if (count >= 3 && count <= 4) return 'bg-neon/40 border border-neon/40';
+  if (count >= 5 && count <= 7) return 'bg-neon/60 border border-neon/50';
+  if (count >= 8 && count <= 12) return 'bg-neon/80 border border-neon/60';
+  return 'bg-neon border border-neon shadow-neon-sm';
 };
 
 interface SubmissionHistoryData {
@@ -108,38 +108,53 @@ const SubmissionHistory = () => {
 
   if (!isMounted || loading) {
     return (
-      <div className="bg-white rounded-xl p-6">
-        <div className="h-[300px] bg-gray-100 rounded-lg animate-pulse" />
+      <div className="panel p-6">
+        <div className="h-[300px] bg-htb-panel-2 rounded animate-pulse" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-white rounded-xl p-6">
-        <div className="text-center text-red-500">
-          <p>Failed to load submission history</p>
-          <p className="text-sm text-gray-500 mt-1">{error}</p>
+      <div className="panel p-6">
+        <div className="text-center">
+          <p className="text-danger font-medium">Failed to load submission history</p>
+          <p className="text-sm text-htb-text-dim mt-1 font-mono">{error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl p-4 sm:p-6">
+    <div className="panel p-5 sm:p-6">
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 gap-2">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-5 gap-3">
         <div className="flex items-center gap-2">
-          <span className="font-medium">{historyData?.totalSubmissions || 0}</span>
-          <span className="text-sm text-gray-500">submissions in {selectedYear}</span>
+          <span className="terminal-eyebrow">activity.heatmap</span>
         </div>
-        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-          <div>Total active days: {historyData?.activeDays || 0}</div>
-          <div>Max streak: {historyData?.maxStreak || 0}</div>
-          <select 
-            value={selectedYear} 
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
+          <div className="flex items-center gap-1.5">
+            <span className="font-mono uppercase tracking-wider text-htb-text-dim">Submissions</span>
+            <span className="font-mono font-semibold text-neon tabular-nums">
+              {historyData?.totalSubmissions || 0}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="font-mono uppercase tracking-wider text-htb-text-dim">Active</span>
+            <span className="font-mono font-semibold text-htb-text tabular-nums">
+              {historyData?.activeDays || 0}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="font-mono uppercase tracking-wider text-htb-text-dim">Max streak</span>
+            <span className="font-mono font-semibold text-htb-text tabular-nums">
+              {historyData?.maxStreak || 0}
+            </span>
+          </div>
+          <select
+            value={selectedYear}
             onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-            className="bg-transparent outline-none border border-gray-200 rounded px-2 py-1"
+            className="bg-htb-panel border border-htb-border rounded px-2 py-1 text-htb-text font-mono text-xs uppercase tracking-wider hover:border-htb-border-hover focus:border-neon/60 focus:ring-1 focus:ring-neon/40 outline-none transition-colors"
           >
             <option value={new Date().getFullYear()}>Current</option>
             <option value={new Date().getFullYear() - 1}>{new Date().getFullYear() - 1}</option>
@@ -149,12 +164,12 @@ const SubmissionHistory = () => {
       </div>
 
       {/* Calendar Grid */}
-      <div className="w-full overflow-x-auto scrollbar-hide pb-4 -mx-4 sm:mx-0">
+      <div className="w-full overflow-x-auto scrollbar-hide pb-2 -mx-4 sm:mx-0">
         <div className="min-w-[750px] px-4 sm:px-0">
           {/* Months */}
           <div className="grid grid-cols-12 mb-2">
             {months.map((month) => (
-              <div key={month} className="text-xs text-gray-400">
+              <div key={month} className="text-[10px] font-mono uppercase tracking-wider text-htb-text-dim">
                 {month}
               </div>
             ))}
@@ -168,22 +183,36 @@ const SubmissionHistory = () => {
                   <div
                     key={`${weekIndex}-${dayIndex}`}
                     className={`
-                      w-3 h-3 rounded-sm cursor-pointer
+                      w-3 h-3 rounded-[2px] cursor-pointer
                       ${getBackgroundColor(day.count)}
-                      hover:ring-2 hover:ring-gray-400 hover:ring-offset-2
-                      group relative
+                      hover:ring-1 hover:ring-neon hover:ring-offset-1 hover:ring-offset-htb-panel
+                      group relative transition-all
                     `}
                     title={getTooltipText(day.count, day.date)}
                   >
                     {/* Tooltip */}
-                    <div className="invisible group-hover:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs text-white bg-gray-900 rounded whitespace-nowrap z-10">
+                    <div className="invisible group-hover:visible absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-[10px] font-mono uppercase tracking-wider text-htb-text bg-htb-bg-deep border border-htb-border rounded whitespace-nowrap z-10 shadow-panel">
                       {getTooltipText(day.count, day.date)}
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1 border-4 border-transparent border-t-gray-900" />
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1 border-4 border-transparent border-t-htb-border" />
                     </div>
                   </div>
                 ))}
               </div>
             ))}
+          </div>
+
+          {/* Legend */}
+          <div className="flex items-center justify-end gap-2 mt-4">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-htb-text-dim">Less</span>
+            <div className="flex gap-[3px]">
+              {[0, 1, 3, 5, 9, 13].map((count) => (
+                <div
+                  key={count}
+                  className={`w-3 h-3 rounded-[2px] ${getBackgroundColor(count)}`}
+                />
+              ))}
+            </div>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-htb-text-dim">More</span>
           </div>
         </div>
       </div>

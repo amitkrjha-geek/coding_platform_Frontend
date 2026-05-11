@@ -140,22 +140,22 @@ const TransactionsTable = () => {
   };
 
   return (
-    <div className="mt-4">
-      <div className="flex gap-4 mb-4">
-        <div className="flex-1 relative">
+    <div className="mt-2">
+      <div className="flex gap-3 mb-4 flex-wrap">
+        <div className="flex-1 min-w-[240px] relative">
           <input
             type="text"
             placeholder="Enter Name or Payment ID"
-            className="w-full p-2 pl-3 pr-10 border-2 rounded-md border-purple focus:border-purple focus:outline-none focus:ring-0" 
+            className="w-full p-2.5 pl-3 pr-10 border border-htb-border bg-htb-panel text-htb-text rounded-md font-mono text-sm placeholder:text-htb-text-dim hover:border-htb-border-hover focus:border-neon/60 focus:ring-1 focus:ring-neon/40 outline-none transition-colors"
             value={searchTerm}
             onChange={handleSearchChange}
           />
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-            <Search size={20} />
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-htb-text-dim pointer-events-none">
+            <Search size={16} />
           </div>
         </div>
         <select
-          className="p-2 border-2 rounded-md border-purple focus:border-purple focus:outline-none focus:ring-0" 
+          className="p-2.5 border border-htb-border bg-htb-panel text-htb-text rounded-md font-mono text-xs uppercase tracking-wider hover:border-htb-border-hover focus:border-neon/60 focus:ring-1 focus:ring-neon/40 outline-none transition-colors"
           value={category}
           onChange={handleCategoryChange}
         >
@@ -168,7 +168,7 @@ const TransactionsTable = () => {
           <option value="PER_CHALLENGE">Per Challenge</option>
         </select>
         <select
-          className="p-2 border-2 rounded-md border-purple focus:border-purple focus:outline-none focus:ring-0" 
+          className="p-2.5 border border-htb-border bg-htb-panel text-htb-text rounded-md font-mono text-xs uppercase tracking-wider hover:border-htb-border-hover focus:border-neon/60 focus:ring-1 focus:ring-neon/40 outline-none transition-colors"
           value={sortBy}
           onChange={handleSortChange}
         >
@@ -178,29 +178,29 @@ const TransactionsTable = () => {
         </select>
         <button
           onClick={clearFilters}
-          className="px-4 py-2 bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors"
+          className="px-4 py-2 border border-htb-border bg-htb-panel text-htb-muted hover:text-neon hover:border-neon/40 rounded-md transition-colors font-mono text-xs uppercase tracking-widest font-semibold"
         >
-          Clear Filters
+          Clear
         </button>
       </div>
 
       {/* Filter Status */}
       {(searchTerm || category !== "all" || sortBy !== "all") && (
-        <div className="mb-4 p-3 bg-blue-50 rounded-md">
-          <div className="flex items-center gap-2 text-sm text-blue-700">
-            <span className="font-medium">Active Filters:</span>
+        <div className="mb-4 p-3 rounded-md border border-neon/20 bg-neon/5">
+          <div className="flex items-center gap-2 text-xs flex-wrap">
+            <span className="font-mono uppercase tracking-widest text-neon font-semibold">Active:</span>
             {searchTerm && (
-              <span className="px-2 py-1 bg-blue-100 rounded-full">
+              <span className="px-2 py-0.5 rounded font-mono text-[10px] uppercase tracking-widest border border-neon/30 bg-neon/10 text-neon">
                 Search: &quot;{searchTerm}&quot;
               </span>
             )}
             {category !== "all" && (
-              <span className="px-2 py-1 bg-blue-100 rounded-full">
+              <span className="px-2 py-0.5 rounded font-mono text-[10px] uppercase tracking-widest border border-neon/30 bg-neon/10 text-neon">
                 Plan: {category}
               </span>
             )}
             {sortBy !== "all" && (
-              <span className="px-2 py-1 bg-blue-100 rounded-full">
+              <span className="px-2 py-0.5 rounded font-mono text-[10px] uppercase tracking-widest border border-neon/30 bg-neon/10 text-neon">
                 Sort: {sortBy === "date" ? "Date & Time" : "Amount"}
               </span>
             )}
@@ -208,108 +208,102 @@ const TransactionsTable = () => {
         </div>
       )}
 
-      <h3 className="font-manrope font-semibold text-base leading-[21.86px] text-purple mb-4">
-        Payment History ({filteredTransactions.length} transactions)
+      <h3 className="terminal-eyebrow mb-3 inline-block">
+        payment.history ({filteredTransactions.length} transactions)
       </h3>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="panel overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[1200px]">
             <thead>
-              <tr className="border-b bg-[#7421931A]">
-                <th className="p-3 text-left text-sm font-medium text-gray-700 w-32">Payment ID</th>
-                <th className="p-3 text-left text-sm font-medium text-gray-700 w-24">Paid By</th>
-                <th className="p-3 text-left text-sm font-medium text-gray-700 w-36">Date & Time</th>
-                <th className="p-3 text-left text-sm font-medium text-gray-700 w-20">Method</th>
-                <th className="p-3 text-left text-sm font-medium text-gray-700 w-20">Amount</th>
-                <th className="p-3 text-left text-sm font-medium text-gray-700 w-16">Currency</th>
-                <th className="p-3 text-left text-sm font-medium text-gray-700 w-20">Coupon</th>
-                <th className="p-3 text-left text-sm font-medium text-gray-700 w-20">Plan</th>
-                {/* <th className="p-3 text-left text-sm font-medium text-gray-700 w-24">Action</th> */}
+              <tr className="border-b border-htb-border bg-htb-bg/40">
+                <th className="p-3 text-left text-[10px] font-mono font-semibold text-htb-muted uppercase tracking-widest w-32">Payment ID</th>
+                <th className="p-3 text-left text-[10px] font-mono font-semibold text-htb-muted uppercase tracking-widest w-24">Paid By</th>
+                <th className="p-3 text-left text-[10px] font-mono font-semibold text-htb-muted uppercase tracking-widest w-36">Date & Time</th>
+                <th className="p-3 text-left text-[10px] font-mono font-semibold text-htb-muted uppercase tracking-widest w-20">Method</th>
+                <th className="p-3 text-left text-[10px] font-mono font-semibold text-htb-muted uppercase tracking-widest w-20">Amount</th>
+                <th className="p-3 text-left text-[10px] font-mono font-semibold text-htb-muted uppercase tracking-widest w-16">Currency</th>
+                <th className="p-3 text-left text-[10px] font-mono font-semibold text-htb-muted uppercase tracking-widest w-20">Coupon</th>
+                <th className="p-3 text-left text-[10px] font-mono font-semibold text-htb-muted uppercase tracking-widest w-20">Plan</th>
               </tr>
             </thead>
             <tbody>
               {getCurrentPageItems().map((transaction) => (
-                <tr key={transaction.paymentId} className="border-b hover:bg-gray-50">
+                <tr key={transaction.paymentId} className="border-t border-htb-border hover:bg-neon/5 transition-colors">
                   <td className="p-3 text-sm">
-                    <div className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
+                    <div className="font-mono text-xs bg-htb-bg border border-htb-border px-2 py-1 rounded text-htb-muted">
                       {transaction.paymentId}
                     </div>
                   </td>
-                  <td className="p-3 text-sm font-medium">{transaction.paidBy}</td>
-                  <td className="p-3 text-sm text-gray-600">
+                  <td className="p-3 text-sm font-medium text-htb-text">{transaction.paidBy}</td>
+                  <td className="p-3 text-xs text-htb-muted font-mono">
                     {formatDateTime(transaction.dateTime)}
                   </td>
                   <td className="p-3 text-sm">
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded font-mono text-[10px] font-semibold uppercase tracking-widest border border-neon/30 bg-neon/10 text-neon">
                       {transaction.modeOfPayment}
                     </span>
                   </td>
-                  <td className="p-3 text-sm font-semibold text-green-600">
+                  <td className="p-3 text-sm font-mono font-bold text-neon tabular-nums">
                     ₹{transaction.amount?.toLocaleString()}
                   </td>
-                  <td className="p-3 text-sm text-gray-500">{transaction.currency}</td>
+                  <td className="p-3 text-xs text-htb-text-dim font-mono">{transaction.currency}</td>
                   <td className="p-3 text-sm">
                     {transaction.coupon ? (
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded font-mono text-[10px] font-semibold uppercase tracking-widest border border-purple-500/30 bg-purple-500/10 text-purple-300">
                         {transaction.coupon}
                       </span>
                     ) : (
-                      <span className="text-gray-400">-</span>
+                      <span className="text-htb-text-dim">-</span>
                     )}
                   </td>
                   <td className="p-3 text-sm">
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded font-mono text-[10px] font-semibold uppercase tracking-widest border border-sky-400/30 bg-sky-400/10 text-sky-300">
                       {transaction.plan}
                     </span>
                   </td>
-                  {/* <td className="p-3 text-sm">
-                    <button className="text-blue-600 hover:text-blue-800 hover:underline text-xs font-medium">
-                      Download
-                    </button>
-                  </td> */}
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <div className="p-4 flex justify-center items-center gap-2">
-          <button 
+        <div className="p-3 flex justify-center items-center gap-1.5 border-t border-htb-border flex-wrap">
+          <button
             onClick={handlePrevious}
             disabled={currentPage === 1}
-            className={`px-3 py-1 text-gray-600 border border-gray-300 rounded-md hover:text-purple-600 flex items-center gap-1 ${
-              currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''
+            className={`px-3 py-1.5 border border-htb-border bg-htb-panel text-htb-muted hover:text-neon hover:border-neon/40 rounded-md flex items-center gap-1 font-mono text-[11px] uppercase tracking-widest font-semibold transition-colors ${
+              currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
-            <ChevronLeft className="h-4 w-4" /> Previous
+            <ChevronLeft className="h-3.5 w-3.5" /> Prev
           </button>
-          
-          {getPageNumbers().map((pageNum, index) => (
-            pageNum === '...' ? (
-              <span key={`dots-${index}`} className="px-2">...</span>
+
+          {getPageNumbers().map((pageNum, index) =>
+            pageNum === "..." ? (
+              <span key={`dots-${index}`} className="px-2 text-htb-text-dim">...</span>
             ) : (
-              <button 
+              <button
                 key={pageNum}
                 onClick={() => handlePageChange(pageNum as number)}
-                className={`px-3 py-1 rounded-md ${
-                  currentPage === pageNum 
-                    ? 'bg-purple-600 text-white' 
-                    : 'hover:bg-gray-100'
+                className={`min-w-[36px] h-9 rounded-md font-mono text-xs font-semibold transition-colors ${
+                  currentPage === pageNum
+                    ? "bg-neon text-htb-bg shadow-neon-sm"
+                    : "border border-htb-border bg-htb-panel text-htb-muted hover:border-neon/40 hover:text-neon"
                 }`}
               >
                 {pageNum}
               </button>
             )
-          ))}
-          
-          <button 
+          )}
+
+          <button
             onClick={handleNext}
             disabled={currentPage === totalPages}
-            className={`px-3 py-1 text-gray-600 border border-gray-300 rounded-md hover:text-purple-600 flex items-center gap-1 ${
-              currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''
+            className={`px-3 py-1.5 border border-htb-border bg-htb-panel text-htb-muted hover:text-neon hover:border-neon/40 rounded-md flex items-center gap-1 font-mono text-[11px] uppercase tracking-widest font-semibold transition-colors ${
+              currentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
-            Next <ChevronRight className="h-4 w-4" />
+            Next <ChevronRight className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>

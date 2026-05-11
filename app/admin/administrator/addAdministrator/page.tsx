@@ -14,30 +14,32 @@ const Page = () => {
     
   
   return (
-    <section className="bg-[#f9f9f9] h-50 p-7">
+    <section className="bg-htb-bg min-h-screen p-7">
       <div>
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href="/admin" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-htb-text-dim" />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin/administrator">Administrator</BreadcrumbLink>
+              <BreadcrumbLink href="/admin/administrator" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Administrator</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-htb-text-dim" />
             <BreadcrumbItem>
-              <BreadcrumbPage>Add Administrator</BreadcrumbPage>
+              <BreadcrumbPage className="text-neon font-mono text-xs uppercase tracking-widest">Add Administrator</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </div>
 
- <h1 className="heading1 mt-2">Add Administrator</h1>
-      <div>
-      <AdminForm />
+      <div className="mt-3 mb-5">
+        <span className="terminal-eyebrow">add.administrator</span>
+        <h1 className="heading-display text-2xl text-htb-text mt-1">Add Administrator</h1>
       </div>
-
+      <div>
+        <AdminForm />
+      </div>
     </section>
   )
 }

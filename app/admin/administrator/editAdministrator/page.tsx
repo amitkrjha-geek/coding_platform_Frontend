@@ -28,28 +28,31 @@ const AdminContent = () => {
 
 const Page = () => {
   return (
-    <section className="bg-[#f9f9f9] h-50 p-7">
+    <section className="bg-htb-bg min-h-screen p-7">
       <div>
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href="/admin" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-htb-text-dim" />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin/administrator">Administrator</BreadcrumbLink>
+              <BreadcrumbLink href="/admin/administrator" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Administrator</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-htb-text-dim" />
             <BreadcrumbItem>
-              <BreadcrumbPage>Edit Administrator</BreadcrumbPage>
+              <BreadcrumbPage className="text-neon font-mono text-xs uppercase tracking-widest">Edit Administrator</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </div>
 
-      <h1 className="heading1 mt-2">Edit Administrator</h1>
+      <div className="mt-3 mb-5">
+        <span className="terminal-eyebrow">edit.administrator</span>
+        <h1 className="heading-display text-2xl text-htb-text mt-1">Edit Administrator</h1>
+      </div>
 
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<div className="text-htb-text-dim font-mono uppercase tracking-widest">Loading...</div>}>
         <AdminContent />
       </Suspense>
     </section>

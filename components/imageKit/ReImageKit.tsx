@@ -77,10 +77,10 @@ const ReImageKit: React.FC<ImageKitProps> = ({ id, initialUrl, isMultiple = fals
                         />
                         <button
                             type="button"
-                            className="absolute -top-1 -right-1 bg-white rounded-full hover:rotate-180 transition hover:scale-110 transform focus:outline-none"
+                            className="absolute -top-1.5 -right-1.5 bg-htb-panel border border-htb-border rounded-full hover:rotate-180 hover:border-danger/40 hover:text-danger transition hover:scale-110 transform focus:outline-none focus:ring-1 focus:ring-neon/40 text-htb-muted"
                             onClick={() => setPreviewUrl(null)}
                         >
-                            <IoIosCloseCircleOutline className="text-blueCustom size-4 sm:size-5" />
+                            <IoIosCloseCircleOutline className="size-4 sm:size-5" />
                         </button>
                     </div>
                 )}

@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { useRouter } from "next/navigation";
 import { Plus } from "lucide-react";
-import SectionHeader from "@/components/adminDashboard/SectionHeader";
 import PlanCard from "@/components/adminDashboard/plan&Billing/PlanCard";
 import CouponCard from "@/components/adminDashboard/plan&Billing/CouponCard";
 import TransactionsTable from "@/components/adminDashboard/plan&Billing/TransactionsTable";
@@ -97,77 +96,60 @@ const PlanBillingPage = () => {
   };
 
   return (
-    <section className="bg-[#f9f9f9] h-50 p-7">
+    <section className="bg-htb-bg min-h-screen p-7">
       <div>
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href="/admin" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-htb-text-dim" />
             <BreadcrumbItem>
-              <BreadcrumbPage>Subscription</BreadcrumbPage>
+              <BreadcrumbPage className="text-neon font-mono text-xs uppercase tracking-widest">Subscription</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-      <h1 className="heading mt-4">Subscription</h1>
+      <div className="mt-3 mb-4">
+        <span className="terminal-eyebrow">subscription</span>
+        <h1 className="heading-display text-2xl text-htb-text mt-1">Subscription</h1>
+      </div>
 
-      <div className="flex justify-between items-center  h-[60px]">
-        <div className="w-[50%] ">
-          <div className="flex flex-row justify-evenly gap-10">
+      <div className="flex flex-wrap justify-between items-center gap-4 border-b border-htb-border mb-6">
+        <div className="flex items-center gap-1">
+          {(["plans", "coupons", "transactions"] as const).map((tab) => (
             <button
-              className={`font-bold text-center w-[33%] p-1 ${
-                activeTab === "plans"
-                  ? "border-b-2 border-purple text-purple"
-                  : "text-black"
+              key={tab}
+              className={`relative px-5 py-3 -mb-px font-mono text-xs uppercase tracking-widest font-semibold transition-colors ${
+                activeTab === tab
+                  ? "text-neon border-b-2 border-neon"
+                  : "text-htb-muted border-b-2 border-transparent hover:text-htb-text"
               }`}
-              onClick={() => setActiveTab("plans")}
+              onClick={() => setActiveTab(tab)}
             >
-              Plans
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
-
-            <button
-              className={`font-bold text-center w-[33%] p-1 ${
-                activeTab === "coupons"
-                  ? "border-b-2 border-purple text-purple"
-                  : "text-black"
-              }`}
-              onClick={() => setActiveTab("coupons")}
-            >
-              Coupons
-            </button>
-
-            <button
-              className={`font-bold text-center w-[33%] p-1 ${
-                activeTab === "transactions"
-                  ? "border-b-2 border-purple text-purple"
-                  : "text-black"
-              }`}
-              onClick={() => setActiveTab("transactions")}
-            >
-              Transactions
-            </button>
-          </div>
+          ))}
         </div>
         {/* Show Add button only for plans and coupons */}
         {activeTab !== "transactions" && (
-          <div>
-            <SectionHeader
-              buttonText={activeTab === "plans" ? "Add Plan" : "Add Coupon"}
-              onButtonClick={handleAddCoupon}
-              icon={<Plus />}
-              className="mb-4"
-            />
+          <div className="pb-2">
+            <button
+              onClick={handleAddCoupon}
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-neon text-htb-bg hover:shadow-neon-sm hover:-translate-y-0.5 transition-all font-mono text-xs uppercase tracking-widest font-semibold"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              {activeTab === "plans" ? "Add Plan" : "Add Coupon"}
+            </button>
           </div>
         )}
       </div>
 
       {activeTab === "plans" && (
         <div className="w-full">
-          <h2 className="text-black font-semibold mb-4">All Plans</h2>
+          <span className="terminal-eyebrow mb-3 inline-block">all.plans</span>
           {plans?.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2  xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {plans.map((plan) => (
                 <PlanCard
                   key={plan._id}
@@ -186,14 +168,14 @@ const PlanBillingPage = () => {
               ))}
             </div>
           ) : (
-            <p className="text-gray-500">No plans found.</p>
+            <p className="text-htb-text-dim font-mono uppercase tracking-widest text-sm">No plans found.</p>
           )}
         </div>
       )}
 
       {activeTab === "coupons" && (
-        <div className="min-w-xl mx-auto grid grid-cols-1  gap-4">
-          <h2 className="text-black font-semibold mb-2">All Coupons</h2>
+        <div className="grid grid-cols-1 gap-3">
+          <span className="terminal-eyebrow mb-1 inline-block">all.coupons</span>
           {coupons?.length > 0 ? (
             coupons.map((coupon) => (
               <CouponCard
@@ -206,7 +188,7 @@ const PlanBillingPage = () => {
               />
             ))
           ) : (
-            <p className="text-gray-500">No coupons found.</p>
+            <p className="text-htb-text-dim font-mono uppercase tracking-widest text-sm">No coupons found.</p>
           )}
         </div>
       )}

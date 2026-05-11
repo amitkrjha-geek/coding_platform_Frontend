@@ -4,18 +4,20 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useAppSelector } from "@/redux/hooks";
 import { useState, useMemo } from "react";
-
-
+import TerminalEyebrow from "@/components/shared/TerminalEyebrow";
 
 const difficultyStats = [
-  { level: "Easy", count: 8, total: 834, color: "text-green-500" },
-  { level: "Medium", count: 22, total: 1794, color: "text-yellow-500" },
-  { level: "Hard", count: 4, total: 793, color: "text-red-500" }
+  { level: "Easy", count: 8, total: 834, color: "text-neon" },
+  { level: "Medium", count: 22, total: 1794, color: "text-warn" },
+  { level: "Hard", count: 4, total: 793, color: "text-danger" },
 ];
 
-const Sidebar = ({ selectedCompany, onCompanySelect }: {
-  selectedCompany?: string | null,
-  onCompanySelect?: (company: string | null) => void
+const Sidebar = ({
+  selectedCompany,
+  onCompanySelect,
+}: {
+  selectedCompany?: string | null;
+  onCompanySelect?: (company: string | null) => void;
 }) => {
   const { companyStats, loading } = useAppSelector((state) => state.challenge);
   const [searchQuery, setSearchQuery] = useState("");
@@ -24,13 +26,16 @@ const Sidebar = ({ selectedCompany, onCompanySelect }: {
   const filteredCompanies = useMemo(() => {
     return Object.entries(companyStats)
       .filter(([name]) =>
-        name.toLowerCase().includes(searchQuery.toLowerCase())
+        name.toLowerCase().includes(searchQuery.toLowerCase()),
       )
       .sort((a, b) => b[1] - a[1]); // Sort by count in descending order
   }, [companyStats, searchQuery]);
 
+  // difficultyStats reserved for future stats card; suppress unused warning
+  void difficultyStats;
+
   return (
-    <div className="w-[280px] space-y-8 py-8 pr-8">
+    <div className="w-[280px] space-y-6 py-8 pr-2">
       {/* Submissions Stats */}
       {/* <div>
         <div className="relative w-32 h-32 mx-auto">
@@ -74,65 +79,64 @@ const Sidebar = ({ selectedCompany, onCompanySelect }: {
       </div> */}
 
       {/* Trending Companies */}
-      <div>
-        <h3 className="text-lg font-medium mb-4">Trending Companies</h3>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+      <div className="panel p-5">
+        <TerminalEyebrow className="mb-4">trending.companies</TerminalEyebrow>
+        <div className="relative mb-4">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-htb-text-dim w-4 h-4 pointer-events-none" />
           <Input
             placeholder="Search for a company..."
-            className="pl-9 bg-[#F8F9FA] border-0 mb-4"
+            className="pl-9 font-mono text-sm"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
         <div className="flex flex-wrap gap-2">
           {loading ? (
-            // Loading skeleton
             <>
               {[...Array(6)].map((_, i) => (
                 <div
                   key={i}
-                  className="h-6 w-24 bg-gray-200 animate-pulse rounded-full"
+                  className="h-7 w-24 bg-htb-panel-2 border border-htb-border animate-pulse rounded-md"
                 />
               ))}
             </>
           ) : filteredCompanies.length === 0 ? (
-            // No results message
             <div className="w-full text-center py-4">
-              <p className="text-gray-500 text-sm">
+              <p className="text-htb-text-dim text-sm font-mono">
                 {searchQuery
-                  ? `No companies found matching "${searchQuery}"`
+                  ? `No matches for "${searchQuery}"`
                   : "No companies available"}
               </p>
             </div>
           ) : (
-            // Actual company data
-            filteredCompanies.map(([name, count]) => (
-              <div
-                key={name}
-                className={`flex items-center gap-x-2 p-0.5 px-1.5 rounded-full group cursor-pointer transition-colors ${selectedCompany === name.toLowerCase()
-                    ? 'bg-purple/20 ring-2 ring-purple'
-                    : 'bg-[#262626BF]/10 hover:bg-[#262626BF]/20'
+            filteredCompanies.map(([name, count]) => {
+              const isSelected = selectedCompany === name.toLowerCase();
+              return (
+                <button
+                  key={name}
+                  type="button"
+                  onClick={() => {
+                    onCompanySelect?.(isSelected ? null : name.toLowerCase());
+                  }}
+                  className={`group flex items-center gap-2 px-2 py-1 rounded-md border font-mono text-[11px] uppercase tracking-wider transition-all ${
+                    isSelected
+                      ? "bg-neon/10 border-neon/50 text-neon shadow-neon-sm"
+                      : "bg-htb-bg border-htb-border text-htb-muted hover:border-htb-border-hover hover:text-htb-text"
                   }`}
-                onClick={() => {
-                  const isCurrentlySelected = selectedCompany === name.toLowerCase();
-                  onCompanySelect?.(isCurrentlySelected ? null : name.toLowerCase());
-                }}
-              >
-                <span className={`text-sm font-medium capitalize ${selectedCompany === name.toLowerCase()
-                    ? 'text-purple'
-                    : 'group-hover:text-purple'
-                  }`}>
-                  {name}
-                </span>
-                <span className={`text-xs px-2 py-1 rounded-full text-white ${selectedCompany === name.toLowerCase()
-                    ? 'bg-purple'
-                    : 'bg-purple'
-                  }`}>
-                  {count}
-                </span>
-              </div>
-            ))
+                >
+                  <span className="capitalize">{name}</span>
+                  <span
+                    className={`px-1.5 py-0.5 rounded text-[10px] font-semibold tabular-nums ${
+                      isSelected
+                        ? "bg-neon text-htb-bg"
+                        : "bg-htb-panel-2 text-htb-muted group-hover:bg-htb-panel-hover"
+                    }`}
+                  >
+                    {count}
+                  </span>
+                </button>
+              );
+            })
           )}
         </div>
       </div>
@@ -140,4 +144,4 @@ const Sidebar = ({ selectedCompany, onCompanySelect }: {
   );
 };
 
-export default Sidebar; 
+export default Sidebar;

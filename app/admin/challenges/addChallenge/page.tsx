@@ -339,28 +339,31 @@ const AddChallenge = () => {
   };
 
   return (
-    <section className="bg-white min-h-screen p-7">
+    <section className="bg-htb-bg min-h-screen p-7">
       <div>
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href="/admin" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-htb-text-dim" />
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin/challenges">
+              <BreadcrumbLink href="/admin/challenges" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">
                 Challenges
               </BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
+            <BreadcrumbSeparator className="text-htb-text-dim" />
             <BreadcrumbItem>
-              <BreadcrumbPage>Add Challenge</BreadcrumbPage>
+              <BreadcrumbPage className="text-neon font-mono text-xs uppercase tracking-widest">Add Challenge</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </div>
 
-      <h1 className="text-2xl font-bold mt-6 mb-4">Create New Challenge</h1>
+      <div className="mt-6 mb-5">
+        <span className="terminal-eyebrow">create.challenge</span>
+        <h1 className="heading-display text-2xl text-htb-text mt-1">Create New Challenge</h1>
+      </div>
 
       <Card>
         <CardContent className="pt-6">
@@ -660,7 +663,7 @@ const AddChallenge = () => {
                         onChange={field.onChange}
                         placeholder="Paste your code template here..."
                         rows={12}
-                        className="w-full border rounded-md px-3 py-2 text-sm font-mono resize-vertical focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-50"
+                        className="w-full border border-htb-border rounded-md px-3 py-2 text-sm font-mono resize-vertical focus:outline-none focus:ring-1 focus:ring-neon/40 focus:border-neon/60 bg-htb-bg text-htb-text"
                       />
                     </FormControl>
                     <FormMessage />
@@ -676,19 +679,19 @@ const AddChallenge = () => {
                   <FormItem>
                     <FormLabel>Upload Files <span className="text-red-500">*</span></FormLabel>
                     <FormControl>
-                      <div className="border-2 border-dashed rounded-md p-4 text-center">
-                        <p className="text-gray-500">Upload any type of file</p>
+                      <div className="border-2 border-dashed border-htb-border rounded-md p-4 text-center">
+                        <p className="text-htb-muted text-sm font-mono uppercase tracking-wider">Upload any type of file</p>
 
                         {/* Display uploaded files */}
                         <div className="mt-2 space-y-2">
                           {(field.value || []).map((file, index) => (
                             <div
                               key={index}
-                              className="flex items-center justify-between bg-gray-50 p-1 rounded"
+                              className="flex items-center justify-between bg-htb-bg/40 border border-htb-border p-2 rounded-md"
                             >
                               <div className="flex items-center gap-2">
-                                <FileText className="w-4 h-4 text-blue-500" />
-                                <span className="text-sm">{file.name}</span>
+                                <FileText className="w-4 h-4 text-neon" />
+                                <span className="text-sm text-htb-text">{file.name}</span>
                               </div>
                               <Button
                                 type="button"
@@ -701,7 +704,7 @@ const AddChallenge = () => {
                                   field.onChange(newFiles);
                                 }}
                               >
-                                <X size={16} className="w-4 h-4 text-red-500" />
+                                <X size={16} className="w-4 h-4 text-danger" />
                               </Button>
                             </div>
                           ))}
@@ -755,7 +758,7 @@ const AddChallenge = () => {
                       </div>
                     </FormControl>
                     <FormMessage />
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p className="text-xs text-htb-text-dim mt-2 font-mono uppercase tracking-wider">
                       Any file type is allowed
                     </p>
                   </FormItem>
@@ -764,9 +767,9 @@ const AddChallenge = () => {
 
               {/* Answer File Upload (PDF) */}
               <div className="space-y-2">
-                <label className="text-sm font-medium">
+                <label className="text-sm font-medium text-htb-text">
                   Add Answer File{" "}
-                  <span className="text-gray-400 font-normal">(PDF only)</span>
+                  <span className="text-htb-text-dim font-normal text-xs font-mono">(PDF only)</span>
                 </label>
 
                 {/* Hidden file input */}
@@ -781,32 +784,32 @@ const AddChallenge = () => {
 
                 {form.watch("answerFileUrl") ? (
                   /* Uploaded state */
-                  <div className="border border-green-200 bg-green-50 rounded-lg p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
-                          <FileCheck className="w-5 h-5 text-green-600" />
+                  <div className="border border-neon/30 bg-neon/5 rounded-md p-4">
+                    <div className="flex items-center justify-between gap-3 flex-wrap">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="shrink-0 w-10 h-10 rounded-md border border-neon/30 bg-neon/10 flex items-center justify-center">
+                          <FileCheck className="w-5 h-5 text-neon" />
                         </div>
-                        <div>
-                          <p className="text-sm font-medium text-green-800">
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-htb-text truncate">
                             {answerFileName || "Answer File"}
                           </p>
                           <a
                             href={form.watch("answerFileUrl")}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs text-green-600 hover:underline"
+                            className="text-xs text-neon hover:text-neon-green-dim font-mono uppercase tracking-wider"
                           >
                             View uploaded PDF
                           </a>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 shrink-0">
                         <Button
                           type="button"
-                          variant="outline"
+                          variant="outline-dim"
                           size="sm"
-                          className="text-gray-500 hover:text-purple-600 border-gray-200"
+                          className="font-mono text-[11px] uppercase tracking-widest"
                           onClick={() => answerFileInputRef.current?.click()}
                           disabled={answerFileUploading}
                         >
@@ -817,7 +820,7 @@ const AddChallenge = () => {
                           type="button"
                           variant="ghost"
                           size="sm"
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                          className="text-danger hover:text-danger hover:bg-danger/10"
                           onClick={removeAnswerFile}
                           disabled={answerFileUploading}
                         >
@@ -828,28 +831,28 @@ const AddChallenge = () => {
                   </div>
                 ) : answerFileUploading ? (
                   /* Uploading state */
-                  <div className="border-2 border-dashed border-purple-300 bg-purple-50 rounded-lg p-6 flex flex-col items-center justify-center">
-                    <Loader2 className="w-8 h-8 text-purple-500 animate-spin mb-2" />
-                    <p className="text-sm font-medium text-purple-600">
+                  <div className="border-2 border-dashed border-neon/30 bg-neon/5 rounded-md p-6 flex flex-col items-center justify-center">
+                    <Loader2 className="w-7 h-7 text-neon animate-spin mb-2" />
+                    <p className="text-sm font-medium text-neon font-mono uppercase tracking-wider">
                       Uploading answer file...
                     </p>
-                    <p className="text-xs text-purple-400 mt-1">
+                    <p className="text-xs text-htb-muted mt-1">
                       Please wait while the file is being uploaded
                     </p>
                   </div>
                 ) : (
                   /* Empty / upload state */
                   <div
-                    className="border-2 border-dashed border-gray-200 hover:border-purple-300 rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer transition-colors group"
+                    className="border-2 border-dashed border-htb-border hover:border-neon/40 rounded-md p-6 flex flex-col items-center justify-center cursor-pointer transition-colors group bg-htb-bg/40"
                     onClick={() => answerFileInputRef.current?.click()}
                   >
-                    <div className="w-12 h-12 rounded-full bg-gray-100 group-hover:bg-purple-100 flex items-center justify-center mb-3 transition-colors">
-                      <Upload className="w-5 h-5 text-gray-400 group-hover:text-purple-500 transition-colors" />
+                    <div className="w-12 h-12 rounded-md border border-htb-border bg-htb-panel-2 group-hover:border-neon/40 group-hover:bg-neon/10 flex items-center justify-center mb-3 transition-colors">
+                      <Upload className="w-5 h-5 text-htb-text-dim group-hover:text-neon transition-colors" />
                     </div>
-                    <p className="text-sm font-medium text-gray-600 group-hover:text-purple-600 transition-colors">
+                    <p className="text-sm font-medium text-htb-muted group-hover:text-neon transition-colors font-mono uppercase tracking-wider">
                       Click to upload answer file
                     </p>
-                    <p className="text-xs text-gray-400 mt-1">
+                    <p className="text-xs text-htb-text-dim mt-1 font-mono uppercase tracking-wider">
                       PDF format only, max 20MB
                     </p>
                   </div>
@@ -859,65 +862,65 @@ const AddChallenge = () => {
               {/* Flags */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium">Add Flag</label>
+                  <label className="text-sm font-medium text-htb-text">Add Flag</label>
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="ghost-neon"
                     size="sm"
                     onClick={addFlag}
-                    className="flex items-center gap-1"
+                    className="flex items-center gap-1 font-mono text-[11px] uppercase tracking-widest"
                   >
                     <Plus size={14} /> Add Flag
                   </Button>
                 </div>
                 {flags.map((flag, index) => (
-                  <div key={index} className="border rounded-md p-4 space-y-3 bg-gray-50">
+                  <div key={index} className="border border-htb-border rounded-md p-4 space-y-3 bg-htb-bg/40">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-600">Flag {index + 1}</span>
+                      <span className="terminal-eyebrow">flag.{index + 1}</span>
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
                         onClick={() => removeFlag(index)}
-                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        className="text-danger hover:text-danger hover:bg-danger/10"
                       >
                         <Minus size={14} />
                       </Button>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-medium text-gray-500">Question</label>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-mono uppercase tracking-widest font-semibold text-htb-muted">Question</label>
                       <textarea
                         value={flag.question}
                         onChange={(e) => updateFlag(index, "question", e.target.value)}
                         placeholder="Enter flag question"
                         rows={2}
-                        className="w-full border rounded-md px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full border border-htb-border rounded-md px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-neon/40 focus:border-neon/60 bg-htb-bg text-htb-text"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-medium text-gray-500">Answer</label>
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-mono uppercase tracking-widest font-semibold text-htb-muted">Answer</label>
                       <textarea
                         value={flag.answer}
                         onChange={(e) => updateFlag(index, "answer", e.target.value)}
                         placeholder="Enter flag answer"
                         rows={2}
-                        className="w-full border rounded-md px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full border border-htb-border rounded-md px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-neon/40 focus:border-neon/60 bg-htb-bg text-htb-text"
                       />
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="flex gap-4">
-                <Button type="submit" className="bg-purple-600 text-white" disabled={loading} >
-                   {loading ? "Creating..." : "Create Challenge"}
+              <div className="flex gap-3">
+                <Button type="submit" variant="neon" disabled={loading} className="font-mono text-xs uppercase tracking-widest">
+                  {loading ? "Creating..." : "Create Challenge"}
                 </Button>
                 <Button
-                  variant="outline"
+                  variant="outline-dim"
                   type="button"
-                  className="bg-orange-100 border-orange-200"
                   onClick={() => router.push("/admin/challenges")}
                   disabled={loading}
+                  className="font-mono text-xs uppercase tracking-widest"
                 >
                   Cancel
                 </Button>

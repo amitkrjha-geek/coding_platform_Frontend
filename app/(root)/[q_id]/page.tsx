@@ -305,14 +305,13 @@ const QuestionPage = () => {
   };
 
   return (
-    <div className="h-[calc(100vh-56px)] max-w-8xl mx-auto px-4 md:px-7 py-2">
+    <div className="h-[calc(100vh-64px)] max-w-8xl mx-auto px-4 md:px-6 py-3 bg-htb-bg">
       {/* Mobile Layout */}
-      <div className="flex lg:hidden flex-col gap-4 h-full">
-        <div className="bg-white rounded-lg shadow-sm overflow-y-auto">
+      <div className="flex lg:hidden flex-col gap-3 h-full">
+        <div className="panel overflow-y-auto">
           {renderTabContent()}
         </div>
-        <div className="bg-white rounded-lg shadow-sm flex-1" id="mobile-editor-container">
-          {/* Passed targeted ID for mobile fullscreen */}
+        <div className="panel flex-1 flex flex-col" id="mobile-editor-container">
           {renderEditor("mobile-editor-container")}
         </div>
       </div>
@@ -324,62 +323,85 @@ const QuestionPage = () => {
         gutterSize={8}
         className="hidden lg:flex h-full"
       >
-        <div className="bg-white rounded-lg shadow-sm overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
+        <div className="panel overflow-y-auto scrollbar-thin scrollbar-thumb-rounded-full scrollbar-track-rounded-full">
           {renderTabContent()}
         </div>
-        <div className="bg-white rounded-lg shadow-sm flex flex-col" id="desktop-editor-container">
-          {/* Passed targeted ID for desktop fullscreen */}
+        <div className="panel flex flex-col" id="desktop-editor-container">
           {renderEditor("desktop-editor-container")}
         </div>
       </Split>
 
       {/* CTF FLAG SUBMISSION MODAL */}
       {showFlagModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6 m-4 border border-gray-100">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-bold text-gray-800">🚩 Capture The Flag</h2>
-              <button onClick={() => setShowFlagModal(false)} className="text-gray-400 hover:text-gray-600">
-                ✕
-              </button>
-            </div>
-            
-            <p className="text-sm text-gray-600 mb-6">
-              Review your execution logs. Based on the data you intercepted, answer the following security questions to prove your exploit worked.
-            </p>
-
-            <div className="space-y-4">
-              {challenge?.flags?.map((flag: any) => (
-                <div key={flag._id} className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700">
-                    {flag.question}
-                  </label>
-                  <input
-                    type="text"
-                    placeholder="Enter the captured flag..."
-                    className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple focus:border-purple outline-none transition-all"
-                    value={flagAnswers[flag._id] || ''}
-                    onChange={(e) => setFlagAnswers({...flagAnswers, [flag._id]: e.target.value})}
-                  />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-htb-bg-deep/80 backdrop-blur-sm p-4">
+          <div className="relative w-full max-w-md panel shadow-panel-lg overflow-hidden">
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neon/60 to-transparent" />
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-5">
+                <div>
+                  <span className="terminal-eyebrow">capture.the.flag</span>
+                  <h2 className="text-xl font-semibold text-htb-text mt-1">
+                    Submit Your Flags
+                  </h2>
                 </div>
-              ))}
-            </div>
+                <button
+                  onClick={() => setShowFlagModal(false)}
+                  aria-label="Close"
+                  className="text-htb-text-dim hover:text-neon transition-colors w-8 h-8 flex items-center justify-center rounded-md hover:bg-neon/5"
+                >
+                  ✕
+                </button>
+              </div>
 
-            <div className="flex gap-3 mt-8">
-              <Button 
-                variant="outline" 
-                className="flex-1"
-                onClick={() => setShowFlagModal(false)}
-              >
-                Cancel
-              </Button>
-              <Button 
-                className="flex-1 bg-purple text-white hover:bg-purple/90"
-                onClick={handleVerifyFlags}
-                disabled={isVerifyingFlags || Object.keys(flagAnswers).length !== challenge?.flags?.length}
-              >
-                {isVerifyingFlags ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify Flags"}
-              </Button>
+              <p className="text-sm text-htb-muted mb-5 leading-relaxed">
+                Review your execution logs. Based on the data you intercepted,
+                answer the following security questions to prove your exploit
+                worked.
+              </p>
+
+              <div className="space-y-4">
+                {challenge?.flags?.map((flag: any) => (
+                  <div key={flag._id} className="space-y-2">
+                    <label className="text-xs font-mono uppercase tracking-widest text-htb-muted">
+                      {flag.question}
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter the captured flag..."
+                      className="w-full px-3 py-2.5 rounded-md border border-htb-border bg-htb-bg text-htb-text font-mono text-sm placeholder:text-htb-text-dim hover:border-htb-border-hover focus:border-neon/60 focus:ring-1 focus:ring-neon/40 outline-none transition-all"
+                      value={flagAnswers[flag._id] || ''}
+                      onChange={(e) =>
+                        setFlagAnswers({ ...flagAnswers, [flag._id]: e.target.value })
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <Button
+                  variant="outline-dim"
+                  className="flex-1"
+                  onClick={() => setShowFlagModal(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="neon"
+                  className="flex-1"
+                  onClick={handleVerifyFlags}
+                  disabled={
+                    isVerifyingFlags ||
+                    Object.keys(flagAnswers).length !== challenge?.flags?.length
+                  }
+                >
+                  {isVerifyingFlags ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    "Verify Flags"
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -389,48 +411,42 @@ const QuestionPage = () => {
 
   function renderTabContent() {
     return (
-      <div className="h-full">
-        <div className="sticky top-0 bg-white border-b border-gray-200 z-10">
+      <div className="h-full flex flex-col">
+        <div className="sticky top-0 z-10 bg-htb-panel/95 backdrop-blur border-b border-htb-border">
           <Tabs value={activeTab} onValueChange={(value: string) => setActiveTab(value as TabValue)}>
-            <TabsList className="bg-transparent p-2">
+            <TabsList className="bg-transparent border-0 rounded-none p-0 px-2 h-11">
               <TabsTrigger
                 value="description"
-                className="tabs-trigger-active"
+                className="rounded-none px-4 h-11 font-mono text-[11px] uppercase tracking-widest text-htb-muted hover:text-htb-text border-b-2 border-transparent data-[state=active]:bg-transparent data-[state=active]:text-neon data-[state=active]:border-neon data-[state=active]:shadow-none"
               >
                 Description
               </TabsTrigger>
-              <TabsTrigger value="logs" className="tabs-trigger-active">
+              <TabsTrigger
+                value="logs"
+                className="rounded-none px-4 h-11 font-mono text-[11px] uppercase tracking-widest text-htb-muted hover:text-htb-text border-b-2 border-transparent data-[state=active]:bg-transparent data-[state=active]:text-neon data-[state=active]:border-neon data-[state=active]:shadow-none"
+              >
                 Logs
               </TabsTrigger>
               {challenge?.answerFileUrl && (
                 <TabsTrigger
                   value="solution-hint"
-                  className="tabs-trigger-active"
+                  className="rounded-none px-4 h-11 font-mono text-[11px] uppercase tracking-widest text-htb-muted hover:text-htb-text border-b-2 border-transparent data-[state=active]:bg-transparent data-[state=active]:text-neon data-[state=active]:border-neon data-[state=active]:shadow-none"
                 >
                   Solution Hint
                 </TabsTrigger>
               )}
-              {/* <TabsTrigger
-                value="accepted"
-                className="tabs-trigger-active"
-              >
-                <div className="flex items-center">
-                  <History className="size-3.5 mr-1 -mb-[1.75px]" />
-                  <span>Accepted</span>
-                </div>
-              </TabsTrigger> */}
             </TabsList>
           </Tabs>
-        </div>          
-        <div className="px-6 pb-6 pt-3 overflow-y-auto">
+        </div>
+        <div className="px-6 pb-6 pt-4 overflow-y-auto flex-1">
           {activeTab === "description" && (
             challengesStatus === 'loading' ? (
               <div className="animate-pulse space-y-4">
-                <div className="h-8 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-8 bg-htb-panel-2 rounded w-3/4"></div>
                 <div className="space-y-3">
-                  <div className="h-4 bg-gray-200 rounded"></div>
-                  <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                  <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+                  <div className="h-4 bg-htb-panel-2 rounded"></div>
+                  <div className="h-4 bg-htb-panel-2 rounded w-5/6"></div>
+                  <div className="h-4 bg-htb-panel-2 rounded w-4/6"></div>
                 </div>
               </div>
             ) : (
@@ -455,27 +471,33 @@ const QuestionPage = () => {
     return (
       <div className="flex flex-col h-full">
         {/* Top toolbar */}
-        <div className="border-b border-gray-200 p-2">
-          <div className="flex items-center justify-between">
-            <Select value={selectedLanguage} onValueChange={handleLanguageChange}>
-              <SelectTrigger className="w-[180px] h-8">
-                <SelectValue placeholder="Select Language" />
-              </SelectTrigger>
-              <SelectContent>
-                {languages.map((language) => (
-                  <SelectItem key={language.id} value={language.id}>
-                    {language.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <div className="border-b border-htb-border bg-htb-panel/60 px-2 py-1.5 h-11 flex items-center">
+          <div className="flex items-center justify-between w-full gap-2">
+            <div className="flex items-center gap-2">
+              <span className="hidden sm:inline-flex items-center gap-1.5 px-2 py-1 rounded border border-htb-border bg-htb-bg/40 text-[10px] font-mono uppercase tracking-widest text-htb-text-dim">
+                <span className={`w-1.5 h-1.5 rounded-full ${isRunningAgent ? 'bg-neon shadow-neon-sm animate-glow-pulse' : 'bg-htb-text-dim'}`} />
+                {isRunningAgent ? 'Agent Live' : 'Agent Idle'}
+              </span>
+              <Select value={selectedLanguage} onValueChange={handleLanguageChange}>
+                <SelectTrigger className="w-[140px] h-8 font-mono text-xs uppercase tracking-wider">
+                  <SelectValue placeholder="Select Language" />
+                </SelectTrigger>
+                <SelectContent>
+                  {languages.map((language) => (
+                    <SelectItem key={language.id} value={language.id}>
+                      {language.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
             <TooltipProvider>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant={"ghost"} size={"icon"} className='h-8 w-8'>
-                      <Webcam className={`size-6 ${isRunningAgent ? "text-green-500" : "text-red-500"}`} />
+                    <Button variant={"ghost"} size={"icon"} className="h-8 w-8 text-htb-muted hover:text-neon hover:bg-neon/5">
+                      <Webcam className={`size-4 ${isRunningAgent ? "text-neon" : "text-danger"}`} />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
@@ -484,7 +506,7 @@ const QuestionPage = () => {
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button variant={"ghost"} size={"icon"} onClick={handleReset} className='h-8 w-8'>
+                    <Button variant={"ghost"} size={"icon"} onClick={handleReset} className="h-8 w-8 text-htb-muted hover:text-neon hover:bg-neon/5">
                       <RotateCcw className="size-4" />
                     </Button>
                   </TooltipTrigger>
@@ -499,7 +521,7 @@ const QuestionPage = () => {
                       variant={"ghost"}
                       size={"icon"}
                       onClick={handleFormat}
-                      className='h-8 w-8'
+                      className="h-8 w-8 text-htb-muted hover:text-neon hover:bg-neon/5"
                     >
                       <Code2 className="size-4" />
                     </Button>
@@ -509,7 +531,6 @@ const QuestionPage = () => {
                   </TooltipContent>
                 </Tooltip>
 
-                {/* Fullscreen toggle (Dynamic targeted ID) */}
                 <div className="hidden lg:block">
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -517,7 +538,7 @@ const QuestionPage = () => {
                         variant={"ghost"}
                         size={"icon"}
                         onClick={() => handleFullScreen(containerId)}
-                        className='h-8 w-8'
+                        className="h-8 w-8 text-htb-muted hover:text-neon hover:bg-neon/5"
                       >
                         {isFullscreen ? <Minimize2 className="size-4" /> : <Maximize2 className="size-4" />}
                       </Button>
@@ -533,17 +554,18 @@ const QuestionPage = () => {
         </div>
 
         {/* Monaco Editor */}
-        <div className="flex-1 relative min-h-[23rem] md:min-h-[29rem] lg:min-h-[auto]">
+        <div className="flex-1 relative min-h-[23rem] md:min-h-[29rem] lg:min-h-[auto] bg-htb-bg-deep">
           <Editor
             height="100%"
             defaultLanguage={selectedLanguage}
             language={selectedLanguage}
-            theme="vs-light"
+            theme="vs-dark"
             className="pt-1"
             value={code}
             onChange={(value) => setCode(value ?? '')}
             options={{
               fontSize: 14,
+              fontFamily: '"JetBrains Mono", ui-monospace, monospace',
               lineNumbers: 'on',
               automaticLayout: true,
               scrollBeyondLastLine: false,
@@ -558,42 +580,45 @@ const QuestionPage = () => {
               lineHeight: 21,
             }}
             loading={
-              <div className="flex items-center justify-center h-full">
-                Loading editor...
+              <div className="flex items-center justify-center h-full text-htb-muted font-mono text-sm">
+                <Loader2 className="w-4 h-4 animate-spin mr-2" /> Loading editor...
               </div>
             }
           />
         </div>
 
         {/* Bottom toolbar */}
-        <div className="flex justify-between !p-2 border-t">
-          <div className="flex gap-x-3">
+        <div className="flex justify-between p-2 border-t border-htb-border bg-htb-panel/60">
+          <div className="flex gap-x-2">
             <Button
-              className="bg-purple h-8 text-white rounded-lg hover:bg-purple/90 transition-colors"
+              variant="outline-dim"
+              className="h-8 font-mono text-[11px] uppercase tracking-widest"
               onClick={handleSubmitCompile}
               size="sm"
               disabled={isCompiling || isCodePristineTemplate}
             >
-              {isCompiling ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : "Compile"}
+              {isCompiling ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Compile"}
             </Button>
           </div>
           <div className="flex justify-end">
-            <div className="flex gap-x-1 sm:gap-x-2 lg:gap-x-3">
+            <div className="flex gap-x-2">
               <Button
-                className="bg-purple h-8 text-white rounded-lg hover:bg-purple/90 transition-colors"
+                variant="ghost-neon"
+                className="h-8 font-mono text-[11px] uppercase tracking-widest"
                 onClick={handleRunAgent}
                 size="sm"
                 disabled={isRunning}
               >
-                {isRunning ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : "Run"}
+                {isRunning ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Run"}
               </Button>
               <Button
-                className="bg-purple h-8 text-white rounded-lg hover:bg-purple/90 transition-colors"
+                variant="neon"
+                className="h-8 font-mono text-[11px] uppercase tracking-widest"
                 onClick={handleSubmitCode}
                 size="sm"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : "Submit Challenge"}
+                {isSubmitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Submit"}
               </Button>
             </div>
           </div>

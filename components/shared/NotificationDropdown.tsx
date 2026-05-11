@@ -77,40 +77,59 @@ const NotificationDropdown = ({ isOpen, onClose }: NotificationDropdownProps) =>
 
           {/* Dropdown */}
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-            className="absolute top-full right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute top-full right-0 mt-3 w-[22rem] sm:w-96 rounded-lg border border-htb-border bg-htb-panel shadow-panel-lg z-50 overflow-hidden"
           >
-            <div className="max-h-[480px] overflow-y-auto scrollbar-hide">
-              {notifications.map((notification) => (
-                <div
-                  key={notification.id}
-                  className="flex items-start gap-3 p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-0"
-                >
-                  <div className={`shrink-0 mt-1 ${notification.icon === 'trophy' ? 'text-amber-400' : 'text-purple'}`}>
-                    {notification.icon === 'trophy' ? <Trophy size={20} /> : <Info size={20} />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-900">{notification.message}</p>
-                    <p className="text-xs text-gray-500 mt-1">{notification.timeAgo}</p>
-                  </div>
-                  {notification.points && (
-                    <div className="shrink-0 flex items-center gap-1">
-                      <span className="text-amber-400 text-sm">+</span>
-                      <span className="bg-amber-400 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                        {notification.points.replace('+', '')}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ))}
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-htb-border bg-htb-bg/40">
+              <span className="terminal-eyebrow">Notifications</span>
+              <span className="text-[10px] font-mono text-htb-text-dim uppercase tracking-widest">
+                {notifications.length} new
+              </span>
             </div>
-            <div className="p-3 text-center border-t border-gray-100">
+
+            <div className="max-h-[420px] overflow-y-auto scrollbar-hide">
+              {notifications.map((notification) => {
+                const isTrophy = notification.icon === 'trophy';
+                return (
+                  <div
+                    key={notification.id}
+                    className="group relative flex items-start gap-3 px-4 py-3 cursor-pointer border-b border-htb-border last:border-0 hover:bg-neon/5 transition-colors"
+                  >
+                    {/* unread dot */}
+                    <span className="absolute left-1.5 top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-neon shadow-neon-sm opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                    <div
+                      className={`shrink-0 mt-0.5 flex items-center justify-center w-8 h-8 rounded-md border ${
+                        isTrophy
+                          ? 'border-warn/30 bg-warn/10 text-warn'
+                          : 'border-neon/30 bg-neon/10 text-neon'
+                      }`}
+                    >
+                      {isTrophy ? <Trophy size={14} /> : <Info size={14} />}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-htb-text leading-snug">{notification.message}</p>
+                      <p className="text-[11px] font-mono uppercase tracking-wider text-htb-text-dim mt-1">
+                        {notification.timeAgo}
+                      </p>
+                    </div>
+                    {notification.points && (
+                      <div className="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full border border-neon/30 bg-neon/10 font-mono text-[11px] font-semibold text-neon">
+                        +{notification.points.replace('+', '')}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="p-2 border-t border-htb-border">
               <button
                 onClick={handleViewAll}
-                className="text-sm text-gray-500 hover:text-purple"
+                className="w-full text-center text-[11px] font-mono uppercase tracking-widest text-htb-muted hover:text-neon py-2 rounded-md hover:bg-neon/5 transition-colors"
               >
                 View all notifications
               </button>
@@ -122,4 +141,4 @@ const NotificationDropdown = ({ isOpen, onClose }: NotificationDropdownProps) =>
   );
 };
 
-export default NotificationDropdown; 
+export default NotificationDropdown;

@@ -110,34 +110,36 @@ const CouponFormContent = () => {
       .finally(() => setLoading(false));
   };
 
+  const labelClass = "text-htb-muted font-mono text-[11px] uppercase tracking-widest font-semibold";
+
   return (
-    <div className=" flex items-center justify-center py-4 bg-gray-50">
+    <div className="flex items-center justify-center py-4">
       <form
         onSubmit={handleSubmit}
-        className="w-full min-w-xl bg-white rounded-xl border px-8 py-6 space-y-6"
+        className="w-full min-w-xl panel px-8 py-6 space-y-5"
       >
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700">Coupon Code</label>
+          <div className="space-y-1.5">
+            <label className={labelClass}>Coupon Code</label>
             <Input
               placeholder="Enter Code"
               value={formData?.code ?? ''}
               onChange={(e) =>
                 setFormData({ ...formData, code: e.target.value.toUpperCase() })
               }
-              className="w-full transition-all duration-200 focus:ring-2 focus:ring-coupon-primary/20"
+              className="w-full font-mono uppercase tracking-wider"
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-bold text-gray-700">Category</label>
+          <div className="space-y-1.5">
+            <label className={labelClass}>Category</label>
             <Select
               value={formData?.category ?? ''}
               onValueChange={(value) =>
                 setFormData({ ...formData, category: value })
               }
             >
-              <SelectTrigger className="w-full transition-all duration-200 focus:ring-2 focus:ring-coupon-primary/20">
+              <SelectTrigger className="w-full font-mono text-xs uppercase tracking-wider">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -152,8 +154,8 @@ const CouponFormContent = () => {
 
         <div className="grid grid-cols-1 gap-4">
           <div className="flex items-center gap-4">
-            <div className="flex-1 space-y-2">
-              <label className="text-sm font-bold text-gray-700">Discount</label>
+            <div className="flex-1 space-y-1.5">
+              <label className={labelClass}>Discount</label>
               <Input
                 type="number"
                 min="0"
@@ -162,7 +164,7 @@ const CouponFormContent = () => {
                 onChange={(e) =>
                   setFormData({ ...formData, discountAmount: e.target.value })
                 }
-                className="w-full transition-all duration-200 focus:ring-2 focus:ring-coupon-primary/20"
+                className="w-full"
               />
             </div>
             {/* <div className="flex items-center h-full pt-8">
@@ -202,26 +204,29 @@ const CouponFormContent = () => {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-bold text-gray-700">Details</label>
+        <div className="space-y-1.5">
+          <label className={labelClass}>Details</label>
           <Textarea
             placeholder="Details"
             value={formData?.details ?? ''}
             onChange={(e) =>
               setFormData({ ...formData, details: e.target.value })
             }
-            className="min-h-[100px] transition-all duration-200 focus:ring-2 focus:ring-coupon-primary/20"
+            className="min-h-[100px]"
           />
         </div>
 
-        <div className="flex gap-4 pt-4">
+        <div className="flex gap-3 pt-2">
           <button
             type="submit"
-            className="flex-1 bg-purple  hover:bg-purple/90 text-white px-4 py-2 rounded-lg transition-all duration-200  focus:ring-2 focus:ring-[#742193]/20 active:scale-[0.98]"
+            className="flex-1 bg-neon hover:bg-neon-green-dim hover:shadow-neon-sm hover:-translate-y-0.5 text-htb-bg px-4 py-2.5 rounded-md transition-all disabled:opacity-50 font-mono text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2"
             disabled={loading}
           >
             {loading ? (
-              <Loader2 className="h-5 w-5 animate-spin text-white" />
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Adding...</span>
+              </>
             ) : (
               "Add Coupon"
             )}
@@ -229,7 +234,7 @@ const CouponFormContent = () => {
           <button
             type="button"
             onClick={handleCancel}
-            className="flex-1 bg-[#FFCA74] text-gray-800 px-4 py-2 rounded-lg transition-all duration-200 hover:bg-[#FFCA74]/90 focus:ring-2 focus:ring-[#FFCA74]/20 active:scale-[0.98]"
+            className="flex-1 border border-htb-border bg-htb-panel text-htb-muted hover:text-neon hover:border-neon/40 px-4 py-2.5 rounded-md transition-colors font-mono text-xs uppercase tracking-widest font-semibold"
           >
             Cancel
           </button>
@@ -241,7 +246,7 @@ const CouponFormContent = () => {
 
 const CouponForm = () => {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center py-4">Loading...</div>}>
+    <Suspense fallback={<div className="flex items-center justify-center py-4 text-htb-text-dim font-mono uppercase tracking-widest">Loading...</div>}>
       <CouponFormContent />
     </Suspense>
   );

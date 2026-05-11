@@ -167,46 +167,48 @@ const EditPlanForm = ({ initialData }: EditPlanFormProps) => {
     }));
   };
 
+  const labelClass = "text-htb-muted font-mono text-[11px] uppercase tracking-widest font-semibold";
+
   return (
-    <div className="flex items-center justify-center bg-gray-50 py-4">
+    <div className="flex items-center justify-center py-4">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         className="w-full min-w-xl"
       >
-        <Card className="p-6 space-y-6 rounded-xl border bg-white">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <Card className="p-6 space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {/* Plan Name */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Plan Name</label>
+            <div className="space-y-1.5">
+              <label className={labelClass}>Plan Name</label>
               <Input
                 name="name"
                 placeholder="Enter Plan Name"
                 value={formData?.name}
                 onChange={handleInputChange}
-                className="w-full transition-all duration-200 focus:ring-2 focus:ring-purple-500"
+                className="w-full"
               />
             </div>
 
             {/* Popular Plan Toggle */}
             <div className="space-y-2">
-              <label className="flex items-center space-x-2">
+              <label className="flex items-center space-x-2 cursor-pointer">
                 <input
                   type="checkbox"
                   name="popular"
                   checked={formData?.popular || false}
                   onChange={handleCheckboxChange}
-                  className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                  className="rounded border-htb-border bg-htb-bg text-neon focus:ring-neon/40 accent-neon"
                 />
-                <span className="text-sm font-medium text-gray-700">Mark as Popular Plan</span>
+                <span className="text-sm text-htb-text">Mark as Popular Plan</span>
               </label>
             </div>
 
             {/* Price and Price Mode */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Price</label>
+              <div className="space-y-1.5">
+                <label className={labelClass}>Price</label>
                 <Input
                   name="price"
                   placeholder="Enter Amount"
@@ -214,13 +216,13 @@ const EditPlanForm = ({ initialData }: EditPlanFormProps) => {
                   type="number"
                   value={formData?.price}
                   onChange={handleInputChange}
-                  className="w-full transition-all duration-200 focus:ring-2 focus:ring-purple-500"
+                  className="w-full"
                 />
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">Price Mode</label>
+              <div className="space-y-1.5">
+                <label className={labelClass}>Price Mode</label>
                 <Select value={formData.priceMode} onValueChange={handleSelectChange}>
-                  <SelectTrigger className="w-full transition-all duration-200 focus:ring-2 focus:ring-purple-500">
+                  <SelectTrigger className="w-full font-mono text-xs uppercase tracking-wider">
                     <SelectValue placeholder="Select price mode" />
                   </SelectTrigger>
                   <SelectContent>
@@ -234,48 +236,48 @@ const EditPlanForm = ({ initialData }: EditPlanFormProps) => {
 
             {/* Date Fields for Subscription Plans */}
             {formData.priceMode !== 'Per Challenge' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">Start Date <span className="text-red-500">*</span></label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 rounded-md border border-sky-400/30 bg-sky-400/5">
+                <div className="space-y-1.5">
+                  <label className={labelClass}>Start Date <span className="text-danger">*</span></label>
                   <Input
                     name="startDate"
                     type="date"
                     value={formData?.startDate}
                     onChange={handleInputChange}
-                    className="w-full transition-all duration-200 focus:ring-2 focus:ring-purple-500"
+                    className="w-full"
                   />
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">End Date <span className="text-red-500">*</span></label>
+                <div className="space-y-1.5">
+                  <label className={labelClass}>End Date <span className="text-danger">*</span></label>
                   <Input
                     name="endDate"
                     type="date"
                     value={formData?.endDate}
                     onChange={handleInputChange}
-                    className="w-full transition-all duration-200 focus:ring-2 focus:ring-purple-500"
+                    className="w-full"
                   />
                 </div>
                 <div className="col-span-1 md:col-span-2">
-                  <p className="text-xs text-blue-600 font-medium">
-                    📅 These dates define the subscription validity period for {formData.priceMode.toLowerCase()} plans
+                  <p className="text-xs text-sky-300 font-mono uppercase tracking-wider">
+                    These dates define the subscription validity period for {formData.priceMode.toLowerCase()} plans
                   </p>
                 </div>
               </div>
             )}
 
             {/* Plan Details */}
-            <div className="space-y-4">
-              <label className="text-sm font-medium text-gray-700">Plan Detail Points</label>
+            <div className="space-y-3">
+              <label className={labelClass}>Plan Detail Points</label>
               <div className="space-y-2">
                 {planDetails.map((detail, index) => (
                   <motion.div
                     key={detail.id}
-                    initial={{ opacity: 0, x: -20 }}
+                    initial={{ opacity: 0, x: -16 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.1 }}
-                    className="flex items-center justify-between bg-gray-50 p-2 rounded-md group"
+                    transition={{ duration: 0.25, delay: index * 0.05 }}
+                    className="flex items-center justify-between bg-htb-bg/40 border border-htb-border p-2.5 rounded-md group"
                   >
-                    <span className="text-sm text-gray-600">{detail.detail}</span>
+                    <span className="text-sm text-htb-text">{detail.detail}</span>
                     <Button
                       type="button"
                       variant="ghost"
@@ -283,7 +285,7 @@ const EditPlanForm = ({ initialData }: EditPlanFormProps) => {
                       onClick={() => handleRemovePoint(detail.id)}
                       className="transition-opacity duration-200"
                     >
-                      <X className="h-4 w-4 text-gray-500 hover:text-red-500" />
+                      <X className="h-4 w-4 text-htb-text-dim hover:text-danger" />
                     </Button>
                   </motion.div>
                 ))}
@@ -293,7 +295,7 @@ const EditPlanForm = ({ initialData }: EditPlanFormProps) => {
                   value={currentDetail}
                   onChange={(e) => setCurrentDetail(e.target.value)}
                   placeholder="Enter detail point"
-                  className="flex-1 transition-all duration-200 focus:ring-2 focus:ring-purple-500"
+                  className="flex-1"
                   onKeyPress={(e) => {
                     if (e.key === 'Enter') {
                       e.preventDefault();
@@ -303,25 +305,27 @@ const EditPlanForm = ({ initialData }: EditPlanFormProps) => {
                 />
                 <Button
                   type="button"
+                  variant="ghost-neon"
                   onClick={handleAddPoint}
-                  className="bg-purple  hover:bg-purple/90 text-white transition-colors duration-200"
+                  className="font-mono text-[11px] uppercase tracking-widest"
                 >
-                  <Plus className="w-4 h-4 mr-1" />
-                  Add Point
+                  <Plus className="w-3.5 h-3.5 mr-1" />
+                  Add
                 </Button>
               </div>
             </div>
 
             {/* Submit and Reset Buttons */}
-            <div className="flex space-x-4 pt-4">
+            <div className="flex space-x-3 pt-2">
               <Button
                 type="submit"
-                className="flex-1 bg-purple  hover:bg-purple/90 text-white transition-colors duration-200 flex items-center justify-center gap-2"
+                variant="neon"
+                className="flex-1 font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-2"
                 disabled={loading}
               >
                 {loading ? (
                   <>
-                    <Loader2 className="h-5 w-5 animate-spin text-white" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     <span>Updating...</span>
                   </>
                 ) : (
@@ -330,9 +334,9 @@ const EditPlanForm = ({ initialData }: EditPlanFormProps) => {
               </Button>
               <Button
                 type="button"
-                variant="secondary"
+                variant="outline-dim"
                 onClick={handleReset}
-                className="flex-1 bg-[#FFCA74] hover:bg-[#ddaa59] text-[#742193] transition-colors duration-200"
+                className="flex-1 font-mono text-xs uppercase tracking-widest"
               >
                 Reset
               </Button>

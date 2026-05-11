@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 import { Plus, Minus } from 'lucide-react';
+import TerminalEyebrow from '@/components/shared/TerminalEyebrow';
 
 const faqs = [
   {
@@ -35,43 +36,75 @@ const Faq = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <div className="space-y-8">
-      <h2 className="text-2xl font-bold text-center">Frequently asked questions</h2>
-      <div className="max-w-3xl mx-auto space-y-4">
-        {faqs.map((faq, index) => (
-          <motion.div
-            key={index}
-            className="border border-gray-200 rounded-lg overflow-hidden"
-            initial={false}
-          >
-            <button
-              className="w-full flex items-center justify-between p-6"
-              onClick={() => setOpenIndex(openIndex === index ? null : index)}
+    <div className="space-y-10">
+      <div className="text-center space-y-3">
+        <TerminalEyebrow className="justify-center inline-flex">
+          knowledge.base
+        </TerminalEyebrow>
+        <h2 className="heading-display text-3xl sm:text-4xl text-htb-text">
+          Frequently asked questions
+        </h2>
+      </div>
+      <div className="max-w-3xl mx-auto space-y-3">
+        {faqs.map((faq, index) => {
+          const isOpen = openIndex === index;
+          return (
+            <motion.div
+              key={index}
+              className={`panel overflow-hidden transition-colors ${
+                isOpen ? 'border-neon/40' : ''
+              }`}
+              initial={false}
             >
-              <span className="font-medium text-left">{faq.question}</span>
-              {openIndex === index ? (
-                <Minus className="w-5 h-5 text-gray-500" />
-              ) : (
-                <Plus className="w-5 h-5 text-gray-500" />
-              )}
-            </button>
-            <AnimatePresence>
-              {openIndex === index && (
-                <motion.div
-                  initial={{ height: 0 }}
-                  animate={{ height: "auto" }}
-                  exit={{ height: 0 }}
-                  className="overflow-hidden"
+              <button
+                className="w-full flex items-center justify-between p-5 sm:p-6 text-left group"
+                onClick={() => setOpenIndex(isOpen ? null : index)}
+              >
+                <span
+                  className={`font-medium pr-4 transition-colors ${
+                    isOpen ? 'text-neon' : 'text-htb-text group-hover:text-neon'
+                  }`}
                 >
-                  <p className="px-6 pb-6 text-gray-600">{faq.answer}</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        ))}
+                  {faq.question}
+                </span>
+                <span
+                  className={`shrink-0 flex items-center justify-center w-8 h-8 rounded-md border transition-all ${
+                    isOpen
+                      ? 'border-neon/40 bg-neon/10 text-neon'
+                      : 'border-htb-border text-htb-muted group-hover:border-neon/40 group-hover:text-neon'
+                  }`}
+                >
+                  {isOpen ? (
+                    <Minus className="w-4 h-4" />
+                  ) : (
+                    <Plus className="w-4 h-4" />
+                  )}
+                </span>
+              </button>
+              <AnimatePresence initial={false}>
+                {isOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                    className="overflow-hidden"
+                  >
+                    <div className="px-5 sm:px-6 pb-6 -mt-1">
+                      <div className="h-px bg-htb-border mb-4" />
+                      <p className="text-htb-muted text-sm leading-relaxed">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          );
+        })}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Faq  
+export default Faq;

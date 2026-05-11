@@ -18,19 +18,18 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({
   className = "",
 }) => {
   return (
-    <div className={`flex justify-between items-center ${className}`}>
+    <div className={`flex justify-between items-center gap-3 flex-wrap ${className}`}>
       <div>
-        <h1 className="mt-2 heading">{title}</h1>
+        <span className="terminal-eyebrow">{title?.toLowerCase().replace(/\s+/g, ".")}</span>
+        <h1 className="heading-display text-2xl text-htb-text mt-0.5">{title}</h1>
       </div>
-      <div className="flex justify-center items-center bg-[#7E22CE] rounded-md">
-        <button
-          onClick={onButtonClick}
-          className="text-[white] p-3 flex justify-center items-center gap-1 font-semibold text-sm flex-row"
-        >
-          {icon}
-          {buttonText}
-        </button>
-      </div>
+      <button
+        onClick={onButtonClick}
+        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-neon text-htb-bg hover:shadow-neon-sm hover:-translate-y-0.5 transition-all font-mono text-xs uppercase tracking-widest font-semibold"
+      >
+        {icon}
+        {buttonText}
+      </button>
     </div>
   );
 };

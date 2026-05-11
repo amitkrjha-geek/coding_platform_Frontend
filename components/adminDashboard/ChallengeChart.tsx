@@ -19,11 +19,11 @@ interface ChallengeChartProps {
 
 export default function ChallengeChart({ data }: ChallengeChartProps) {
   const colors = [
-    "#742193", // Purple
-    "#22C55E", // Green
-    "#EF4444", // Red
-    "#3B82F6", // Blue
-    "#F59E0B", // Yellow
+    "#9FEF00", // Neon
+    "#A855F7", // Purple
+    "#FF3E3E", // Danger
+    "#38BDF8", // Sky
+    "#FFAF00", // Warn
   ];
 
   // Process data for recharts
@@ -36,7 +36,7 @@ export default function ChallengeChart({ data }: ChallengeChartProps) {
   // If no data, show empty state
   if (!data || data.length === 0) {
     return (
-      <div className="w-full h-64 flex justify-center items-center text-gray-500">
+      <div className="w-full h-64 flex justify-center items-center text-htb-text-dim font-mono uppercase tracking-widest text-sm">
         No challenge data available
       </div>
     );
@@ -52,15 +52,26 @@ export default function ChallengeChart({ data }: ChallengeChartProps) {
             cy="50%"
             innerRadius={60}
             outerRadius={100}
-            paddingAngle={5}
+            paddingAngle={4}
             dataKey="value"
+            stroke="#0B0F17"
+            strokeWidth={2}
           >
             {chartData.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.color} />
             ))}
           </Pie>
-          <Tooltip />
-          <Legend />
+          <Tooltip
+            contentStyle={{
+              background: '#111927',
+              border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: '0.375rem',
+              color: '#E6EDF7',
+              fontFamily: '"JetBrains Mono", ui-monospace, monospace',
+              fontSize: 12,
+            }}
+          />
+          <Legend wrapperStyle={{ color: '#A4B1CD', fontSize: 12, fontFamily: '"JetBrains Mono", ui-monospace, monospace', textTransform: 'uppercase', letterSpacing: '0.1em' }} />
         </PieChart>
       </ResponsiveContainer>
     </div>

@@ -56,29 +56,32 @@ const MotionCard = motion(Card);
 
 export default function Page() {
   return (
-    <div className="hidden lg:block min-h-screen bg-gray-50 p-7">
+    <div className="hidden lg:block min-h-screen bg-htb-bg p-7">
        <div>
         <Breadcrumb>
-          <BreadcrumbList>
+          <BreadcrumbList className="text-htb-muted">
             <BreadcrumbItem>
-              <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+              <BreadcrumbLink href="/admin" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Dashboard</BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            
+            <BreadcrumbSeparator className="text-htb-text-dim" />
+
             <BreadcrumbItem>
-              <BreadcrumbPage>Analytics</BreadcrumbPage>
+              <BreadcrumbPage className="text-neon font-mono text-xs uppercase tracking-widest">Analytics</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-      <motion.h1
-        className="heading mb-6 mt-4"
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        Analytics
-      </motion.h1>
+      <div className="mb-6 mt-4">
+        <span className="terminal-eyebrow">admin.analytics</span>
+        <motion.h1
+          className="heading-display text-3xl text-htb-text mt-1"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          Analytics
+        </motion.h1>
+      </div>
 
       {/* Metrics Cards */}
       <motion.div
@@ -91,17 +94,17 @@ export default function Page() {
           {
             title: "Total Users",
             value: "100",
-            icon: <Users className="h-5 w-5 text-[#742193]" />,
+            icon: <Users className="h-5 w-5 text-neon" />,
           },
           {
             title: "Total Challenges",
             value: "100",
-            icon: <CodeXml className="h-5 w-5 text-[#742193]" />,
+            icon: <CodeXml className="h-5 w-5 text-neon" />,
           },
           {
             title: "Total Revenue",
             value: "100",
-            icon: <Landmark className="h-5 w-5 text-[#742193]" />,
+            icon: <Landmark className="h-5 w-5 text-neon" />,
           },
         ].map((metric, index) => (
           <MetricCard key={index} {...metric} />
@@ -116,9 +119,14 @@ export default function Page() {
         animate="visible"
       >
         <MotionCard className="p-6" variants={cardVariants} whileHover="hover">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="font-bold text-xl">Users</h2>
-            <h2 className="font-bold text-xl">Total Users : 100</h2>
+          <div className="flex justify-between items-center mb-4 gap-3 flex-wrap">
+            <div>
+              <span className="terminal-eyebrow">users.distribution</span>
+              <h2 className="text-lg font-bold text-htb-text mt-0.5">Users</h2>
+            </div>
+            <span className="font-mono text-sm text-htb-muted">
+              Total: <span className="text-neon font-semibold tabular-nums">100</span>
+            </span>
           </div>
           <motion.div className="flex justify-center items-center">
             <UserPieChart />
@@ -152,61 +160,54 @@ export default function Page() {
         </MotionCard>
       </motion.div>
 
-      <MotionCard className="p-4" variants={cardVariants} whileHover="hover">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Trending Challenges</h2>
+      <MotionCard className="p-6" variants={cardVariants} whileHover="hover">
+        <div className="flex justify-between items-center mb-5 gap-3 flex-wrap">
+          <div>
+            <span className="terminal-eyebrow">trending.challenges</span>
+            <h2 className="text-lg font-bold text-htb-text mt-0.5">Top Challenges</h2>
+          </div>
           <Link
             href="/admin/challenges"
-            className="text-purple-600 hover:underline"
+            className="inline-flex items-center gap-1 text-[11px] font-mono uppercase tracking-widest font-semibold text-htb-muted hover:text-neon transition-colors"
           >
-            See all
+            See all →
           </Link>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {[1, 2, 3].map((index) => (
             <div
               key={index}
-              className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm"
+              className="flex items-center justify-between p-4 rounded-md border border-htb-border bg-htb-bg/40 hover:border-neon/30 transition-colors gap-3 flex-wrap"
             >
-              <div className="flex items-center gap-3">
-                <span className="flex items-center justify-center text-sm font-semibold rounded-full bg-purple-100 h-5 w-5  text-purple-600">
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="shrink-0 flex items-center justify-center font-mono text-xs font-bold rounded-md border border-neon/30 bg-neon/10 h-7 w-7 text-neon tabular-nums">
                   {index}
                 </span>
-                <div>
-                  <h3 className="font-medium">3151: Special Array I</h3>
-                  <div className="flex gap-6 text-sm text-gray-600">
-                    <span>
-                      Submissions: <strong>558.9K</strong>
-                    </span>
-                    <span>
-                      Acceptance Rate: <strong>53.8%</strong>
-                    </span>
-                    <span>
-                      Starred: <strong>558.9K</strong>
-                    </span>
-                    <span>
-                      Views: <strong>558.9K</strong>
-                    </span>
+                <div className="min-w-0">
+                  <h3 className="font-medium text-htb-text">3151: Special Array I</h3>
+                  <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-htb-text-dim font-mono uppercase tracking-wider mt-1">
+                    <span>Subs: <span className="text-htb-text font-semibold tabular-nums">558.9K</span></span>
+                    <span>Accept: <span className="text-htb-text font-semibold tabular-nums">53.8%</span></span>
+                    <span>Starred: <span className="text-htb-text font-semibold tabular-nums">558.9K</span></span>
+                    <span>Views: <span className="text-htb-text font-semibold tabular-nums">558.9K</span></span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex gap-2">
-                <span className="px-2 py-1 text-sm text-green-600 bg-green-50 rounded">
+              <div className="flex gap-1.5 shrink-0">
+                <span className="px-2 py-0.5 rounded font-mono text-[10px] font-semibold uppercase tracking-widest border border-neon/30 bg-neon/10 text-neon">
                   Easy
                 </span>
-                <div className="flex gap-1">
-                  <button className="px-4 py-1 text-purple-600 bg-purple-50 rounded hover:bg-purple-100">
-                    View
-                  </button>
-                  <button className="px-4 py-1 text-gray-600 bg-gray-100 rounded hover:bg-gray-200">
-                    Edit
-                  </button>
-                  <button className="px-4 py-1 text-red-600 bg-red-50 rounded hover:bg-red-100">
-                    Delete
-                  </button>
-                </div>
+                <button className="px-3 py-1.5 rounded border border-neon/30 bg-neon/10 text-neon hover:bg-neon/15 font-mono text-[11px] uppercase tracking-widest font-semibold transition-colors">
+                  View
+                </button>
+                <button className="px-3 py-1.5 rounded border border-htb-border bg-htb-panel text-htb-muted hover:text-htb-text hover:border-htb-border-hover font-mono text-[11px] uppercase tracking-widest font-semibold transition-colors">
+                  Edit
+                </button>
+                <button className="px-3 py-1.5 rounded border border-danger/30 bg-danger/10 text-danger hover:bg-danger/15 font-mono text-[11px] uppercase tracking-widest font-semibold transition-colors">
+                  Delete
+                </button>
               </div>
             </div>
           ))}
@@ -218,17 +219,17 @@ export default function Page() {
 
 function MetricCard({ title, value, icon }: MetricCardProps) {
   return (
-    <MotionCard className="p-4" variants={cardVariants} whileHover="hover">
+    <MotionCard className="p-5" variants={cardVariants} whileHover="hover">
       <motion.div
-        className="flex flex-col justify-between "
+        className="flex flex-col justify-between gap-2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="flex justify-between ">
-          <p className="text-xl font-bold">{title}</p>
+        <div className="flex justify-between items-start">
+          <span className="terminal-eyebrow">{title.toLowerCase().replace(/\s+/g, '.')}</span>
           <motion.div
-            className="w-10 h-10 rounded-full bg-[#19258d1a] text-purple flex items-center justify-center border border-purple "
+            className="w-10 h-10 rounded-md border border-neon/30 bg-neon/10 text-neon flex items-center justify-center"
             whileHover={{ rotate: 360 }}
             transition={{ duration: 0.5 }}
           >
@@ -236,8 +237,9 @@ function MetricCard({ title, value, icon }: MetricCardProps) {
           </motion.div>
         </div>
         <div>
+          <p className="text-sm text-htb-muted">{title}</p>
           <motion.h3
-            className="text-2xl font-bold "
+            className="font-mono text-3xl font-bold text-htb-text tabular-nums mt-1"
             initial={{ scale: 0.5 }}
             animate={{ scale: 1 }}
             transition={{

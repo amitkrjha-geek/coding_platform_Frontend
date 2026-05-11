@@ -23,74 +23,93 @@ const AcceptedTab = () => {
     <div className="w-full">
       {/* Header with back navigation */}
       <div className="mb-6">
-        <Link href="/submissions" className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4">
-          <ArrowLeft className="w-4 h-4 mr-1" />
+        <Link
+          href="/submissions"
+          className="inline-flex items-center text-[11px] font-mono uppercase tracking-widest text-htb-muted hover:text-neon mb-4 transition-colors"
+        >
+          <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
           All Submissions
         </Link>
         <div className="flex items-start gap-4">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="text-green-500 font-semibold text-lg">Accepted</span>
-              <span className="text-gray-600 text-sm">98/98 testcases passed</span>
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className="text-neon font-semibold text-lg inline-flex items-center gap-2">
+                <span className="block w-1.5 h-1.5 rounded-full bg-neon shadow-neon-sm" />
+                Accepted
+              </span>
+              <span className="text-htb-muted text-sm font-mono">
+                98/98 testcases passed
+              </span>
             </div>
-            <div className="text-sm text-gray-500 mt-1">submitted at Feb 01, 2025 06:44</div>
+            <div className="text-xs text-htb-text-dim font-mono uppercase tracking-wider mt-1">
+              Submitted Feb 01, 2025 06:44
+            </div>
           </div>
         </div>
       </div>
 
       {/* Runtime and Memory Stats */}
-      <div className="grid grid-cols-2 gap-6 mb-8">
-        <div className="bg-gray-50 rounded-lg p-4">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <span className="font-medium">Runtime</span>
-            </div>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-semibold">59</span>
-            <span className="text-gray-600">ms</span>
-            <span className="text-gray-600 ml-2">Beats</span>
-            <span className="font-medium">18.09%</span>
+      <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="panel p-4">
+          <div className="terminal-eyebrow mb-2">runtime</div>
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <span className="font-mono text-2xl font-bold text-htb-text tabular-nums">59</span>
+            <span className="text-htb-muted text-sm">ms</span>
+            <span className="text-htb-text-dim text-xs ml-2 font-mono uppercase tracking-wider">Beats</span>
+            <span className="text-neon font-mono font-semibold text-sm">18.09%</span>
           </div>
         </div>
-        <div className="bg-gray-50 rounded-lg p-4">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <span className="font-medium">Memory</span>
-            </div>
-          </div>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-semibold">32.90</span>
-            <span className="text-gray-600">MB</span>
-            <span className="text-gray-600 ml-2">Beats</span>
-            <span className="font-medium">92.00%</span>
+        <div className="panel p-4">
+          <div className="terminal-eyebrow mb-2">memory</div>
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <span className="font-mono text-2xl font-bold text-htb-text tabular-nums">32.90</span>
+            <span className="text-htb-muted text-sm">MB</span>
+            <span className="text-htb-text-dim text-xs ml-2 font-mono uppercase tracking-wider">Beats</span>
+            <span className="text-neon font-mono font-semibold text-sm">92.00%</span>
           </div>
         </div>
       </div>
 
       {/* Distribution Chart */}
       <div className="mb-8">
-        <div className="bg-white rounded-lg p-4 border">
+        <div className="panel p-4">
           <div className="h-[200px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={data} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorPercentage" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1} />
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#9FEF00" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="#9FEF00" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="time" tickFormatter={(value) => `${value}ms`} interval={10} tick={{ fontSize: 12 }} />
-                <YAxis tickFormatter={(value) => `${value}%`} tick={{ fontSize: 12 }} domain={[0, 30]} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.06)" />
+                <XAxis
+                  dataKey="time"
+                  tickFormatter={(value) => `${value}ms`}
+                  interval={10}
+                  tick={{ fontSize: 11, fill: '#A4B1CD' }}
+                  axisLine={{ stroke: 'rgba(255,255,255,0.06)' }}
+                />
+                <YAxis
+                  tickFormatter={(value) => `${value}%`}
+                  tick={{ fontSize: 11, fill: '#A4B1CD' }}
+                  domain={[0, 30]}
+                  axisLine={{ stroke: 'rgba(255,255,255,0.06)' }}
+                />
                 <Tooltip
+                  contentStyle={{
+                    background: '#111927',
+                    border: '1px solid rgba(255,255,255,0.06)',
+                    borderRadius: '0.375rem',
+                    color: '#E6EDF7',
+                  }}
                   formatter={(value: number) => [`${value.toFixed(1)}%`, "Submissions"]}
                   labelFormatter={(label) => `Runtime: ${label}ms`}
                 />
                 <Area
                   type="monotone"
                   dataKey="percentage"
-                  stroke="#3b82f6"
+                  stroke="#9FEF00"
                   fill="url(#colorPercentage)"
                   strokeWidth={2}
                 />
@@ -98,7 +117,7 @@ const AcceptedTab = () => {
             </ResponsiveContainer>
           </div>
         </div>
-        <div className="flex justify-between text-sm text-gray-500 mt-2 px-4">
+        <div className="flex justify-between text-[10px] font-mono text-htb-text-dim mt-2 px-4 tabular-nums">
           <span>3ms</span>
           <span>56ms</span>
           <span>109ms</span>
@@ -109,30 +128,30 @@ const AcceptedTab = () => {
       </div>
 
       {/* Code Section */}
-      <div className="rounded-lg border bg-white">
-        <div className="flex items-center justify-between p-4 border-b">
+      <div className="panel overflow-hidden">
+        <div className="flex items-center justify-between p-3 border-b border-htb-border bg-htb-panel/40">
           <div className="flex items-center gap-2">
-            <span className="text-gray-600">Code</span>
-            <Badge variant="secondary">C++</Badge>
+            <span className="terminal-eyebrow">code</span>
+            <Badge variant="info">C++</Badge>
           </div>
         </div>
-        <div className="p-4">
-          <pre className="text-sm font-mono overflow-x-auto">
+        <div className="p-4 bg-htb-bg-deep">
+          <pre className="text-sm font-mono overflow-x-auto text-neon">
             <code className="language-cpp">
               {`class MyCalendarThree {
 public:
     map<int, int>mp;
     int maxCount = 0;
     MyCalendarThree() {
-        
+
     }
 }`}
             </code>
           </pre>
         </div>
-        <div className="p-4 border-t">
-          <Button variant="outline" className="w-full">
-            View more
+        <div className="p-3 border-t border-htb-border">
+          <Button variant="outline-dim" className="w-full font-mono text-xs uppercase tracking-widest">
+            View More
           </Button>
         </div>
       </div>

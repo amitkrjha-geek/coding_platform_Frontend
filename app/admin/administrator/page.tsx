@@ -155,29 +155,25 @@ const Page = () => {
   };
 
   return (
-    <section className="h-auto   p-7">
+    <section className="bg-htb-bg min-h-screen p-7">
       <div className="container mx-auto">
         <div>
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink href="/admin">Dashboard</BreadcrumbLink>
+                <BreadcrumbLink href="/admin" className="text-htb-muted hover:text-neon font-mono text-xs uppercase tracking-widest">Dashboard</BreadcrumbLink>
               </BreadcrumbItem>
-              <BreadcrumbSeparator />
+              <BreadcrumbSeparator className="text-htb-text-dim" />
               <BreadcrumbItem>
-                <BreadcrumbPage>Administrators</BreadcrumbPage>
+                <BreadcrumbPage className="text-neon font-mono text-xs uppercase tracking-widest">Administrators</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
         </div>
-        {/* <SectionHeader
-          title="Administrators"
-          buttonText="Add Admin"
-          onButtonClick={handleAddAdministrator}
-          icon={<Plus />}
-          className="mb-4"
-        /> */}
-        <h1 className="heading mb-4 mt-2">Administrators</h1>
+        <div className="mt-3 mb-5">
+          <span className="terminal-eyebrow">administrators</span>
+          <h1 className="heading-display text-2xl text-htb-text mt-1">Administrators</h1>
+        </div>
 
         <div className="grid gap-4 md:grid-cols-3 mb-6 ">
           <SearchBar value={search} onChange={setSearch} />
@@ -201,8 +197,8 @@ const Page = () => {
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     className={
                       currentPage === 1
-                        ? "pointer-events-none opacity-50 "
-                        : "cursor-pointer text-[#742193] hover:text-[#57176e] hover:border hover:border-[#7421931A] hover:bg-[#7421931A]"
+                        ? "pointer-events-none opacity-50"
+                        : "cursor-pointer text-htb-muted hover:text-neon hover:border hover:border-neon/30 hover:bg-neon/10"
                     }
                   />
                 </PaginationItem>
@@ -213,7 +209,7 @@ const Page = () => {
                       <PaginationLink
                         onClick={() => setCurrentPage(1)}
                         isActive={currentPage === 1}
-                        className="cursor-pointer text-[#742193] hover:text-[#57176e]"
+                        className="cursor-pointer text-htb-muted hover:text-neon"
                       >
                         1
                       </PaginationLink>
@@ -231,8 +227,8 @@ const Page = () => {
                         isActive={currentPage === pageNumber}
                         className={
                           currentPage === pageNumber
-                            ? "text-[#742193] border border-[#7421931A] bg-[#7421931A]"
-                            : "cursor-pointer text-[#742193] hover:text-[#57176e]"
+                            ? "text-neon border border-neon/40 bg-neon/10 shadow-neon-sm"
+                            : "cursor-pointer text-htb-muted hover:text-neon hover:border hover:border-neon/30"
                         }
                       >
                         {pageNumber}
@@ -248,7 +244,7 @@ const Page = () => {
                       <PaginationLink
                         onClick={() => setCurrentPage(totalPages)}
                         isActive={currentPage === totalPages}
-                        className="cursor-pointer text-[#742193] hover:text-[#57176e]"
+                        className="cursor-pointer text-htb-muted hover:text-neon"
                       >
                         {totalPages}
                       </PaginationLink>
@@ -264,7 +260,7 @@ const Page = () => {
                     className={
                       currentPage === totalPages
                         ? "pointer-events-none opacity-50"
-                        : "cursor-pointer text-[#742193] hover:text-[#57176e] hover:border hover:border-[#7421931A] hover:bg-[#7421931A]"
+                        : "cursor-pointer text-htb-muted hover:text-neon hover:border hover:border-neon/30 hover:bg-neon/10"
                     }
                   />
                 </PaginationItem>

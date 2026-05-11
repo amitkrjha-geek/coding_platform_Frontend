@@ -8,18 +8,14 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-   <div>
-    <Navbar/>
-   
-       <div className="flex-1 flex">
-       
-       <Sidebar/>
-       <div className=" h-[calc(100vh-3.5rem)] flex-1 overflow-x-auto">
-       {children}
-       </div>
-       
-       
-    </div>
+    <div className="bg-htb-bg min-h-screen">
+      <Navbar />
+      <div className="flex-1 flex">
+        <Sidebar />
+        <div className="h-[calc(100vh-3.5rem)] flex-1 overflow-x-auto bg-htb-bg">
+          {children}
+        </div>
+      </div>
     </div>
   );
 }

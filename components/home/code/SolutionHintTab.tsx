@@ -98,31 +98,34 @@ const SolutionHintTab = ({
   if (checking) {
     return (
       <div className="flex flex-col items-center justify-center py-16">
-        <Loader2 className="w-8 h-8 text-purple-500 animate-spin mb-3" />
-        <p className="text-sm text-gray-500">Checking access...</p>
+        <Loader2 className="w-7 h-7 text-neon animate-spin mb-3" />
+        <p className="text-xs font-mono uppercase tracking-widest text-htb-muted">
+          Checking access...
+        </p>
       </div>
     );
   }
 
   if (!hasAccess) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 px-6">
-        <div className="w-16 h-16 rounded-full bg-purple-50 flex items-center justify-center mb-4">
-          <Lock className="w-7 h-7 text-purple-400" />
+      <div className="flex flex-col items-center justify-center py-14 px-6">
+        <div className="w-16 h-16 rounded-md border border-purple-500/30 bg-purple-500/10 flex items-center justify-center mb-4">
+          <Lock className="w-6 h-6 text-purple-300" />
         </div>
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+        <span className="terminal-eyebrow mb-2">premium.access</span>
+        <h3 className="text-lg font-semibold text-htb-text mb-2">
           Premium Content
         </h3>
-        <p className="text-sm text-gray-500 text-center max-w-sm mb-1">
+        <p className="text-sm text-htb-muted text-center max-w-sm mb-4 leading-relaxed">
           Solution hints are available exclusively for subscribers and users who
           have purchased this challenge.
         </p>
         <button
           onClick={() => router.push("/billing")}
-          className="flex items-center gap-1.5 mt-3 text-xs text-purple-600 bg-purple-50 hover:bg-purple-100 px-3 py-1.5 rounded-full transition-colors cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-purple-500/30 bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 hover:border-purple-500/60 transition-colors font-mono text-xs uppercase tracking-widest font-semibold"
         >
           <Crown className="w-3.5 h-3.5" />
-          <span className="font-medium">Upgrade to access</span>
+          <span>Upgrade to Access</span>
         </button>
       </div>
     );
@@ -132,30 +135,32 @@ const SolutionHintTab = ({
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center">
-            <FileText className="w-4 h-4 text-purple-600" />
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-md border border-neon/30 bg-neon/10 flex items-center justify-center">
+            <FileText className="w-4 h-4 text-neon" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-gray-800">
+            <h3 className="text-sm font-semibold text-htb-text">
               Solution Hint
             </h3>
-            <p className="text-xs text-gray-400">PDF Document</p>
+            <p className="text-[10px] font-mono uppercase tracking-widest text-htb-text-dim">
+              PDF Document
+            </p>
           </div>
         </div>
         <Button
-          variant="outline"
+          variant="ghost-neon"
           size="sm"
           onClick={handleDownload}
-          className="text-purple-600 border-purple-200 hover:bg-purple-50 hover:text-purple-700"
+          className="font-mono text-[11px] uppercase tracking-widest"
         >
-          <Download className="w-4 h-4 mr-1.5" />
+          <Download className="w-3.5 h-3.5 mr-1.5" />
           Download
         </Button>
       </div>
 
       {/* PDF Viewer */}
-      <div className="border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+      <div className="border border-htb-border rounded-md overflow-hidden bg-htb-bg-deep">
         <iframe
           src={`${answerFileUrl}#toolbar=1&navpanes=0`}
           className="w-full"

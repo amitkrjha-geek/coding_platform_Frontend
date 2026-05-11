@@ -177,9 +177,9 @@ export default function Page() {
 
   if (error) {
     return (
-      <div className="hidden lg:block min-h-screen bg-gray-50 p-8">
+      <div className="hidden lg:block min-h-screen bg-htb-bg p-8">
         <div className="flex justify-center items-center h-64">
-          <div className="text-xl text-red-500">Error: {error}</div>
+          <div className="text-lg text-danger font-medium">Error: {error}</div>
         </div>
       </div>
     );
@@ -187,23 +187,26 @@ export default function Page() {
 
   if (!dashboardData) {
     return (
-      <div className="hidden lg:block min-h-screen bg-gray-50 p-8">
+      <div className="hidden lg:block min-h-screen bg-htb-bg p-8">
         <div className="flex justify-center items-center h-64">
-          <div className="text-xl">No data available</div>
+          <div className="text-lg text-htb-muted font-mono uppercase tracking-widest">No data available</div>
         </div>
       </div>
     );
   }
   return (
-    <div className="hidden lg:block min-h-screen bg-gray-50 p-8">
-      <motion.h1
-        className="heading mb-6"
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        Dashboard
-      </motion.h1>
+    <div className="hidden lg:block min-h-screen bg-htb-bg p-8">
+      <div className="mb-6">
+        <span className="terminal-eyebrow">admin.dashboard</span>
+        <motion.h1
+          className="heading-display text-3xl text-htb-text mt-1"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          Dashboard
+        </motion.h1>
+      </div>
 
       {/* Metrics Cards */}
       <motion.div
@@ -216,19 +219,19 @@ export default function Page() {
           {
             title: "Total Users",
             value: dashboardData.totals.users.toString(),
-            icon: <Users className="h-5 w-5 text-[#742193]" />,
+            icon: <Users className="h-5 w-5 text-neon" />,
             link: "/admin/users",
           },
           {
             title: "Total Challenges",
             value: dashboardData.totals.challenges.toString(),
-            icon: <CodeXml className="h-5 w-5 text-[#742193]" />,
+            icon: <CodeXml className="h-5 w-5 text-neon" />,
             link: "/admin/challenges",
           },
           {
             title: "Total Revenue",
             value: paymentData ? `₹${paymentData.totalRevenue.toLocaleString()}` : "₹ 0",
-            icon: <Landmark className="h-5 w-5 text-[#742193]" />,
+            icon: <Landmark className="h-5 w-5 text-neon" />,
             link: "/admin",
           },
         ].map((metric, index) => (
@@ -244,56 +247,60 @@ export default function Page() {
         animate="visible"
       >
         <MotionCard className="p-6" variants={cardVariants} whileHover="hover">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="font-bold text-xl">Daily User Registrations</h2>
-            <h2 className="font-bold text-xl">Total Users: {dashboardData.totals.users}</h2>
+          <div className="flex justify-between items-center mb-4 gap-3 flex-wrap">
+            <div>
+              <span className="terminal-eyebrow">daily.signups</span>
+              <h2 className="text-lg font-bold text-htb-text mt-0.5">Daily User Registrations</h2>
+            </div>
+            <span className="font-mono text-sm text-htb-muted">
+              Total: <span className="text-neon font-semibold tabular-nums">{dashboardData.totals.users}</span>
+            </span>
           </div>
           <motion.div className="flex justify-center items-center">
             <DailyUsersChart data={allUsers} />
           </motion.div>
         </MotionCard>
 
-        <MotionCard className="p-4" variants={cardVariants} whileHover="hover">
-          <div className="p-4">
-            <h2 className="text-xl font-bold mb-4">Payment Overview</h2>
-            {paymentData ? (
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <h3 className="text-sm font-medium text-green-800">Successful Transactions</h3>
-                    <p className="text-2xl font-bold text-green-600">{paymentData.successfulTransactions}</p>
-                  </div>
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <h3 className="text-sm font-medium text-blue-800">Total Transactions</h3>
-                    <p className="text-2xl font-bold text-blue-600">{paymentData.totalTransactions}</p>
-                  </div>
+        <MotionCard className="p-6" variants={cardVariants} whileHover="hover">
+          <span className="terminal-eyebrow">payment.overview</span>
+          <h2 className="text-lg font-bold text-htb-text mt-0.5 mb-4">Payment Overview</h2>
+          {paymentData ? (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-md border border-neon/30 bg-neon/5 p-4">
+                  <h3 className="text-[10px] font-mono uppercase tracking-widest font-semibold text-neon">Successful</h3>
+                  <p className="font-mono text-2xl font-bold text-htb-text tabular-nums mt-1">{paymentData.successfulTransactions}</p>
                 </div>
-                <div className="bg-purple-50 p-4 rounded-lg">
-                  <h3 className="text-sm font-medium text-purple-800">Total Revenue</h3>
-                  <p className="text-3xl font-bold text-purple-600">₹{paymentData.totalRevenue.toLocaleString()}</p>
+                <div className="rounded-md border border-sky-400/30 bg-sky-400/5 p-4">
+                  <h3 className="text-[10px] font-mono uppercase tracking-widest font-semibold text-sky-300">Total</h3>
+                  <p className="font-mono text-2xl font-bold text-htb-text tabular-nums mt-1">{paymentData.totalTransactions}</p>
                 </div>
-                {paymentData.statusBreakdown && paymentData.statusBreakdown.length > 0 && (
-                  <div className="space-y-2">
-                    <h4 className="font-medium">Status Breakdown:</h4>
-                    {paymentData.statusBreakdown.map((status: any, index: number) => (
-                      <div key={index} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                        <span className="capitalize">{status._id}</span>
-                        <div className="text-right">
-                          <span className="font-medium">{status.count} transactions</span>
-                          <br />
-                          <span className="text-sm text-gray-600">₹{status.totalAmount.toLocaleString()}</span>
-                        </div>
+              </div>
+              <div className="rounded-md border border-purple-500/30 bg-purple-500/5 p-4">
+                <h3 className="text-[10px] font-mono uppercase tracking-widest font-semibold text-purple-300">Total Revenue</h3>
+                <p className="font-mono text-3xl font-bold text-htb-text tabular-nums mt-1">₹{paymentData.totalRevenue.toLocaleString()}</p>
+              </div>
+              {paymentData.statusBreakdown && paymentData.statusBreakdown.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-[11px] font-mono uppercase tracking-widest font-semibold text-htb-muted">Status Breakdown</h4>
+                  {paymentData.statusBreakdown.map((status: any, index: number) => (
+                    <div key={index} className="flex justify-between items-center p-3 rounded-md border border-htb-border bg-htb-bg/40">
+                      <span className="capitalize text-htb-text text-sm font-medium">{status._id}</span>
+                      <div className="text-right">
+                        <span className="font-mono text-sm text-htb-text tabular-nums">{status.count} txns</span>
+                        <br />
+                        <span className="text-xs text-htb-text-dim font-mono tabular-nums">₹{status.totalAmount.toLocaleString()}</span>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="flex justify-center items-center h-64 text-gray-500">
-                No payment data available
-              </div>
-            )}
-          </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex justify-center items-center h-64 text-htb-text-dim font-mono text-sm uppercase tracking-widest">
+              No payment data available
+            </div>
+          )}
         </MotionCard>
       </motion.div>
 
@@ -304,78 +311,76 @@ export default function Page() {
         initial="hidden"
         animate="visible"
       >
-        <MotionCard className="p-6 " variants={cardVariants} whileHover="hover">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="font-bold text-xl">Challenge Distribution</h2>
+        <MotionCard className="p-6" variants={cardVariants} whileHover="hover">
+          <div className="mb-4">
+            <span className="terminal-eyebrow">challenges.distribution</span>
+            <h2 className="text-lg font-bold text-htb-text mt-0.5">Challenge Distribution</h2>
           </div>
           <ChallengeChart data={dashboardData.challengeStats} />
         </MotionCard>
 
-        <MotionCard className=" p-4" variants={cardVariants} whileHover="hover">
+        <MotionCard className="p-6" variants={cardVariants} whileHover="hover">
           <SubscribersChart data={getSubscriptionStats()} />
         </MotionCard>
       </motion.div>
 
-      <MotionCard className="p-4" variants={cardVariants} whileHover="hover">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold">Trending Challenges</h2>
+      <MotionCard className="p-6" variants={cardVariants} whileHover="hover">
+        <div className="flex justify-between items-center mb-5 gap-3 flex-wrap">
+          <div>
+            <span className="terminal-eyebrow">trending.challenges</span>
+            <h2 className="text-lg font-bold text-htb-text mt-0.5">Top Challenges</h2>
+          </div>
           <Link
             href="/admin/challenges"
-            className="text-purple-600 hover:underline"
+            className="inline-flex items-center gap-1 text-[11px] font-mono uppercase tracking-widest font-semibold text-htb-muted hover:text-neon transition-colors"
           >
-            See all
+            See all →
           </Link>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {dashboardData.topChallenges.length > 0 ? (
             dashboardData.topChallenges.map((challenge, index) => (
               <div
                 key={challenge._id}
-                className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm"
+                className="flex items-center justify-between p-4 rounded-md border border-htb-border bg-htb-bg/40 hover:border-neon/30 transition-colors gap-3 flex-wrap"
               >
-                <div className="flex items-center gap-3">
-                  <span className="flex items-center justify-center text-sm font-semibold rounded-full bg-purple-100 h-5 w-5 text-purple-600">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="shrink-0 flex items-center justify-center font-mono text-xs font-bold rounded-md border border-neon/30 bg-neon/10 h-7 w-7 text-neon tabular-nums">
                     {index + 1}
                   </span>
-                  <div>
-                    <h3 className="font-medium">{challenge.title}</h3>
-                    <div className="flex gap-6 text-sm text-gray-600">
+                  <div className="min-w-0">
+                    <h3 className="font-medium text-htb-text truncate">{challenge.title}</h3>
+                    <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-htb-text-dim font-mono uppercase tracking-wider mt-1">
                       <span>
-                        Submissions: <strong>{challenge.submissions.toLocaleString()}</strong>
+                        Subs: <span className="text-htb-text font-semibold tabular-nums">{challenge.submissions.toLocaleString()}</span>
                       </span>
                       <span>
-                        Difficulty: <strong>{challenge.difficulty}</strong>
+                        Diff: <span className="text-htb-text font-semibold capitalize">{challenge.difficulty}</span>
                       </span>
                       <span>
-                        Created: <strong>{new Date(challenge.createdAt).toLocaleDateString()}</strong>
+                        Created: <span className="text-htb-text font-semibold">{new Date(challenge.createdAt).toLocaleDateString()}</span>
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex gap-2">
-                 
-                  <div className="flex gap-1">
-                    <Link href={`/admin/challenges/view?id=${challenge._id}`}>
-                      <button className="px-4 py-1 text-purple-600 bg-purple-50 rounded hover:bg-purple-100">
-                        View
-                      </button>
-                    </Link>
-                    <Link href={`/admin/challenges/edit?id=${challenge._id}`}>
-                      <button className="px-4 py-1 text-gray-600 bg-gray-100 rounded hover:bg-gray-200">
-                        Edit
-                      </button>
-                    </Link>
-                    {/* <button className="px-4 py-1 text-red-600 bg-red-50 rounded hover:bg-red-100">
-                      Delete
-                    </button> */}
-                  </div>
+                <div className="flex gap-1.5 shrink-0">
+                  <Link href={`/admin/challenges/view?id=${challenge._id}`}>
+                    <button className="px-3 py-1.5 rounded border border-neon/30 bg-neon/10 text-neon hover:bg-neon/15 hover:border-neon/40 font-mono text-[11px] uppercase tracking-widest font-semibold transition-colors">
+                      View
+                    </button>
+                  </Link>
+                  <Link href={`/admin/challenges/edit?id=${challenge._id}`}>
+                    <button className="px-3 py-1.5 rounded border border-htb-border bg-htb-panel text-htb-muted hover:text-htb-text hover:border-htb-border-hover font-mono text-[11px] uppercase tracking-widest font-semibold transition-colors">
+                      Edit
+                    </button>
+                  </Link>
                 </div>
               </div>
             ))
           ) : (
-            <div className="text-center text-gray-500 py-8">
+            <div className="text-center text-htb-text-dim py-8 font-mono text-sm uppercase tracking-widest">
               No challenges available
             </div>
           )}
@@ -388,9 +393,9 @@ export default function Page() {
 function MetricCard({ title, value, icon, link }: MetricCardProps) {
   const router = useRouter();
   return (
-    <MotionCard className="p-4" variants={cardVariants} whileHover="hover"> 
+    <MotionCard className="p-5 cursor-pointer" variants={cardVariants} whileHover="hover">
       <motion.div
-        className="flex flex-col justify-between "
+        className="flex flex-col justify-between gap-2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
@@ -400,10 +405,10 @@ function MetricCard({ title, value, icon, link }: MetricCardProps) {
           }
         }}
       >
-        <div className="flex justify-between ">
-          <p className="text-xl font-bold">{title}</p>
+        <div className="flex justify-between items-start">
+          <span className="terminal-eyebrow">{title.toLowerCase().replace(/\s+/g, '.')}</span>
           <motion.div
-            className="w-10 h-10 rounded-full bg-[#19258d1a] text-purple flex items-center justify-center border border-purple "
+            className="w-10 h-10 rounded-md border border-neon/30 bg-neon/10 text-neon flex items-center justify-center"
             whileHover={{ rotate: 360 }}
             transition={{ duration: 0.5 }}
           >
@@ -411,8 +416,9 @@ function MetricCard({ title, value, icon, link }: MetricCardProps) {
           </motion.div>
         </div>
         <div>
+          <p className="text-sm text-htb-muted">{title}</p>
           <motion.h3
-            className="text-2xl font-bold "
+            className="font-mono text-3xl font-bold text-htb-text tabular-nums mt-1"
             initial={{ scale: 0.5 }}
             animate={{ scale: 1 }}
             transition={{

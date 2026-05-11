@@ -90,72 +90,102 @@ export const PricingPlans = () => {
 
   return (
     <>
-    <div
+      {/* Hidden payment form auto-submit — preserved */}
+      <div
         dangerouslySetInnerHTML={{ __html: form }}
-        style={{ marginTop: "20px", border: "1px solid #ddd", padding: "10px" }}
-        />
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto px-4">
-        {plans.filter((plan) => plan.priceMode !== "Per Challenge").map((plan) => (
-          <motion.div
-            key={plan.name}
-            whileHover={{ scale: 1.02, y: -5 }}
-            transition={{ duration: 0.2 }}
-            className={`relative rounded-2xl p-8 transition-all duration-300 ${
-              plan.popular
-                ? 'bg-gradient-to-br from-purple-50 to-purple-100 border-2 border-purple-200 shadow-lg shadow-purple-200/50'
-                : 'bg-white border border-gray-200 shadow-md hover:shadow-lg'
-            }`}
-          >
-            {/* Popular Badge */}
-            {plan.popular && (
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <span className="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-4 py-1 text-sm font-medium rounded-full shadow-lg">
-                  Most Popular
-                </span>
-              </div>
-            )}
+        style={{ display: "none" }}
+      />
 
-            {/* Plan Header */}
-            <div className="text-center mb-8">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
-              <div className="flex items-baseline justify-center">
-                <span className="text-4xl font-bold text-gray-900">₹{plan.price}</span>
-                <span className="text-gray-500 ml-2 text-lg">/{plan.priceMode}</span>
-              </div>
-            </div>
-
-            {/* Features List */}
-            <div className="mb-8">
-              <ul className="space-y-4">
-                {plan.details.map((detail, index) => (
-                  <li
-                    key={index}
-                    className="flex items-start text-gray-700"
-                  >
-                    <div className="flex-shrink-0 w-5 h-5 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                      <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                      </svg>
-                    </div>
-                    <span className="text-sm leading-relaxed">{detail}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Subscribe Button */}
-            <button
-              onClick={() => handlePlanSelect(plan)}
-              className={`w-full py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-105 ${
-                plan.popular
-                  ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg shadow-purple-600/25 hover:shadow-xl hover:shadow-purple-600/30'
-                  : 'bg-gray-900 text-white hover:bg-gray-800 shadow-lg hover:shadow-xl'
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto">
+        {plans
+          .filter((plan) => plan.priceMode !== "Per Challenge")
+          .map((plan) => (
+            <motion.div
+              key={plan.name}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className={`group relative rounded-lg p-6 sm:p-7 transition-all duration-300 ${
+                plan.popular ? "popular_pricing" : "panel panel-hover"
               }`}
             >
-              Subscribe Now
-            </button>
-          </motion.div>
-        ))}
+              {/* Top neon accent for popular */}
+              {plan.popular && (
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neon to-transparent" />
+              )}
+
+              {/* Popular Badge */}
+              {plan.popular && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                  <span className="inline-flex items-center gap-1.5 bg-neon text-htb-bg px-3 py-1 text-[10px] font-mono font-semibold uppercase tracking-widest rounded shadow-neon-sm">
+                    <span className="block w-1.5 h-1.5 rounded-full bg-htb-bg" />
+                    Most Popular
+                  </span>
+                </div>
+              )}
+
+              {/* Plan Header */}
+              <div className="mb-6">
+                <span
+                  className={`terminal-eyebrow ${plan.popular ? "" : ""}`}
+                >
+                  tier.{plan.name.trim().toLowerCase().replace(/\s+/g, "_")}
+                </span>
+                <h3 className="text-2xl font-bold text-htb-text mt-2">
+                  {plan.name}
+                </h3>
+                <div className="flex items-baseline gap-2 mt-3">
+                  <span className="font-mono text-4xl sm:text-5xl font-bold text-htb-text tabular-nums">
+                    ₹{plan.price}
+                  </span>
+                  <span className="text-htb-text-dim text-sm font-mono uppercase tracking-wider">
+                    /{plan.priceMode}
+                  </span>
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="h-px bg-htb-border mb-6" />
+
+              {/* Features List */}
+              <div className="mb-7">
+                <ul className="space-y-3">
+                  {plan.details.map((detail, index) => (
+                    <li key={index} className="flex items-start gap-3 text-htb-muted">
+                      <div className="flex-shrink-0 w-5 h-5 rounded border border-neon/30 bg-neon/10 flex items-center justify-center mt-0.5">
+                        <svg
+                          className="w-3 h-3 text-neon"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <span className="text-sm leading-relaxed">{detail}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Subscribe Button */}
+              <button
+                onClick={() => handlePlanSelect(plan)}
+                className={`group/btn relative w-full overflow-hidden py-3.5 px-6 rounded-md font-mono text-xs uppercase tracking-widest font-semibold transition-all duration-300 ${
+                  plan.popular
+                    ? "bg-neon text-htb-bg hover:shadow-neon-sm hover:-translate-y-0.5"
+                    : "bg-htb-panel-2 text-htb-text border border-htb-border hover:border-neon/40 hover:text-neon hover:-translate-y-0.5"
+                }`}
+              >
+                <span className="relative z-10">Subscribe Now</span>
+                {plan.popular && (
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-htb-bg/20 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
+                )}
+              </button>
+            </motion.div>
+          ))}
       </div>
 
       <CheckoutModal
