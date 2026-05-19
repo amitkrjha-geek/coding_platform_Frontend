@@ -127,10 +127,18 @@ const PlanForm = () => {
 
     setLoading(true);
 
-    const transformedData = {
-      ...formData,
+    const isSubscription = formData.priceMode !== 'Per Challenge';
+    const transformedData: Record<string, unknown> = {
+      name: formData.name,
+      popular: formData.popular,
+      priceMode: formData.priceMode,
+      price: formData.price,
       details: formData.details.map((item) => item.detail),
     };
+    if (isSubscription) {
+      transformedData.startDate = formData.startDate;
+      transformedData.endDate = formData.endDate;
+    }
 
     dispatch(registerPlan(transformedData))
       .unwrap()

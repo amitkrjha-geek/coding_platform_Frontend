@@ -44,9 +44,18 @@ export default function Navbar() {
     }, [isMenuOpen]);
 
     const navLinks = [
-        { href: "/", label: "Challenges" },
+        { href: "/challenges", label: "Challenges" },
         { href: "/billing", label: "Billing" },
     ];
+
+    // Marketing routes render their own <MarketingNav/> — hide this global one there
+    const isMarketingRoute =
+        pathname === "/" ||
+        pathname === "/about" ||
+        pathname === "/terms" ||
+        pathname === "/privacy" ||
+        pathname.startsWith("/vs/");
+    if (isMarketingRoute) return null;
 
     return (
         <>
@@ -57,14 +66,25 @@ export default function Navbar() {
                 className="fixed top-0 z-50 w-full h-16 px-4 sm:px-6 flex items-center justify-between border-b border-htb-border bg-htb-bg/80 backdrop-blur-xl supports-[backdrop-filter]:bg-htb-bg/60"
             >
                 {/* Logo */}
-                <Link href="/" className="flex items-center gap-2 group">
-                    <span className="relative flex items-center justify-center w-8 h-8 rounded border border-neon/30 bg-neon/5 group-hover:border-neon group-hover:bg-neon/10 transition-colors">
-                        <Terminal className="w-4 h-4 text-neon" />
-                    </span>
-                    <h1 className="text-lg font-bold tracking-tight text-htb-text">
-                        Vio<span className="text-neon">_</span>ethat
-                    </h1>
-                </Link>
+                   <Link
+          href="/"
+          aria-label="Violethat — Home"
+          className="flex items-center gap-2 group shrink-0"
+        >
+          <span className="relative flex items-center justify-center w-9 h-9  transition-colors">
+            <Image
+              src="/VioletHat Logo_Emblen_Violet.svg"
+              alt="VioletHat logo"
+              width={30}
+              height={30}
+              priority
+              className="w-10 h-10"
+            />
+          </span>
+          <span className="text-lg font-bold tracking-tight text-htb-text">
+            Vio<span className="text-neon">£</span>ethat
+          </span>
+        </Link>
 
                 {/* Desktop Navigation */}
                 <nav className="hidden lg:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
@@ -121,7 +141,7 @@ export default function Navbar() {
                             {role === 'admin' && !pathname.startsWith('/admin') && (
                                 <Link
                                     href={dashboardHref}
-                                    className="px-3 py-1.5 rounded-md bg-neon text-htb-bg text-xs font-mono uppercase tracking-widest font-semibold hover:shadow-neon-sm transition-all hover:-translate-y-0.5"
+                                    className="px-3 py-1.5 rounded-md bg-neon text-white text-xs font-mono uppercase tracking-widest font-semibold hover:shadow-neon-sm transition-all hover:-translate-y-0.5"
                                 >
                                     Dashboard
                                 </Link>
@@ -141,7 +161,7 @@ export default function Navbar() {
                             </Link>
                             <Link
                                 href="/sign-up"
-                                className="px-4 py-2 rounded-md bg-neon text-htb-bg text-xs font-mono uppercase tracking-widest font-semibold hover:shadow-neon-sm transition-all hover:-translate-y-0.5"
+                                className="px-4 py-2 rounded-md bg-neon text-white text-xs font-mono uppercase tracking-widest font-semibold hover:shadow-neon-sm transition-all hover:-translate-y-0.5"
                             >
                                 Sign Up
                             </Link>
@@ -261,7 +281,7 @@ export default function Navbar() {
                                         <Link
                                             href="/sign-up"
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="mt-3 block px-4 py-3 rounded-md bg-neon text-htb-bg font-mono text-xs uppercase tracking-widest font-semibold text-center hover:shadow-neon-sm transition-all"
+                                            className="mt-3 block px-4 py-3 rounded-md bg-neon text-white font-mono text-xs uppercase tracking-widest font-semibold text-center hover:shadow-neon-sm transition-all"
                                         >
                                             Sign Up
                                         </Link>
@@ -271,7 +291,7 @@ export default function Navbar() {
                                         <Link
                                             href={dashboardHref}
                                             onClick={() => setIsMenuOpen(false)}
-                                            className="mt-3 block px-4 py-3 rounded-md bg-neon text-htb-bg font-mono text-xs uppercase tracking-widest font-semibold text-center hover:shadow-neon-sm transition-all"
+                                            className="mt-3 block px-4 py-3 rounded-md bg-neon text-white font-mono text-xs uppercase tracking-widest font-semibold text-center hover:shadow-neon-sm transition-all"
                                         >
                                             Dashboard
                                         </Link>

@@ -287,7 +287,7 @@ const TransactionsTable = () => {
                 onClick={() => handlePageChange(pageNum as number)}
                 className={`min-w-[36px] h-9 rounded-md font-mono text-xs font-semibold transition-colors ${
                   currentPage === pageNum
-                    ? "bg-neon text-htb-bg shadow-neon-sm"
+                    ? "bg-neon text-white shadow-neon-sm"
                     : "border border-htb-border bg-htb-panel text-htb-muted hover:border-neon/40 hover:text-neon"
                 }`}
               >

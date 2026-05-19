@@ -120,7 +120,7 @@ const ProfileStats = ({ organizedData, plan }: { organizedData: any, plan: any }
   }
 
   // HTB-aligned palette (donut + dots)
-  const colorEasy = '#9FEF00';
+  const colorEasy = '#A855F7';
   const colorMedium = '#FFAF00';
   const colorHard = '#FF3E3E';
 
@@ -354,7 +354,7 @@ const ProfileStats = ({ organizedData, plan }: { organizedData: any, plan: any }
               </div>
 
               <Link href="/billing">
-                <button className="w-full mt-2 py-2.5 bg-neon text-htb-bg hover:shadow-neon-sm hover:-translate-y-0.5 transition-all font-mono text-xs uppercase tracking-widest font-semibold rounded-md">
+                <button className="w-full mt-2 py-2.5 bg-neon text-white hover:shadow-neon-sm hover:-translate-y-0.5 transition-all font-mono text-xs uppercase tracking-widest font-semibold rounded-md">
                   Upgrade Plan
                 </button>
               </Link>

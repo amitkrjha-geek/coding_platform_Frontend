@@ -19,9 +19,9 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        // HTB neon variants
+        // HTB neon variants (now purple)
         neon:
-          "bg-neon text-htb-bg font-semibold tracking-wide shadow-neon-sm hover:shadow-neon hover:bg-neon-green hover:-translate-y-0.5 active:translate-y-0",
+          "bg-neon text-white font-semibold tracking-wide shadow-neon-sm hover:shadow-neon hover:bg-neon-green hover:-translate-y-0.5 active:translate-y-0",
         "ghost-neon":
           "bracket-corners bg-transparent text-neon border border-neon/40 hover:border-neon hover:bg-neon/10 hover:shadow-neon-sm font-semibold tracking-wide",
         violet:

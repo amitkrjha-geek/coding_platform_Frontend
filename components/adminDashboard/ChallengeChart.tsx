@@ -19,7 +19,7 @@ interface ChallengeChartProps {
 
 export default function ChallengeChart({ data }: ChallengeChartProps) {
   const colors = [
-    "#9FEF00", // Neon
+    "#A855F7", // Neon
     "#A855F7", // Purple
     "#FF3E3E", // Danger
     "#38BDF8", // Sky

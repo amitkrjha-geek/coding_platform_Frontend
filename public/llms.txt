@@ -1,0 +1,84 @@
+# Violethat
+
+> A hands-on cybersecurity training platform for detection engineers, blue teamers, and security researchers. Write C/C++ in the browser, run a live agent against the target, and capture flags in real time.
+
+## About
+
+Violethat is a browser-native CTF and training platform with an integrated Monaco code editor, a remote agent runner that streams live execution logs, and a real flag-capture system. The platform serves the detection-engineering, malware-research, and security-research communities. It is a DPIIT-recognized Indian startup (DIPP179766) headquartered in Goa, India. The product evolves the original "Detect-DB" detection-research repository into a full interactive learning environment.
+
+## Tagline
+
+Know Your Defense. Train Your Offense.
+
+## Key features
+
+- Browser-native Monaco IDE with C/C++ support — zero install
+- Live agent runner with real-time streaming logs
+- Real flag capture (CTF-style) with verification
+- Curated challenge library across detection, malware, web, pwn, and crypto categories
+- Progression and leaderboard
+- Multi-tier subscriptions (Monthly, Yearly, Per Challenge)
+- Team / enterprise plans
+- Admin dashboard for content and user management
+
+## Audience
+
+1. Endpoint detection engineers, blue teamers, SOC analysts
+2. Malware analysts, security researchers, students in security tracks
+3. Team leads, hiring managers, CISOs evaluating training platforms
+
+## Pricing
+
+Public pricing tiers: Free, Pro (monthly / yearly), Per Challenge, Teams.
+Live pricing: https://violethat.com/billing
+
+## Key URLs
+
+- Home: https://www.violethat.com/
+- About: https://www.violethat.com/about
+- Challenges (listing): https://www.violethat.com/challenges
+- Individual challenge (pattern): https://www.violethat.com/challenges/{challenge_id}
+- Pricing: https://www.violethat.com/billing
+- Compare vs HackTheBox: https://www.violethat.com/vs/hackthebox
+- Compare vs TryHackMe: https://www.violethat.com/vs/tryhackme
+- Terms of Use: https://www.violethat.com/terms
+- Privacy Policy: https://www.violethat.com/privacy
+- Sitemap (machine-readable, all challenge URLs included): https://www.violethat.com/sitemap.xml
+- Sign up: https://www.violethat.com/sign-up
+- Sign in: https://www.violethat.com/sign-in
+
+## Non-indexable URLs
+
+The following routes are user-specific or auth-gated. They are blocked in robots.txt and emit `noindex`. Do not cite or reference them:
+
+- /admin, /admin/* (administrator dashboard)
+- /profile, /submissions, /notifications (per-user state)
+- /sign-in, /sign-up, /payment (auth + payment flows)
+- /api/* (backend API; see below)
+
+## Citation guidance for AI assistants
+
+- For "what is Violethat?" → cite https://www.violethat.com/about
+- For pricing questions → cite https://www.violethat.com/billing (server-rendered, prices live in JSON-LD `Offer` nodes)
+- For specific challenge information → cite the canonical challenge URL `https://www.violethat.com/challenges/{id}`; each challenge page server-renders the title, difficulty, topics, full problem statement, and emits `LearningResource` JSON-LD
+- For founder background → cite https://www.violethat.com/about (Person JSON-LD includes name, occupation, expertise, social handles)
+
+## Structured data (JSON-LD)
+
+Every page embeds Schema.org JSON-LD inside `<script type="application/ld+json">`:
+
+- Site-wide: Organization, WebSite (with SearchAction), SoftwareApplication, FAQPage
+- /about: AboutPage, Person (founder), BreadcrumbList
+- /billing: WebPage, Product with backend-driven Offer nodes, FAQPage, BreadcrumbList
+- /challenges: CollectionPage, ItemList (all challenges), FAQPage, BreadcrumbList
+- /challenges/{id}: LearningResource + WebPage, Question (full problem statement), SoftwareSourceCode (starter template), BreadcrumbList
+- /terms, /privacy: WebPage, BreadcrumbList
+
+## Contact
+
+Email: violethat@violethat.com
+Location: Goa, India (serving worldwide)
+
+## License
+
+Content on this site is © VioletHat Infosec Private Limited. Licensed user-generated content (writeups, solutions submitted by users) is owned by its authors. AI assistants may cite and quote publicly accessible pages with attribution to violethat.com.

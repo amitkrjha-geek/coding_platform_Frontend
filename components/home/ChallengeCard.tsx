@@ -1,4 +1,4 @@
-import { Code, Users, Lock, ArrowRight } from "lucide-react";
+import { Code, Users, Lock, ArrowRight, Crown, Sparkles } from "lucide-react";
 import { memo, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { CheckoutPage } from "@/components/billing/CheckoutPage";
@@ -71,7 +71,7 @@ const ChallengeCard = memo(
         router.push("/sign-in");
         return;
       }
-      router.push(`/${id}`);
+      router.push(`/challenges/${id}`);
     };
 
     const handlePayment = () => {
@@ -155,9 +155,28 @@ const ChallengeCard = memo(
 
     return (
       <>
-        <div className="group relative panel panel-hover overflow-hidden transition-all duration-300">
-          {/* Top accent line */}
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neon/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div
+          className={`group relative overflow-hidden rounded-lg border transition-all duration-300 ${
+            isLocked
+              ? "border-purple-500/30 bg-gradient-to-br from-htb-panel via-htb-panel to-purple-950/30 hover:border-purple-400/60 hover:shadow-[0_0_0_1px_rgba(168,85,247,0.4),0_0_40px_rgba(168,85,247,0.18)]"
+              : "panel panel-hover"
+          }`}
+        >
+          {/* Premium-only: glowing top accent + decorative corner sparkle */}
+          {isLocked && (
+            <>
+              <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-purple-600 via-fuchsia-400 to-purple-600 opacity-80" />
+              <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-purple-500/20 blur-3xl pointer-events-none" />
+              <div className="absolute top-3 right-3 pointer-events-none">
+                <Sparkles className="w-3.5 h-3.5 text-fuchsia-300/60 animate-pulse" />
+              </div>
+            </>
+          )}
+
+          {/* Regular card hover accent */}
+          {!isLocked && (
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neon/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          )}
 
           <div className="relative p-5 space-y-4">
             {/* Header */}
@@ -177,29 +196,54 @@ const ChallengeCard = memo(
                     className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded font-mono text-[10px] font-semibold uppercase tracking-widest border ${
                       paymentMode === "free"
                         ? "bg-neon/10 text-neon border-neon/30"
-                        : "bg-purple-500/10 text-purple-300 border-purple-500/30"
+                        : "bg-gradient-to-r from-purple-600/20 via-fuchsia-500/20 to-purple-600/20 text-fuchsia-200 border-fuchsia-400/40 shadow-[0_0_12px_rgba(217,70,239,0.2)]"
                     }`}
                   >
-                    {paymentMode === "free" ? "Free" : "Premium"}
+                    {paymentMode === "free" ? (
+                      "Free"
+                    ) : (
+                      <>
+                        <Crown className="w-2.5 h-2.5" />
+                        Premium
+                      </>
+                    )}
                   </span>
                 </div>
 
-                <h3 className="text-base font-mono sm:text-lg font-semibold text-htb-text  transition-colors leading-snug line-clamp-2">
+                <h3
+                  className={`text-base sm:text-lg font-semibold leading-snug line-clamp-2 transition-colors ${
+                    isLocked
+                      ? "text-htb-text group-hover:text-fuchsia-100"
+                      : "text-htb-text font-mono"
+                  }`}
+                >
                   {title}
                 </h3>
               </div>
 
               {isLocked && (
-                <div className="shrink-0 flex items-center justify-center w-9 h-9 rounded-md border border-purple-500/30 bg-purple-500/10 text-purple-300">
+                <div className="shrink-0 relative flex items-center justify-center w-10 h-10 rounded-md border border-fuchsia-400/40 bg-gradient-to-br from-purple-600/30 to-fuchsia-500/20 text-fuchsia-200 shadow-[0_0_16px_rgba(217,70,239,0.25)]">
                   <Lock className="w-4 h-4" />
                 </div>
               )}
             </div>
 
             {/* Stats row */}
-            <div className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-md border border-htb-border bg-htb-bg/50">
+            <div
+              className={`flex items-center justify-between gap-3 px-3 py-2.5 rounded-md border ${
+                isLocked
+                  ? "border-purple-500/20 bg-purple-950/20"
+                  : "border-htb-border bg-htb-bg/50"
+              }`}
+            >
               <div className="flex items-center gap-2.5">
-                <div className="flex items-center justify-center w-7 h-7 rounded border border-htb-border bg-htb-panel-2 text-htb-muted">
+                <div
+                  className={`flex items-center justify-center w-7 h-7 rounded border ${
+                    isLocked
+                      ? "border-fuchsia-400/30 bg-fuchsia-500/10 text-fuchsia-300"
+                      : "border-htb-border bg-htb-panel-2 text-htb-muted"
+                  }`}
+                >
                   <Users className="w-3.5 h-3.5" />
                 </div>
                 <div>
@@ -214,10 +258,18 @@ const ChallengeCard = memo(
 
               {paymentMode === "paid" && planId && (
                 <div className="text-right">
-                  <div className="font-mono text-[11px] font-semibold text-purple-300 truncate max-w-[140px]">
+                  <div
+                    className={`font-mono text-[11px] font-semibold truncate max-w-[140px] ${
+                      isLocked ? "text-fuchsia-200" : "text-purple-300"
+                    }`}
+                  >
                     {planId.name.trim()}
                   </div>
-                  <div className="text-[10px] font-mono uppercase tracking-widest text-htb-text-dim">
+                  <div
+                    className={`text-[10px] font-mono uppercase tracking-widest ${
+                      isLocked ? "text-fuchsia-300/70" : "text-htb-text-dim"
+                    }`}
+                  >
                     ₹{planId.price} · {planId.priceMode}
                   </div>
                 </div>
@@ -228,27 +280,32 @@ const ChallengeCard = memo(
             {isLocked ? (
               <button
                 onClick={handlePayment}
-                className="group/btn relative w-full overflow-hidden bg-purple-700 hover:bg-purple-600 text-white font-mono text-xs uppercase tracking-widest font-semibold py-3 rounded-md transition-all duration-300 hover:shadow-violet-glow flex items-center justify-center gap-2"
+                className="group/btn relative w-full overflow-hidden bg-gradient-to-r from-purple-700 via-fuchsia-600 to-purple-700 bg-[length:200%_100%] bg-left hover:bg-right text-white font-mono text-xs uppercase tracking-widest font-semibold py-3.5 rounded-md transition-[background-position,box-shadow,transform] duration-500 hover:shadow-[0_0_0_1px_rgba(217,70,239,0.6),0_0_32px_rgba(217,70,239,0.45)] hover:-translate-y-0.5 flex items-center justify-center gap-2 border border-fuchsia-400/30"
               >
-                <Lock className="w-3.5 h-3.5" />
-                <span>Subscribe to Access</span>
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
+                <Crown className="w-3.5 h-3.5" />
+                <span>Unlock Premium</span>
+                <ArrowRight className="w-3.5 h-3.5 -translate-x-1 opacity-0 group-hover/btn:translate-x-0 group-hover/btn:opacity-100 transition-all duration-300" />
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
               </button>
             ) : (
               <button
                 onClick={handleStartChallenge}
-                className="group/btn relative w-full overflow-hidden bg-neon hover:bg-neon-green-dim text-htb-bg font-mono text-xs uppercase tracking-widest font-semibold py-3 rounded-md transition-all duration-300 hover:shadow-neon-sm flex items-center justify-center gap-2"
+                className="group/btn relative w-full overflow-hidden bg-neon hover:bg-neon-green-dim text-white font-mono text-xs uppercase tracking-widest font-semibold py-3 rounded-md transition-all duration-300 hover:shadow-neon-sm flex items-center justify-center gap-2"
               >
                 <Code className="w-3.5 h-3.5" />
                 <span>Start Challenge</span>
                 <ArrowRight className="w-3.5 h-3.5 -translate-x-1 opacity-0 group-hover/btn:translate-x-0 group-hover/btn:opacity-100 transition-all duration-300" />
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-htb-bg/15 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/15 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700" />
               </button>
             )}
           </div>
 
           {/* Bottom accent */}
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neon to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
+          {isLocked ? (
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-fuchsia-400/60 to-transparent" />
+          ) : (
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-neon to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500" />
+          )}
         </div>
 
         {/* Payment Form */}

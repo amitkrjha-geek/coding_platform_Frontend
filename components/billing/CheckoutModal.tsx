@@ -132,7 +132,7 @@ const CheckoutModal = ({ isOpen, onClose, plan }: CheckoutModalProps) => {
                   <div className="panel p-4">
                     <div className="flex items-center gap-3">
                       <div className="bg-neon w-10 h-10 rounded-md flex items-center justify-center">
-                        <span className="text-[10px] font-mono uppercase tracking-widest font-bold text-htb-bg">
+                        <span className="text-[10px] font-mono uppercase tracking-widest font-bold text-white">
                           Pro
                         </span>
                       </div>
@@ -329,7 +329,7 @@ const CheckoutModal = ({ isOpen, onClose, plan }: CheckoutModalProps) => {
                   <div className="flex justify-end">
                     <button
                       type="submit"
-                      className="px-6 py-2.5 bg-neon text-htb-bg font-mono text-xs uppercase tracking-widest font-semibold rounded-md hover:shadow-neon-sm hover:-translate-y-0.5 transition-all"
+                      className="px-6 py-2.5 bg-neon text-white font-mono text-xs uppercase tracking-widest font-semibold rounded-md hover:shadow-neon-sm hover:-translate-y-0.5 transition-all"
                     >
                       Checkout
                     </button>

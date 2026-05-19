@@ -339,7 +339,7 @@ const AdminDetails = ({ id }: { id: string }) => {
         <button
           type="submit"
           onClick={handleSubmit}
-          className="bg-neon hover:bg-neon-green-dim hover:shadow-neon-sm hover:-translate-y-0.5 text-htb-bg py-2.5 px-6 rounded-md transition-all disabled:opacity-50 font-mono text-xs uppercase tracking-widest font-semibold"
+          className="bg-neon hover:bg-neon-green-dim hover:shadow-neon-sm hover:-translate-y-0.5 text-white py-2.5 px-6 rounded-md transition-all disabled:opacity-50 font-mono text-xs uppercase tracking-widest font-semibold"
         >
           Save Details
         </button>

@@ -8,22 +8,26 @@ const perks = [
   {
     icon: Target,
     title: 'Curated challenge tracks',
-    description: 'Sharpen specific skills with structured tracks across difficulty tiers.',
+    description:
+      'Sharpen specific skills with structured tracks across difficulty tiers.',
   },
   {
     icon: Trophy,
     title: 'Earn reputation',
-    description: 'Climb the ranks as you capture flags and resolve real-world exploits.',
+    description:
+      'Climb the ranks as you capture flags and detect real-world attacker techniques.',
   },
   {
     icon: Rocket,
     title: 'Zero setup, full IDE',
-    description: 'Start coding in seconds — Monaco editor, language tooling, all in-browser.',
+    description:
+      'Start coding in seconds — Monaco editor, language tooling, all in-browser.',
   },
   {
     icon: Users,
     title: 'Operator community',
-    description: 'Join a network of engineers refining their offensive security craft.',
+    description:
+      'Join a network of engineers refining their offensive security craft.',
   },
 ]
 
@@ -53,8 +57,9 @@ export default function Page() {
                 Provision your <span className="text-neon">access</span>.
               </h2>
               <p className="text-htb-muted text-sm xl:text-base max-w-md leading-relaxed">
-                Spin up an operator account and start exploiting real-world labs
-                in minutes. No credit card required to get started.
+                Create an operator account in minutes and start analyzing
+                real-world attacker techniques. No credit card required to get
+                started.
               </p>
             </div>
 
@@ -114,7 +119,7 @@ export default function Page() {
                   formFieldInput:
                     'bg-htb-bg border border-htb-border text-htb-text hover:border-htb-border-hover focus:border-neon/60 focus:ring-1 focus:ring-neon/40 transition-colors',
                   formButtonPrimary:
-                    'bg-neon text-htb-bg hover:bg-neon-green-dim hover:shadow-neon-sm font-mono text-xs uppercase tracking-widest font-semibold transition-all',
+                    'bg-neon text-white hover:bg-neon-green-dim hover:shadow-neon-sm font-mono text-xs uppercase tracking-widest font-semibold transition-all',
                   footer: 'bg-transparent',
                   footerActionText: 'text-htb-muted',
                   footerActionLink:

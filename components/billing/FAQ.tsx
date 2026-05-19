@@ -8,28 +8,34 @@ import TerminalEyebrow from '@/components/shared/TerminalEyebrow';
 const faqs = [
   {
     question: "What do I get with a premium subscription?",
-    answer: "Premium subscription includes access to all premium features including video solutions, company-specific questions, interview simulations, and more."
+    answer:
+      "Premium subscription provides access to all the paid coding challenges, along with complete technical solution writeups.",
   },
   {
-    question: "What are premium solutions? Can I see a sample?",
-    answer: "LeetCode offers high-quality official solutions for a large selection of our problems. Some of these solutions are only available to premium subscribers. You can view a sample article here for free."
+    question: "What are premium subscription?",
+    answer:
+      "Premium subscription includes carefully researched coding challenges designed to provide unique detection insights into advanced attacker techniques that are often difficult to identify, or alternative detection approaches that can be more effective than existing methods.",
   },
   {
     question: "How much does the premium subscription cost?",
-    answer: "Our premium subscription is available at different pricing tiers. You can choose between monthly, quarterly, or annual plans. The annual plan offers the best value with significant savings."
+    answer:
+      "Our Premium subscription is currently offered in multiple pricing tiers. At the moment, you can choose either an individual coding challenge or a bundle that provides access to multiple challenges. We also plan to revise and expand our subscription plans soon.",
   },
   {
     question: "Can I cancel my subscription anytime?",
-    answer: "Yes, you can cancel your premium subscription at any time. If you cancel, you'll continue to have access to premium features until the end of your billing period."
+    answer:
+      "You cannot cancel the subscription once it has been purchased, as the current model is based on one-time payments for individual challenges or challenge bundles rather than recurring billing. Cancellation options will be available once we revise the subscription structure in the future.",
   },
   {
     question: "Do you offer student discounts?",
-    answer: "Yes! We offer special discounts for students with valid .edu email addresses. Contact our support team with your student credentials to get your discount code."
+    answer:
+      'Yes! We offer special discounts for students with valid student email addresses. Contact us on "violethat@violethat.com" with your student credentials to get your discount code.',
   },
   {
     question: "Can I switch between different subscription plans?",
-    answer: "Yes, you can upgrade or downgrade your subscription plan at any time. The changes will take effect at the start of your next billing cycle."
-  }
+    answer:
+      "Yes, you can upgrade or downgrade your subscription plan at any time. The changes will take effect at the start of your next billing cycle.",
+  },
 ];
 
 const Faq = () => {

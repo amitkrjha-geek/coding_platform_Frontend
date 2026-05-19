@@ -8,22 +8,24 @@ const highlights = [
   {
     icon: Terminal,
     title: 'Real-world labs',
-    description: 'Hands-on offensive engineering challenges sourced from real engagements.',
+    description: 'Learn hook development before malware does it better.',
   },
   {
     icon: Code2,
-    title: 'Multi-language IDE',
-    description: 'Compile, run, and submit C, C++, and C# directly in the browser.',
+    title: 'Multiple packages',
+    description:
+      'Compile, run, and submit using multiple software packages for monitoring and instrumenting API calls.',
   },
   {
     icon: ShieldCheck,
     title: 'Secure sandbox',
-    description: 'Every run executes inside an isolated agent — your machine stays clean.',
+    description:
+      'Every run executes inside an isolated machine — we have nothing to loose.',
   },
   {
     icon: Zap,
     title: 'Live agent telemetry',
-    description: 'Stream stdout, stderr, and exploit results in real time over a websocket.',
+    description: 'Real-time stdout and stderr streaming for live result analysis.',
   },
 ]
 
@@ -114,7 +116,7 @@ export default function Page() {
                   formFieldInput:
                     'bg-htb-bg border border-htb-border text-htb-text hover:border-htb-border-hover focus:border-neon/60 focus:ring-1 focus:ring-neon/40 transition-colors',
                   formButtonPrimary:
-                    'bg-neon text-htb-bg hover:bg-neon-green-dim hover:shadow-neon-sm font-mono text-xs uppercase tracking-widest font-semibold transition-all',
+                    'bg-neon text-white hover:bg-neon-green-dim hover:shadow-neon-sm font-mono text-xs uppercase tracking-widest font-semibold transition-all',
                   footer: 'bg-transparent',
                   footerActionText: 'text-htb-muted',
                   footerActionLink:

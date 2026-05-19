@@ -68,10 +68,10 @@ const RevenueChart = ({ data }: RevenueChartProps) => {
           <Line
             type="monotone"
             dataKey="revenue"
-            stroke="#9FEF00"
+            stroke="#A855F7"
             strokeWidth={2}
-            dot={{ r: 5, fill: '#9FEF00', stroke: '#0B0F17', strokeWidth: 2 }}
-            activeDot={{ r: 6, fill: '#9FEF00', stroke: '#0B0F17', strokeWidth: 2 }}
+            dot={{ r: 5, fill: '#A855F7', stroke: '#0B0F17', strokeWidth: 2 }}
+            activeDot={{ r: 6, fill: '#A855F7', stroke: '#0B0F17', strokeWidth: 2 }}
           />
         </LineChart>
       </ResponsiveContainer>

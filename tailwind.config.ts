@@ -23,19 +23,19 @@ export default {
 					'panel-hover': '#162033',
 					'panel-2': '#1A2332',
 					border: 'rgba(255,255,255,0.06)',
-					'border-hover': 'rgba(159,239,0,0.35)',
+					'border-hover': 'rgba(168,85,247,0.35)',
 					muted: '#A4B1CD',
 					'text-dim': '#6B7A99',
 					text: '#E6EDF7',
 				},
+				// "neon" tokens remapped to purple (legacy class names kept for compat)
 				neon: {
-					DEFAULT: '#9FEF00',
-					green: '#9FEF00',
-					'green-dim': '#7BC400',
-					'green-soft': 'rgba(159,239,0,0.12)',
-					'green-glow': 'rgba(159,239,0,0.45)',
+					DEFAULT: '#A855F7',
+					green: '#A855F7',
+					'green-dim': '#9333EA',
+					'green-soft': 'rgba(168,85,247,0.12)',
+					'green-glow': 'rgba(168,85,247,0.45)',
 				},
-				// retain violet for "premium tier" accent
 				purple: {
 					DEFAULT: '#7E22CE',
 					100: '#7E22CE1A',
@@ -45,7 +45,7 @@ export default {
 					700: '#7E22CE',
 				},
 				// status (tuned for dark bg)
-				success: '#9FEF00',
+				success: '#A855F7',
 				warn: '#FFAF00',
 				danger: '#FF3E3E',
 				card: {
@@ -102,24 +102,24 @@ export default {
 				'widest-2': '0.25em',
 			},
 			boxShadow: {
-				'neon': '0 0 0 1px rgba(159,239,0,0.5), 0 0 24px rgba(159,239,0,0.25)',
-				'neon-sm': '0 0 0 1px rgba(159,239,0,0.4), 0 0 12px rgba(159,239,0,0.15)',
-				'neon-lg': '0 0 0 1px rgba(159,239,0,0.6), 0 0 48px rgba(159,239,0,0.35)',
+				'neon': '0 0 0 1px rgba(168,85,247,0.5), 0 0 24px rgba(168,85,247,0.25)',
+				'neon-sm': '0 0 0 1px rgba(168,85,247,0.4), 0 0 12px rgba(168,85,247,0.15)',
+				'neon-lg': '0 0 0 1px rgba(168,85,247,0.6), 0 0 48px rgba(168,85,247,0.35)',
 				'panel': '0 4px 24px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.04) inset',
 				'panel-lg': '0 12px 48px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.05) inset',
 				'violet-glow': '0 0 0 1px rgba(168,85,247,0.5), 0 0 24px rgba(168,85,247,0.3)',
 			},
 			backgroundImage: {
 				'grid-pattern':
-					'linear-gradient(rgba(159,239,0,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(159,239,0,0.05) 1px, transparent 1px)',
+					'linear-gradient(rgba(168,85,247,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(168,85,247,0.05) 1px, transparent 1px)',
 				'grid-pattern-dim':
 					'linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)',
 				'radial-glow':
-					'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(159,239,0,0.15), transparent 70%)',
+					'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(168,85,247,0.15), transparent 70%)',
 				'radial-glow-violet':
 					'radial-gradient(ellipse 60% 50% at 50% 0%, rgba(126,34,206,0.18), transparent 70%)',
 				'hex-pattern':
-					"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='46' viewBox='0 0 40 46'><path d='M20 0L40 11.5v23L20 46 0 34.5v-23z' fill='none' stroke='rgba(159,239,0,0.06)' stroke-width='1'/></svg>\")",
+					"url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='46' viewBox='0 0 40 46'><path d='M20 0L40 11.5v23L20 46 0 34.5v-23z' fill='none' stroke='rgba(168,85,247,0.06)' stroke-width='1'/></svg>\")",
 				'panel-gradient':
 					'linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%)',
 			},
@@ -158,8 +158,8 @@ export default {
 					'100%': { transform: 'translateY(100%)' }
 				},
 				'glow-pulse': {
-					'0%, 100%': { boxShadow: '0 0 0 1px rgba(159,239,0,0.4), 0 0 12px rgba(159,239,0,0.15)' },
-					'50%': { boxShadow: '0 0 0 1px rgba(159,239,0,0.7), 0 0 32px rgba(159,239,0,0.45)' }
+					'0%, 100%': { boxShadow: '0 0 0 1px rgba(168,85,247,0.4), 0 0 12px rgba(168,85,247,0.15)' },
+					'50%': { boxShadow: '0 0 0 1px rgba(168,85,247,0.7), 0 0 32px rgba(168,85,247,0.45)' }
 				},
 				'grid-fade': {
 					'0%, 100%': { opacity: '0.6' },

@@ -379,7 +379,7 @@ const PaymentHistory = ({ paymentHistory, loading = false, error }: PaymentHisto
                         onClick={() => setCurrentPage(page)}
                         className={`w-9 h-9 text-xs font-mono font-semibold rounded-md transition-colors ${
                           currentPage === page
-                            ? 'bg-neon text-htb-bg shadow-neon-sm'
+                            ? 'bg-neon text-white shadow-neon-sm'
                             : 'border border-htb-border bg-htb-panel text-htb-muted hover:border-neon/40 hover:text-neon'
                         }`}
                       >

@@ -60,7 +60,7 @@ const PaymentStatusContent = () => {
             <div className='flex justify-center'>
                 <Link
                     href='/'
-                    className='inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md bg-neon text-htb-bg hover:shadow-neon-sm hover:-translate-y-0.5 transition-all font-mono text-xs uppercase tracking-widest font-semibold'
+                    className='inline-flex items-center justify-center gap-2 px-6 py-3 rounded-md bg-neon text-white hover:shadow-neon-sm hover:-translate-y-0.5 transition-all font-mono text-xs uppercase tracking-widest font-semibold'
                 >
                     <span>Return to Home</span>
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
