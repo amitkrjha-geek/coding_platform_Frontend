@@ -136,7 +136,7 @@ const PlanBillingPage = () => {
           <div className="pb-2">
             <button
               onClick={handleAddCoupon}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-neon text-htb-bg hover:shadow-neon-sm hover:-translate-y-0.5 transition-all font-mono text-xs uppercase tracking-widest font-semibold"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-neon text-white hover:shadow-neon-sm hover:-translate-y-0.5 transition-all font-mono text-xs uppercase tracking-widest font-semibold"
             >
               <Plus className="w-3.5 h-3.5" />
               {activeTab === "plans" ? "Add Plan" : "Add Coupon"}

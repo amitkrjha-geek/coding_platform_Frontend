@@ -18,7 +18,7 @@ const data = [
   { country: 'India', count: 50 },
 ];
 
-const barColor = "#9FEF00";
+const barColor = "#A855F7";
 
 const TopCountriesChart = () => {
   return (
@@ -54,7 +54,7 @@ const TopCountriesChart = () => {
               fontFamily: '"JetBrains Mono", ui-monospace, monospace',
               fontSize: 12,
             }}
-            cursor={{ fill: 'rgba(159, 239, 0, 0.05)' }}
+            cursor={{ fill: 'rgba(168, 85, 247, 0.05)' }}
           />
           <Bar dataKey="count" fill={barColor} radius={[0, 6, 6, 0]}>
             {data.map((entry, index) => (

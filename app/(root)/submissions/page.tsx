@@ -199,7 +199,7 @@ const SubmissionsPage = () => {
           <h2 className="text-xl font-bold text-htb-text mb-4">Please log in to view submissions</h2>
           <button
             onClick={() => router.push('/sign-in')}
-            className="bg-neon text-htb-bg font-mono text-xs uppercase tracking-widest font-semibold px-6 py-2.5 rounded-md hover:shadow-neon-sm hover:-translate-y-0.5 transition-all"
+            className="bg-neon text-white font-mono text-xs uppercase tracking-widest font-semibold px-6 py-2.5 rounded-md hover:shadow-neon-sm hover:-translate-y-0.5 transition-all"
           >
             Sign In
           </button>
@@ -347,7 +347,7 @@ const SubmissionsPage = () => {
             <div className="flex gap-2 mt-5">
               <button
                 onClick={applyFilters}
-                className="px-4 py-2 bg-neon text-htb-bg font-mono text-xs uppercase tracking-widest font-semibold rounded-md hover:shadow-neon-sm hover:-translate-y-0.5 transition-all"
+                className="px-4 py-2 bg-neon text-white font-mono text-xs uppercase tracking-widest font-semibold rounded-md hover:shadow-neon-sm hover:-translate-y-0.5 transition-all"
               >
                 Apply Filters
               </button>
@@ -389,7 +389,7 @@ const SubmissionsPage = () => {
               </p>
               <button
                 onClick={() => router.push('/Challenges')}
-                className="px-6 py-3 bg-neon text-htb-bg rounded-md hover:shadow-neon-sm hover:-translate-y-0.5 transition-all font-mono text-xs uppercase tracking-widest font-semibold"
+                className="px-6 py-3 bg-neon text-white rounded-md hover:shadow-neon-sm hover:-translate-y-0.5 transition-all font-mono text-xs uppercase tracking-widest font-semibold"
               >
                 Browse Challenges
               </button>
@@ -403,7 +403,7 @@ const SubmissionsPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.04, duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   className="group panel panel-hover p-5 cursor-pointer h-full transition-all"
-                  onClick={() => router.push(`/${submission?.challenge?._id}`)}
+                  onClick={() => router.push(`/challenges/${submission?.challenge?._id}`)}
                 >
                   <div className="flex flex-col h-full">
                     {/* Header with title and difficulty */}

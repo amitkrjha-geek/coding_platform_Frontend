@@ -171,7 +171,7 @@ const AdminForm = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 bg-neon hover:bg-neon-green-dim hover:shadow-neon-sm hover:-translate-y-0.5 text-htb-bg py-2.5 px-4 rounded-md transition-all disabled:opacity-50 font-mono text-xs uppercase tracking-widest font-semibold"
+              className="flex-1 bg-neon hover:bg-neon-green-dim hover:shadow-neon-sm hover:-translate-y-0.5 text-white py-2.5 px-4 rounded-md transition-all disabled:opacity-50 font-mono text-xs uppercase tracking-widest font-semibold"
             >
               {isSubmitting ? "Adding..." : "Add Admin"}
             </button>

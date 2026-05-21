@@ -25,7 +25,7 @@ const SubscribersChart = ({ data }: SubscribersChartProps) => {
   }));
 
   // Colors for the charts (HTB palette)
-  const colors = ['#9FEF00', '#A855F7', '#FF3E3E', '#38BDF8', '#FFAF00'];
+  const colors = ['#A855F7', '#A855F7', '#FF3E3E', '#38BDF8', '#FFAF00'];
 
   // If no data, show empty state
   if (!data || data.length === 0) {

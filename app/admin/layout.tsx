@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import Navbar from "@/components/adminDashboard/Navbar";
 import { Sidebar } from "@/components/adminDashboard/Sidebar";
 
+export const metadata: Metadata = {
+  title: "Admin",
+  robots: { index: false, follow: false, nocache: true },
+};
 
 export default function DashboardLayout({
   children,

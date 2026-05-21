@@ -19,7 +19,7 @@ import { useAuth } from '@clerk/nextjs';
 
 export const PricingPlans = () => {
   const dispatch = useAppDispatch();
-  const token = getToken();
+  // const token = getToken();
   const router = useRouter();
       const { userId } = useAuth();      
   
@@ -116,8 +116,8 @@ export const PricingPlans = () => {
               {/* Popular Badge */}
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="inline-flex items-center gap-1.5 bg-neon text-htb-bg px-3 py-1 text-[10px] font-mono font-semibold uppercase tracking-widest rounded shadow-neon-sm">
-                    <span className="block w-1.5 h-1.5 rounded-full bg-htb-bg" />
+                  <span className="inline-flex items-center gap-1.5 bg-neon text-white px-3 py-1 text-[10px] font-mono font-semibold uppercase tracking-widest rounded shadow-neon-sm">
+                    <span className="block w-1.5 h-1.5 rounded-full bg-white" />
                     Most Popular
                   </span>
                 </div>
@@ -175,7 +175,7 @@ export const PricingPlans = () => {
                 onClick={() => handlePlanSelect(plan)}
                 className={`group/btn relative w-full overflow-hidden py-3.5 px-6 rounded-md font-mono text-xs uppercase tracking-widest font-semibold transition-all duration-300 ${
                   plan.popular
-                    ? "bg-neon text-htb-bg hover:shadow-neon-sm hover:-translate-y-0.5"
+                    ? "bg-neon text-white hover:shadow-neon-sm hover:-translate-y-0.5"
                     : "bg-htb-panel-2 text-htb-text border border-htb-border hover:border-neon/40 hover:text-neon hover:-translate-y-0.5"
                 }`}
               >

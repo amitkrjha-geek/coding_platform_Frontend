@@ -78,8 +78,8 @@ const AcceptedTab = () => {
               <AreaChart data={data} margin={{ top: 10, right: 0, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorPercentage" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#9FEF00" stopOpacity={0.35} />
-                    <stop offset="95%" stopColor="#9FEF00" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#A855F7" stopOpacity={0.35} />
+                    <stop offset="95%" stopColor="#A855F7" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.06)" />
@@ -109,7 +109,7 @@ const AcceptedTab = () => {
                 <Area
                   type="monotone"
                   dataKey="percentage"
-                  stroke="#9FEF00"
+                  stroke="#A855F7"
                   fill="url(#colorPercentage)"
                   strokeWidth={2}
                 />

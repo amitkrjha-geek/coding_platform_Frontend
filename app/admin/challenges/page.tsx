@@ -470,7 +470,7 @@ const Page = () => {
                           pageNum === "..."
                             ? "cursor-default text-htb-text-dim"
                             : currentPage === pageNum
-                            ? "bg-neon text-htb-bg shadow-neon-sm"
+                            ? "bg-neon text-white shadow-neon-sm"
                             : "border border-htb-border bg-htb-panel text-htb-muted hover:border-neon/40 hover:text-neon"
                         }`}
                       >

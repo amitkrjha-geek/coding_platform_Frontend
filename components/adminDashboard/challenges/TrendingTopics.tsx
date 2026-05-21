@@ -47,7 +47,7 @@ export const TrendingTopics = ({ companies, selectedCompany, setSelectedCompany 
               <span className="capitalize">{company.name}</span>
               <span className={`px-1.5 py-0.5 rounded text-[10px] font-semibold tabular-nums ${
                 active
-                  ? "bg-neon text-htb-bg"
+                  ? "bg-neon text-white"
                   : "bg-htb-panel-2 text-htb-muted group-hover:bg-htb-panel-hover"
               }`}>
                 {company.count}

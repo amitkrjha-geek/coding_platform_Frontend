@@ -12,7 +12,7 @@ import {
 import { Search } from "lucide-react";
 import { FaAngleDoubleRight } from "react-icons/fa";
 import ChallengeList from "./ChallengeList";
-import Sidebar from "./Sidebar";
+// import Sidebar from "./Sidebar";
 import { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import GridBackground from "@/components/shared/GridBackground";
@@ -229,7 +229,7 @@ const Challenges = () => {
               setToken(response?.token);
               setCurrentUserId(response?.user?._id);
             }
-            router.push("/");
+            router.push("/challenges");
             // console.log("User created successfully");
             toast.success("User created successfully");
             dispatch(fetchUsers());
@@ -283,11 +283,11 @@ const Challenges = () => {
   );
 
   return (
-    <div className="relative w-full pt-16">
+    <div className="relative w-full ">
       {/* Hero band */}
       <section className="relative overflow-hidden border-b border-htb-border">
         <GridBackground variant="neon" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 sm:pt-14 pb-8 sm:pb-10">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 sm:pt-10 pb-8 sm:pb-10">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -296,12 +296,11 @@ const Challenges = () => {
           >
             <TerminalEyebrow cursor>challenges.index</TerminalEyebrow>
             <h1 className="heading-display text-3xl sm:text-4xl lg:text-5xl text-htb-text">
-              Hack your way through{" "}
-              <span className="text-neon">real-world</span> challenges
+              Develop hooks.{" "}
+              <span className="text-neon">Compile. Detect.</span>
             </h1>
             <p className="text-htb-muted max-w-2xl text-sm sm:text-base">
-              Sharpen your offensive engineering skills on a curated arsenal of
-              hands-on labs. Compile, exploit, and capture the flag.
+              Practice Endpoint Detection Engineering through coding challenges because malware shouldn&rsquo;t be the only one using hooks.
             </p>
           </motion.div>
 

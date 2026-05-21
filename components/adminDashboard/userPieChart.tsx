@@ -4,7 +4,7 @@ import React from "react";
 import { PieChart, Pie, Legend, Tooltip, Cell } from "recharts";
 
 const data = [
-  { name: "Active Users", value: 70, color: "#9FEF00" },
+  { name: "Active Users", value: 70, color: "#A855F7" },
   { name: "Non Active", value: 30, color: "#A4B1CD" },
 ];
 

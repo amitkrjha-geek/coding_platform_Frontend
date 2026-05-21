@@ -66,8 +66,8 @@ export default function DailyUsersChart({ data }: DailyUsersChartProps) {
         <AreaChart data={processedData} margin={{ top: 20, right: 30, left: 20, bottom: 20 }}>
           <defs>
             <linearGradient id="userGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#9FEF00" stopOpacity={0.4}/>
-              <stop offset="95%" stopColor="#9FEF00" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#A855F7" stopOpacity={0.4}/>
+              <stop offset="95%" stopColor="#A855F7" stopOpacity={0}/>
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" />
@@ -101,11 +101,11 @@ export default function DailyUsersChart({ data }: DailyUsersChartProps) {
           <Area
             type="monotone"
             dataKey="users"
-            stroke="#9FEF00"
+            stroke="#A855F7"
             fill="url(#userGradient)"
             strokeWidth={2}
-            dot={{ r: 4, fill: "#9FEF00", stroke: "#0B0F17", strokeWidth: 2 }}
-            activeDot={{ r: 6, fill: "#9FEF00", stroke: "#0B0F17", strokeWidth: 2 }}
+            dot={{ r: 4, fill: "#A855F7", stroke: "#0B0F17", strokeWidth: 2 }}
+            activeDot={{ r: 6, fill: "#A855F7", stroke: "#0B0F17", strokeWidth: 2 }}
           />
         </AreaChart>
       </ResponsiveContainer>

@@ -46,7 +46,7 @@ const PlanCard = ({
               {title}
             </h2>
             {popular && (
-              <span className="bg-neon text-htb-bg text-[10px] font-mono font-semibold uppercase tracking-widest px-2 py-0.5 rounded">
+              <span className="bg-neon text-white text-[10px] font-mono font-semibold uppercase tracking-widest px-2 py-0.5 rounded">
                 Popular
               </span>
             )}

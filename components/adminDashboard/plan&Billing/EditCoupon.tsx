@@ -215,7 +215,7 @@ const UpdateCouponForm = ({ initialData }: UpdateCouponFormProps) => {
         <div className="flex gap-3 pt-2">
           <button
             type="submit"
-            className="flex-1 bg-neon hover:bg-neon-green-dim hover:shadow-neon-sm hover:-translate-y-0.5 text-htb-bg px-4 py-2.5 rounded-md transition-all disabled:opacity-50 font-mono text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2"
+            className="flex-1 bg-neon hover:bg-neon-green-dim hover:shadow-neon-sm hover:-translate-y-0.5 text-white px-4 py-2.5 rounded-md transition-all disabled:opacity-50 font-mono text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2"
             disabled={loading}
           >
             {loading ? (
