@@ -22,6 +22,9 @@ interface SsrChallenge {
   paymentMode?: string;
 }
 
+
+
+
 async function fetchChallengesServerSide(): Promise<SsrChallenge[]> {
   const base = process.env.NEXT_PUBLIC_API_END_POINTS;
   if (!base) return [];
